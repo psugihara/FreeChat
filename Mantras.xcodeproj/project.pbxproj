@@ -1,0 +1,602 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		A1F617262A782AA100F2048C /* MantrasApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1F617252A782AA100F2048C /* MantrasApp.swift */; };
+		A1F617282A782AA100F2048C /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1F617272A782AA100F2048C /* ContentView.swift */; };
+		A1F6172A2A782AA200F2048C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A1F617292A782AA200F2048C /* Assets.xcassets */; };
+		A1F6172D2A782AA200F2048C /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A1F6172C2A782AA200F2048C /* Preview Assets.xcassets */; };
+		A1F6172F2A782AA200F2048C /* Persistence.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1F6172E2A782AA200F2048C /* Persistence.swift */; };
+		A1F617322A782AA200F2048C /* Mantras.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = A1F617302A782AA200F2048C /* Mantras.xcdatamodeld */; };
+		A1F6173D2A782AA200F2048C /* MantrasTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1F6173C2A782AA200F2048C /* MantrasTests.swift */; };
+		A1F617472A782AA200F2048C /* MantrasUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1F617462A782AA200F2048C /* MantrasUITests.swift */; };
+		A1F617492A782AA200F2048C /* MantrasUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1F617482A782AA200F2048C /* MantrasUITestsLaunchTests.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		A1F617392A782AA200F2048C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A1F6171A2A782AA100F2048C /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A1F617212A782AA100F2048C;
+			remoteInfo = Mantras;
+		};
+		A1F617432A782AA200F2048C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A1F6171A2A782AA100F2048C /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A1F617212A782AA100F2048C;
+			remoteInfo = Mantras;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		A1F617222A782AA100F2048C /* Mantras.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Mantras.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		A1F617252A782AA100F2048C /* MantrasApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MantrasApp.swift; sourceTree = "<group>"; };
+		A1F617272A782AA100F2048C /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		A1F617292A782AA200F2048C /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		A1F6172C2A782AA200F2048C /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		A1F6172E2A782AA200F2048C /* Persistence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Persistence.swift; sourceTree = "<group>"; };
+		A1F617312A782AA200F2048C /* Mantras.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Mantras.xcdatamodel; sourceTree = "<group>"; };
+		A1F617332A782AA200F2048C /* Mantras.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Mantras.entitlements; sourceTree = "<group>"; };
+		A1F617382A782AA200F2048C /* MantrasTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MantrasTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		A1F6173C2A782AA200F2048C /* MantrasTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MantrasTests.swift; sourceTree = "<group>"; };
+		A1F617422A782AA200F2048C /* MantrasUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MantrasUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		A1F617462A782AA200F2048C /* MantrasUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MantrasUITests.swift; sourceTree = "<group>"; };
+		A1F617482A782AA200F2048C /* MantrasUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MantrasUITestsLaunchTests.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		A1F6171F2A782AA100F2048C /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A1F617352A782AA200F2048C /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A1F6173F2A782AA200F2048C /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		A1F617192A782AA100F2048C = {
+			isa = PBXGroup;
+			children = (
+				A1F617242A782AA100F2048C /* Mantras */,
+				A1F6173B2A782AA200F2048C /* MantrasTests */,
+				A1F617452A782AA200F2048C /* MantrasUITests */,
+				A1F617232A782AA100F2048C /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		A1F617232A782AA100F2048C /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				A1F617222A782AA100F2048C /* Mantras.app */,
+				A1F617382A782AA200F2048C /* MantrasTests.xctest */,
+				A1F617422A782AA200F2048C /* MantrasUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		A1F617242A782AA100F2048C /* Mantras */ = {
+			isa = PBXGroup;
+			children = (
+				A1F617252A782AA100F2048C /* MantrasApp.swift */,
+				A1F617272A782AA100F2048C /* ContentView.swift */,
+				A1F617292A782AA200F2048C /* Assets.xcassets */,
+				A1F6172E2A782AA200F2048C /* Persistence.swift */,
+				A1F617332A782AA200F2048C /* Mantras.entitlements */,
+				A1F617302A782AA200F2048C /* Mantras.xcdatamodeld */,
+				A1F6172B2A782AA200F2048C /* Preview Content */,
+			);
+			path = Mantras;
+			sourceTree = "<group>";
+		};
+		A1F6172B2A782AA200F2048C /* Preview Content */ = {
+			isa = PBXGroup;
+			children = (
+				A1F6172C2A782AA200F2048C /* Preview Assets.xcassets */,
+			);
+			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		A1F6173B2A782AA200F2048C /* MantrasTests */ = {
+			isa = PBXGroup;
+			children = (
+				A1F6173C2A782AA200F2048C /* MantrasTests.swift */,
+			);
+			path = MantrasTests;
+			sourceTree = "<group>";
+		};
+		A1F617452A782AA200F2048C /* MantrasUITests */ = {
+			isa = PBXGroup;
+			children = (
+				A1F617462A782AA200F2048C /* MantrasUITests.swift */,
+				A1F617482A782AA200F2048C /* MantrasUITestsLaunchTests.swift */,
+			);
+			path = MantrasUITests;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		A1F617212A782AA100F2048C /* Mantras */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A1F6174C2A782AA200F2048C /* Build configuration list for PBXNativeTarget "Mantras" */;
+			buildPhases = (
+				A1F6171E2A782AA100F2048C /* Sources */,
+				A1F6171F2A782AA100F2048C /* Frameworks */,
+				A1F617202A782AA100F2048C /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Mantras;
+			productName = Mantras;
+			productReference = A1F617222A782AA100F2048C /* Mantras.app */;
+			productType = "com.apple.product-type.application";
+		};
+		A1F617372A782AA200F2048C /* MantrasTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A1F6174F2A782AA200F2048C /* Build configuration list for PBXNativeTarget "MantrasTests" */;
+			buildPhases = (
+				A1F617342A782AA200F2048C /* Sources */,
+				A1F617352A782AA200F2048C /* Frameworks */,
+				A1F617362A782AA200F2048C /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				A1F6173A2A782AA200F2048C /* PBXTargetDependency */,
+			);
+			name = MantrasTests;
+			productName = MantrasTests;
+			productReference = A1F617382A782AA200F2048C /* MantrasTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		A1F617412A782AA200F2048C /* MantrasUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A1F617522A782AA200F2048C /* Build configuration list for PBXNativeTarget "MantrasUITests" */;
+			buildPhases = (
+				A1F6173E2A782AA200F2048C /* Sources */,
+				A1F6173F2A782AA200F2048C /* Frameworks */,
+				A1F617402A782AA200F2048C /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				A1F617442A782AA200F2048C /* PBXTargetDependency */,
+			);
+			name = MantrasUITests;
+			productName = MantrasUITests;
+			productReference = A1F617422A782AA200F2048C /* MantrasUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		A1F6171A2A782AA100F2048C /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1430;
+				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+					A1F617212A782AA100F2048C = {
+						CreatedOnToolsVersion = 14.3.1;
+					};
+					A1F617372A782AA200F2048C = {
+						CreatedOnToolsVersion = 14.3.1;
+						TestTargetID = A1F617212A782AA100F2048C;
+					};
+					A1F617412A782AA200F2048C = {
+						CreatedOnToolsVersion = 14.3.1;
+						TestTargetID = A1F617212A782AA100F2048C;
+					};
+				};
+			};
+			buildConfigurationList = A1F6171D2A782AA100F2048C /* Build configuration list for PBXProject "Mantras" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = A1F617192A782AA100F2048C;
+			productRefGroup = A1F617232A782AA100F2048C /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				A1F617212A782AA100F2048C /* Mantras */,
+				A1F617372A782AA200F2048C /* MantrasTests */,
+				A1F617412A782AA200F2048C /* MantrasUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		A1F617202A782AA100F2048C /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A1F6172D2A782AA200F2048C /* Preview Assets.xcassets in Resources */,
+				A1F6172A2A782AA200F2048C /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A1F617362A782AA200F2048C /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A1F617402A782AA200F2048C /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		A1F6171E2A782AA100F2048C /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A1F6172F2A782AA200F2048C /* Persistence.swift in Sources */,
+				A1F617282A782AA100F2048C /* ContentView.swift in Sources */,
+				A1F617322A782AA200F2048C /* Mantras.xcdatamodeld in Sources */,
+				A1F617262A782AA100F2048C /* MantrasApp.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A1F617342A782AA200F2048C /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A1F6173D2A782AA200F2048C /* MantrasTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A1F6173E2A782AA200F2048C /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A1F617472A782AA200F2048C /* MantrasUITests.swift in Sources */,
+				A1F617492A782AA200F2048C /* MantrasUITestsLaunchTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		A1F6173A2A782AA200F2048C /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A1F617212A782AA100F2048C /* Mantras */;
+			targetProxy = A1F617392A782AA200F2048C /* PBXContainerItemProxy */;
+		};
+		A1F617442A782AA200F2048C /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A1F617212A782AA100F2048C /* Mantras */;
+			targetProxy = A1F617432A782AA200F2048C /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		A1F6174A2A782AA200F2048C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 13.3;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		A1F6174B2A782AA200F2048C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 13.3;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+			};
+			name = Release;
+		};
+		A1F6174D2A782AA200F2048C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = Mantras/Mantras.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"Mantras/Preview Content\"";
+				DEVELOPMENT_TEAM = 6577JALN5F;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.npc-pet.Mantras";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		A1F6174E2A782AA200F2048C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = Mantras/Mantras.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"Mantras/Preview Content\"";
+				DEVELOPMENT_TEAM = 6577JALN5F;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.npc-pet.Mantras";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		A1F617502A782AA200F2048C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 6577JALN5F;
+				GENERATE_INFOPLIST_FILE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 13.3;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.npc-pet.MantrasTests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Mantras.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Mantras";
+			};
+			name = Debug;
+		};
+		A1F617512A782AA200F2048C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 6577JALN5F;
+				GENERATE_INFOPLIST_FILE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 13.3;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.npc-pet.MantrasTests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Mantras.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Mantras";
+			};
+			name = Release;
+		};
+		A1F617532A782AA200F2048C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 6577JALN5F;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.npc-pet.MantrasUITests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TEST_TARGET_NAME = Mantras;
+			};
+			name = Debug;
+		};
+		A1F617542A782AA200F2048C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 6577JALN5F;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.npc-pet.MantrasUITests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TEST_TARGET_NAME = Mantras;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		A1F6171D2A782AA100F2048C /* Build configuration list for PBXProject "Mantras" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A1F6174A2A782AA200F2048C /* Debug */,
+				A1F6174B2A782AA200F2048C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A1F6174C2A782AA200F2048C /* Build configuration list for PBXNativeTarget "Mantras" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A1F6174D2A782AA200F2048C /* Debug */,
+				A1F6174E2A782AA200F2048C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A1F6174F2A782AA200F2048C /* Build configuration list for PBXNativeTarget "MantrasTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A1F617502A782AA200F2048C /* Debug */,
+				A1F617512A782AA200F2048C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A1F617522A782AA200F2048C /* Build configuration list for PBXNativeTarget "MantrasUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A1F617532A782AA200F2048C /* Debug */,
+				A1F617542A782AA200F2048C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCVersionGroup section */
+		A1F617302A782AA200F2048C /* Mantras.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				A1F617312A782AA200F2048C /* Mantras.xcdatamodel */,
+			);
+			currentVersion = A1F617312A782AA200F2048C /* Mantras.xcdatamodel */;
+			path = Mantras.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+/* End XCVersionGroup section */
+	};
+	rootObject = A1F6171A2A782AA100F2048C /* Project object */;
+}
