@@ -18,9 +18,10 @@ Not sure what this is like to run on another machine. Try it out.
   - [x] hook agent up, save convos to coredata
   - [ ] server should shut down more reliably, try storing pids and reaping orphans
   - [ ] user can edit convo titles
-  - [ ] TextField and NavigationLink focus behavior work more like Messages
   - [ ] make intel chips work by [making a universal `server` binary](https://developer.apple.com/documentation/apple-silicon/building-a-universal-macos-binary#Update-the-Architecture-List-of-Custom-Makefiles)
   - [ ] App icon
+  - [ ] Conversation null state
+  - [ ] user can copy conversation
 
 - [ ] Try any llama.cpp compatible model
 - [ ] Change system prompts to modify personas or expertise
