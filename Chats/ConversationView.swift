@@ -111,8 +111,11 @@ struct ConversationView: View {
     input = ""
     _ = try! Message.create(text: submitted, fromId: Message.USER_SPEAKER_ID, conversation: conversation, inContext: viewContext)
     Task {
+      agent.prompt = conversation.prompt ?? agent.prompt
       let text = await agent.listenThinkRespond(speakerId: Message.USER_SPEAKER_ID, message: submitted)
       _ = try Message.create(text: text, fromId: agent.id, conversation: conversation, inContext: viewContext)
+      conversation.prompt = agent.prompt
+      try viewContext.save()
       agent.pendingMessage = ""
     }
   }

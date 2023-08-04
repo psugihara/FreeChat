@@ -60,7 +60,9 @@ class LlamaServer {
   
   func complete(prompt: String, progressHandler: ((String) -> Void)? = nil) async throws -> String {
     // debug
-    // print("START PROMPT\n \(prompt) \nEND PROMPT\n\n")
+#if DEBUG
+     print("START PROMPT\n \(prompt) \nEND PROMPT\n\n")
+#endif
     
     try startServer()
     
