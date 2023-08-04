@@ -1,8 +1,9 @@
 # Chats
 
-<img width="1009" alt="Screenshot 2023-08-04 at 1 39 52 PM" src="https://github.com/npc-pet/Chats/assets/282016/c3216351-2b7a-40c7-9fe6-d78ec5f3d0b3">
-
 Chat with Meta’s Llama 2 on your MacBook without installing any other software or connecting to the internet. Every conversation is saved locally.
+
+
+<img width="1009" alt="Screenshot 2023-08-04 at 1 39 52 PM" src="https://github.com/npc-pet/Chats/assets/282016/c3216351-2b7a-40c7-9fe6-d78ec5f3d0b3">
 
 ## Dev
 
