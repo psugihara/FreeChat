@@ -24,7 +24,7 @@ struct ContentView: View {
   var body: some View {
     NavigationSplitView {
       List(sortedItems(), id: \.self, selection: $selection) { item in
-          Text(title(item))
+        Text(title(item))
           .contextMenu {
             Button {
               deleteConversation(item)
@@ -69,11 +69,13 @@ struct ContentView: View {
   private func sortedItems() -> [FetchedResults<Conversation>.Element] {
     items.sorted(by: { $0.createdAt!.compare($1.createdAt!) == .orderedDescending })
   }
-
+  
   private func title(_ conversation: FetchedResults<Conversation>.Element) -> String {
+    (conversation.title == nil && conversation.createdAt == nil) ?
+    "Untitled" :
     conversation.title ?? itemFormatter.string(from: conversation.createdAt!)
   }
-
+  
   private func addConversation() {
     withAnimation {
       let newConversation = Conversation(context: viewContext)
@@ -89,7 +91,7 @@ struct ContentView: View {
       }
     }
   }
-
+  
   private func deleteSelectedConversations() {
     withAnimation {
       selection.forEach(viewContext.delete)

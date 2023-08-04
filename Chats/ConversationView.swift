@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import MarkdownUI
 
 struct FTextFieldStyle: TextFieldStyle {
   @FocusState private var isFocused: Bool
@@ -49,9 +50,7 @@ struct ConversationView: View {
     ZStack(alignment: .bottom) {
       ScrollViewReader { proxy in
         List(messages) { m in
-          Text(m.text!)
-            .frame(maxWidth: .infinity, alignment: m.fromId == Message.USER_SPEAKER_ID ? .topTrailing : .topLeading)
-            .id(m == messages.last && agent.status != .processing ? Position.bottom : nil)
+          MessageView(m).id(m == messages.last && agent.status != .processing ? Position.bottom : nil)
           if m == messages.last {
             if agent.pendingMessage != "" {
               Text(agent.pendingMessage)
@@ -66,10 +65,11 @@ struct ConversationView: View {
           }
         }
         .textSelection(.enabled)
-        .listStyle(.inset(alternatesRowBackgrounds: true))
+        .listRowSeparator(.visible)
         .safeAreaInset(edge: .bottom, spacing: 0) {
           TextField("Message", text: $input, axis: .vertical)
             .onSubmit { submit() }
+            .submitLabel(.send)
             .focused($messageFieldFocused, equals: true)
             .textFieldStyle(FTextFieldStyle())
             .padding(.all, 8)
@@ -99,7 +99,7 @@ struct ConversationView: View {
         await agent.warmup()
       }
     }
-
+    
   }
   
   func submit() {
@@ -129,3 +129,4 @@ struct ConversationView: View {
 //    ConversationView(conversation: c).environment(\.managedObjectContext, ctx)
 //  }
 //}
+

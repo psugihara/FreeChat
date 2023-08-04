@@ -8,11 +8,13 @@
 
 /* Begin PBXBuildFile section */
 		A11721992A7D5274003B0358 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = A11721982A7D5274003B0358 /* README.md */; };
+		A117219C2A7D7B70003B0358 /* MarkdownUI in Frameworks */ = {isa = PBXBuildFile; productRef = A117219B2A7D7B70003B0358 /* MarkdownUI */; };
 		A17A2E182A79A006006CDD90 /* Agent.swift in Sources */ = {isa = PBXBuildFile; fileRef = A17A2E122A79A005006CDD90 /* Agent.swift */; };
 		A17A2E192A79A006006CDD90 /* LlamaServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A17A2E132A79A005006CDD90 /* LlamaServer.swift */; };
 		A17A2E1F2A79A075006CDD90 /* EventSource in Frameworks */ = {isa = PBXBuildFile; productRef = A17A2E1E2A79A075006CDD90 /* EventSource */; };
 		A17A2E242A7A14D0006CDD90 /* llama-2-7b-chat.ggmlv3.q4_1.bin in Resources */ = {isa = PBXBuildFile; fileRef = A17A2E232A7A14D0006CDD90 /* llama-2-7b-chat.ggmlv3.q4_1.bin */; };
 		A17A2E2C2A7A205E006CDD90 /* server in Resources */ = {isa = PBXBuildFile; fileRef = A17A2E2B2A7A205E006CDD90 /* server */; };
+		A1A286E82A7D8A7D0004967A /* MessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1A286E72A7D8A7D0004967A /* MessageView.swift */; };
 		A1F617262A782AA100F2048C /* ChatsApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1F617252A782AA100F2048C /* ChatsApp.swift */; };
 		A1F617282A782AA100F2048C /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1F617272A782AA100F2048C /* ContentView.swift */; };
 		A1F6172A2A782AA200F2048C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A1F617292A782AA200F2048C /* Assets.xcassets */; };
@@ -50,6 +52,7 @@
 		A17A2E132A79A005006CDD90 /* LlamaServer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LlamaServer.swift; sourceTree = "<group>"; };
 		A17A2E232A7A14D0006CDD90 /* llama-2-7b-chat.ggmlv3.q4_1.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; path = "llama-2-7b-chat.ggmlv3.q4_1.bin"; sourceTree = "<group>"; };
 		A17A2E2B2A7A205E006CDD90 /* server */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = server; sourceTree = "<group>"; };
+		A1A286E72A7D8A7D0004967A /* MessageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageView.swift; sourceTree = "<group>"; };
 		A1F617222A782AA100F2048C /* Chats.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Chats.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A1F617252A782AA100F2048C /* ChatsApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatsApp.swift; sourceTree = "<group>"; };
 		A1F617272A782AA100F2048C /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -74,6 +77,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				A17A2E1F2A79A075006CDD90 /* EventSource in Frameworks */,
+				A117219C2A7D7B70003B0358 /* MarkdownUI in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -138,6 +142,7 @@
 				A1F617302A782AA200F2048C /* Chats.xcdatamodeld */,
 				A1F6172B2A782AA200F2048C /* Preview Content */,
 				A1F617552A782E4F00F2048C /* ConversationView.swift */,
+				A1A286E72A7D8A7D0004967A /* MessageView.swift */,
 				A1F617592A7838DB00F2048C /* Models */,
 			);
 			path = Chats;
@@ -196,6 +201,7 @@
 			name = Chats;
 			packageProductDependencies = (
 				A17A2E1E2A79A075006CDD90 /* EventSource */,
+				A117219B2A7D7B70003B0358 /* MarkdownUI */,
 			);
 			productName = Mantras;
 			productReference = A1F617222A782AA100F2048C /* Chats.app */;
@@ -271,6 +277,7 @@
 			mainGroup = A1F617192A782AA100F2048C;
 			packageReferences = (
 				A17A2E1D2A79A075006CDD90 /* XCRemoteSwiftPackageReference "EventSource" */,
+				A117219A2A7D7B70003B0358 /* XCRemoteSwiftPackageReference "swift-markdown-ui" */,
 			);
 			productRefGroup = A1F617232A782AA100F2048C /* Products */;
 			projectDirPath = "";
@@ -321,6 +328,7 @@
 				A1F6172F2A782AA200F2048C /* Persistence.swift in Sources */,
 				A1F617282A782AA100F2048C /* ContentView.swift in Sources */,
 				A1F617322A782AA200F2048C /* Chats.xcdatamodeld in Sources */,
+				A1A286E82A7D8A7D0004967A /* MessageView.swift in Sources */,
 				A17A2E192A79A006006CDD90 /* LlamaServer.swift in Sources */,
 				A1F617582A7836AE00F2048C /* Message+Extensions.swift in Sources */,
 				A1F617262A782AA100F2048C /* ChatsApp.swift in Sources */,
@@ -663,6 +671,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		A117219A2A7D7B70003B0358 /* XCRemoteSwiftPackageReference "swift-markdown-ui" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/gonzalezreal/swift-markdown-ui";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.0.0;
+			};
+		};
 		A17A2E1D2A79A075006CDD90 /* XCRemoteSwiftPackageReference "EventSource" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/Recouse/EventSource.git";
@@ -674,6 +690,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		A117219B2A7D7B70003B0358 /* MarkdownUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A117219A2A7D7B70003B0358 /* XCRemoteSwiftPackageReference "swift-markdown-ui" */;
+			productName = MarkdownUI;
+		};
 		A17A2E072A798F4C006CDD90 /* NPC */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = NPC;
