@@ -50,7 +50,7 @@ struct ConversationView: View {
         .textSelection(.enabled)
         .listStyle(.inset(alternatesRowBackgrounds: true))
         .safeAreaInset(edge: .bottom, spacing: 0) {
-          TextField("Message", text: $input)
+          TextField("Message", text: $input, axis: .vertical)
             .onSubmit { submit() }
             .focused($messageFieldFocused, equals: true)
             .textFieldStyle(.roundedBorder)

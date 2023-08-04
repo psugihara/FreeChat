@@ -15,9 +15,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "A1F617212A782AA100F2048C"
-               BuildableName = "Mantras.app"
-               BlueprintName = "Mantras"
-               ReferencedContainer = "container:Mantras.xcodeproj">
+               BuildableName = "Chats.app"
+               BlueprintName = "Chats"
+               ReferencedContainer = "container:Chats.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -35,9 +35,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "A1F617372A782AA200F2048C"
-               BuildableName = "MantrasTests.xctest"
-               BlueprintName = "MantrasTests"
-               ReferencedContainer = "container:Mantras.xcodeproj">
+               BuildableName = "ChatsTests.xctest"
+               BlueprintName = "ChatsTests"
+               ReferencedContainer = "container:Chats.xcodeproj">
             </BuildableReference>
          </TestableReference>
          <TestableReference
@@ -46,9 +46,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "A1F617412A782AA200F2048C"
-               BuildableName = "MantrasUITests.xctest"
-               BlueprintName = "MantrasUITests"
-               ReferencedContainer = "container:Mantras.xcodeproj">
+               BuildableName = "ChatsUITests.xctest"
+               BlueprintName = "ChatsUITests"
+               ReferencedContainer = "container:Chats.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
@@ -68,9 +68,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "A1F617212A782AA100F2048C"
-            BuildableName = "Mantras.app"
-            BlueprintName = "Mantras"
-            ReferencedContainer = "container:Mantras.xcodeproj">
+            BuildableName = "Chats.app"
+            BlueprintName = "Chats"
+            ReferencedContainer = "container:Chats.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -85,9 +85,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "A1F617212A782AA100F2048C"
-            BuildableName = "Mantras.app"
-            BlueprintName = "Mantras"
-            ReferencedContainer = "container:Mantras.xcodeproj">
+            BuildableName = "Chats.app"
+            BlueprintName = "Chats"
+            ReferencedContainer = "container:Chats.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

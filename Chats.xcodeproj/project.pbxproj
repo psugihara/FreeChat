@@ -11,7 +11,6 @@
 		A17A2E192A79A006006CDD90 /* LlamaServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A17A2E132A79A005006CDD90 /* LlamaServer.swift */; };
 		A17A2E1F2A79A075006CDD90 /* EventSource in Frameworks */ = {isa = PBXBuildFile; productRef = A17A2E1E2A79A075006CDD90 /* EventSource */; };
 		A17A2E242A7A14D0006CDD90 /* llama-2-7b-chat.ggmlv3.q4_1.bin in Resources */ = {isa = PBXBuildFile; fileRef = A17A2E232A7A14D0006CDD90 /* llama-2-7b-chat.ggmlv3.q4_1.bin */; };
-		A17A2E282A7A1C08006CDD90 /* ggml-metal.metal in Resources */ = {isa = PBXBuildFile; fileRef = A17A2E252A7A1B31006CDD90 /* ggml-metal.metal */; };
 		A17A2E2C2A7A205E006CDD90 /* server in Resources */ = {isa = PBXBuildFile; fileRef = A17A2E2B2A7A205E006CDD90 /* server */; };
 		A1F617262A782AA100F2048C /* MantrasApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1F617252A782AA100F2048C /* MantrasApp.swift */; };
 		A1F617282A782AA100F2048C /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1F617272A782AA100F2048C /* ContentView.swift */; };
@@ -48,9 +47,8 @@
 		A17A2E122A79A005006CDD90 /* Agent.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Agent.swift; sourceTree = "<group>"; };
 		A17A2E132A79A005006CDD90 /* LlamaServer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LlamaServer.swift; sourceTree = "<group>"; };
 		A17A2E232A7A14D0006CDD90 /* llama-2-7b-chat.ggmlv3.q4_1.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; path = "llama-2-7b-chat.ggmlv3.q4_1.bin"; sourceTree = "<group>"; };
-		A17A2E252A7A1B31006CDD90 /* ggml-metal.metal */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.metal; path = "ggml-metal.metal"; sourceTree = "<group>"; };
 		A17A2E2B2A7A205E006CDD90 /* server */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = server; sourceTree = "<group>"; };
-		A1F617222A782AA100F2048C /* Mantras.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Mantras.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		A1F617222A782AA100F2048C /* Chats.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Chats.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A1F617252A782AA100F2048C /* MantrasApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MantrasApp.swift; sourceTree = "<group>"; };
 		A1F617272A782AA100F2048C /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		A1F617292A782AA200F2048C /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -58,9 +56,9 @@
 		A1F6172E2A782AA200F2048C /* Persistence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Persistence.swift; sourceTree = "<group>"; };
 		A1F617312A782AA200F2048C /* Mantras.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Mantras.xcdatamodel; sourceTree = "<group>"; };
 		A1F617332A782AA200F2048C /* Mantras.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Mantras.entitlements; sourceTree = "<group>"; };
-		A1F617382A782AA200F2048C /* MantrasTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MantrasTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		A1F617382A782AA200F2048C /* ChatsTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ChatsTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		A1F6173C2A782AA200F2048C /* MantrasTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MantrasTests.swift; sourceTree = "<group>"; };
-		A1F617422A782AA200F2048C /* MantrasUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MantrasUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		A1F617422A782AA200F2048C /* ChatsUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ChatsUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		A1F617462A782AA200F2048C /* MantrasUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MantrasUITests.swift; sourceTree = "<group>"; };
 		A1F617482A782AA200F2048C /* MantrasUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MantrasUITestsLaunchTests.swift; sourceTree = "<group>"; };
 		A1F617552A782E4F00F2048C /* ConversationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationView.swift; sourceTree = "<group>"; };
@@ -101,7 +99,6 @@
 				A17A2E132A79A005006CDD90 /* LlamaServer.swift */,
 				A17A2E2B2A7A205E006CDD90 /* server */,
 				A17A2E232A7A14D0006CDD90 /* llama-2-7b-chat.ggmlv3.q4_1.bin */,
-				A17A2E252A7A1B31006CDD90 /* ggml-metal.metal */,
 			);
 			path = NPC;
 			sourceTree = "<group>";
@@ -119,9 +116,9 @@
 		A1F617232A782AA100F2048C /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				A1F617222A782AA100F2048C /* Mantras.app */,
-				A1F617382A782AA200F2048C /* MantrasTests.xctest */,
-				A1F617422A782AA200F2048C /* MantrasUITests.xctest */,
+				A1F617222A782AA100F2048C /* Chats.app */,
+				A1F617382A782AA200F2048C /* ChatsTests.xctest */,
+				A1F617422A782AA200F2048C /* ChatsUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -180,9 +177,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		A1F617212A782AA100F2048C /* Mantras */ = {
+		A1F617212A782AA100F2048C /* Chats */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = A1F6174C2A782AA200F2048C /* Build configuration list for PBXNativeTarget "Mantras" */;
+			buildConfigurationList = A1F6174C2A782AA200F2048C /* Build configuration list for PBXNativeTarget "Chats" */;
 			buildPhases = (
 				A1F6171E2A782AA100F2048C /* Sources */,
 				A1F6171F2A782AA100F2048C /* Frameworks */,
@@ -193,17 +190,17 @@
 			dependencies = (
 				A17A2E082A798F4C006CDD90 /* PBXTargetDependency */,
 			);
-			name = Mantras;
+			name = Chats;
 			packageProductDependencies = (
 				A17A2E1E2A79A075006CDD90 /* EventSource */,
 			);
 			productName = Mantras;
-			productReference = A1F617222A782AA100F2048C /* Mantras.app */;
+			productReference = A1F617222A782AA100F2048C /* Chats.app */;
 			productType = "com.apple.product-type.application";
 		};
-		A1F617372A782AA200F2048C /* MantrasTests */ = {
+		A1F617372A782AA200F2048C /* ChatsTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = A1F6174F2A782AA200F2048C /* Build configuration list for PBXNativeTarget "MantrasTests" */;
+			buildConfigurationList = A1F6174F2A782AA200F2048C /* Build configuration list for PBXNativeTarget "ChatsTests" */;
 			buildPhases = (
 				A1F617342A782AA200F2048C /* Sources */,
 				A1F617352A782AA200F2048C /* Frameworks */,
@@ -214,14 +211,14 @@
 			dependencies = (
 				A1F6173A2A782AA200F2048C /* PBXTargetDependency */,
 			);
-			name = MantrasTests;
+			name = ChatsTests;
 			productName = MantrasTests;
-			productReference = A1F617382A782AA200F2048C /* MantrasTests.xctest */;
+			productReference = A1F617382A782AA200F2048C /* ChatsTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
-		A1F617412A782AA200F2048C /* MantrasUITests */ = {
+		A1F617412A782AA200F2048C /* ChatsUITests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = A1F617522A782AA200F2048C /* Build configuration list for PBXNativeTarget "MantrasUITests" */;
+			buildConfigurationList = A1F617522A782AA200F2048C /* Build configuration list for PBXNativeTarget "ChatsUITests" */;
 			buildPhases = (
 				A1F6173E2A782AA200F2048C /* Sources */,
 				A1F6173F2A782AA200F2048C /* Frameworks */,
@@ -232,9 +229,9 @@
 			dependencies = (
 				A1F617442A782AA200F2048C /* PBXTargetDependency */,
 			);
-			name = MantrasUITests;
+			name = ChatsUITests;
 			productName = MantrasUITests;
-			productReference = A1F617422A782AA200F2048C /* MantrasUITests.xctest */;
+			productReference = A1F617422A782AA200F2048C /* ChatsUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
 /* End PBXNativeTarget section */
@@ -260,7 +257,7 @@
 					};
 				};
 			};
-			buildConfigurationList = A1F6171D2A782AA100F2048C /* Build configuration list for PBXProject "Mantras" */;
+			buildConfigurationList = A1F6171D2A782AA100F2048C /* Build configuration list for PBXProject "Chats" */;
 			compatibilityVersion = "Xcode 14.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -276,9 +273,9 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				A1F617212A782AA100F2048C /* Mantras */,
-				A1F617372A782AA200F2048C /* MantrasTests */,
-				A1F617412A782AA200F2048C /* MantrasUITests */,
+				A1F617212A782AA100F2048C /* Chats */,
+				A1F617372A782AA200F2048C /* ChatsTests */,
+				A1F617412A782AA200F2048C /* ChatsUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -289,7 +286,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				A17A2E2C2A7A205E006CDD90 /* server in Resources */,
-				A17A2E282A7A1C08006CDD90 /* ggml-metal.metal in Resources */,
 				A17A2E242A7A14D0006CDD90 /* llama-2-7b-chat.ggmlv3.q4_1.bin in Resources */,
 				A1F6172D2A782AA200F2048C /* Preview Assets.xcassets in Resources */,
 				A1F6172A2A782AA200F2048C /* Assets.xcassets in Resources */,
@@ -355,12 +351,12 @@
 		};
 		A1F6173A2A782AA200F2048C /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = A1F617212A782AA100F2048C /* Mantras */;
+			target = A1F617212A782AA100F2048C /* Chats */;
 			targetProxy = A1F617392A782AA200F2048C /* PBXContainerItemProxy */;
 		};
 		A1F617442A782AA200F2048C /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = A1F617212A782AA100F2048C /* Mantras */;
+			target = A1F617212A782AA100F2048C /* Chats */;
 			targetProxy = A1F617432A782AA200F2048C /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -548,7 +544,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Mantras.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Mantras";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Chats.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Chats";
 			};
 			name = Debug;
 		};
@@ -567,7 +563,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Mantras.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Mantras";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Chats.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Chats";
 			};
 			name = Release;
 		};
@@ -608,7 +604,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		A1F6171D2A782AA100F2048C /* Build configuration list for PBXProject "Mantras" */ = {
+		A1F6171D2A782AA100F2048C /* Build configuration list for PBXProject "Chats" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				A1F6174A2A782AA200F2048C /* Debug */,
@@ -617,7 +613,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		A1F6174C2A782AA200F2048C /* Build configuration list for PBXNativeTarget "Mantras" */ = {
+		A1F6174C2A782AA200F2048C /* Build configuration list for PBXNativeTarget "Chats" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				A1F6174D2A782AA200F2048C /* Debug */,
@@ -626,7 +622,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		A1F6174F2A782AA200F2048C /* Build configuration list for PBXNativeTarget "MantrasTests" */ = {
+		A1F6174F2A782AA200F2048C /* Build configuration list for PBXNativeTarget "ChatsTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				A1F617502A782AA200F2048C /* Debug */,
@@ -635,7 +631,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		A1F617522A782AA200F2048C /* Build configuration list for PBXNativeTarget "MantrasUITests" */ = {
+		A1F617522A782AA200F2048C /* Build configuration list for PBXNativeTarget "ChatsUITests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				A1F617532A782AA200F2048C /* Debug */,
