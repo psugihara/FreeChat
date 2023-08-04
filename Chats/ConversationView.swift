@@ -82,9 +82,13 @@ struct ConversationView: View {
         .onChange(of: agent.pendingMessage) { _ in
           proxy.scrollTo(Position.bottom, anchor: .bottom)
         }
-        .onChange(of: conversation) { _ in
-          DispatchQueue.main.asyncAfter(deadline: .now() + 0.7) {
-            self.messageFieldFocused = true
+        .onChange(of: conversation) { newConversation in
+          DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            let now = Date() // current date
+            let fiveSecondsAgo = now - TimeInterval(5) // 5 seconds ago
+            if newConversation.createdAt! >= fiveSecondsAgo, newConversation.messages?.count == 0 {
+              self.messageFieldFocused = true
+            }
           }
         }
         .task {
