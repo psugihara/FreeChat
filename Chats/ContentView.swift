@@ -50,6 +50,7 @@ struct ContentView: View {
       print("will terminate")
       agent.llama.stopServer()
     })
+    .backgroundStyle(.ultraThinMaterial)
   }
   
   private func addConversation() {
