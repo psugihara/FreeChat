@@ -15,17 +15,17 @@ struct ContentView: View {
     sortDescriptors: [NSSortDescriptor(keyPath: \Conversation.createdAt, ascending: true)],
     animation: .default)
   private var items: FetchedResults<Conversation>
-
+  
+  @State private var selection: Set<FetchedResults<Conversation>.Element> = Set()
+  @State private var showDeleteConfirmation = false
+  
   let agent: Agent = Agent(id: "0", prompt: "")
-
+  
   var body: some View {
-    NavigationView {
-      List(items) { item in
-          NavigationLink {
-            ConversationView(conversation: item, agent: agent)
-          } label: {
-            Text(item.createdAt!, formatter: itemFormatter)
-          }.contextMenu {
+    NavigationSplitView {
+      List(items, id: \.self, selection: $selection) { item in
+          Text(item.createdAt!, formatter: itemFormatter)
+          .contextMenu {
             Button {
               deleteConversation(item)
             } label: {
@@ -44,12 +44,22 @@ struct ContentView: View {
           }
         }
       }
-      Text("Select a conversation")
+    } detail: {
+      if selection.first != nil {
+        ConversationView(conversation: selection.first!, agent: agent)
+      } else {
+        Text("Select a conversation")
+      }
     }
+    .navigationSplitViewColumnWidth(50)
     .onReceive(NotificationCenter.default.publisher(for: NSApplication.willTerminateNotification), perform: { output in
       agent.llama.stopServer()
     })
     .backgroundStyle(.ultraThinMaterial)
+    .onDeleteCommand { showDeleteConfirmation = true }
+    .confirmationDialog("Are you sure you want to delete \(selection.count == 1 ? "this" : "\(selection.count)") conversation\(selection.count == 1 ? "" : "s")?", isPresented: $showDeleteConfirmation) {
+      Button("Yes, delete", role: .destructive, action: {})
+    }
   }
   
   private func addConversation() {
@@ -67,11 +77,24 @@ struct ContentView: View {
       }
     }
   }
+
+  private func deleteSelectedConversations() {
+    withAnimation {
+      selection.forEach(viewContext.delete)
+      selection = Set()
+      do {
+        try viewContext.save()
+      } catch {
+        // Replace this implementation with code to handle the error appropriately.
+        // fatalError() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
+        let nsError = error as NSError
+        fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
+      }
+    }
+  }
   
   private func deleteConversation(_ item: FetchedResults<Conversation>.Element) {
-//    print("deleteConversation: ", multiSelection)
     withAnimation {
-//      offsets.map { items[$0] }.forEach(viewContext.delete)
       viewContext.delete(item)
       do {
         try viewContext.save()

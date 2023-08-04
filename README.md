@@ -19,6 +19,7 @@ Not sure what this is like to run on another machine. Try it out.
   - [ ] user can edit convo titles
   - [ ] TextField and NavigationLink focus behavior work more like Messages
   - [ ] make intel chips work by [making a universal `server` binary](https://developer.apple.com/documentation/apple-silicon/building-a-universal-macos-binary#Update-the-Architecture-List-of-Custom-Makefiles)
+  - [ ] App icon
 
 - [ ] Try any llama.cpp compatible model
 - [ ] Change system prompts to modify personas or expertise
