@@ -23,8 +23,8 @@ struct ContentView: View {
   
   var body: some View {
     NavigationSplitView {
-      List(items, id: \.self, selection: $selection) { item in
-          Text(item.createdAt!, formatter: itemFormatter)
+      List(sortedItems(), id: \.self, selection: $selection) { item in
+          Text(title(item))
           .contextMenu {
             Button {
               deleteConversation(item)
@@ -51,6 +51,7 @@ struct ContentView: View {
         Text("Select a conversation")
       }
     }
+    .navigationTitle(selection.count == 1 ? title(selection.first!) : "Chats")
     .navigationSplitViewColumnWidth(50)
     .onReceive(NotificationCenter.default.publisher(for: NSApplication.willTerminateNotification), perform: { output in
       agent.llama.stopServer()
@@ -60,8 +61,19 @@ struct ContentView: View {
     .confirmationDialog("Are you sure you want to delete \(selection.count == 1 ? "this" : "\(selection.count)") conversation\(selection.count == 1 ? "" : "s")?", isPresented: $showDeleteConfirmation) {
       Button("Yes, delete", role: .destructive, action: {})
     }
+    .onChange(of: items.count) { _ in
+      selection = Set([sortedItems().first].compactMap { $0 })
+    }
   }
   
+  private func sortedItems() -> [FetchedResults<Conversation>.Element] {
+    items.sorted(by: { $0.createdAt!.compare($1.createdAt!) == .orderedDescending })
+  }
+
+  private func title(_ conversation: FetchedResults<Conversation>.Element) -> String {
+    conversation.title ?? itemFormatter.string(from: conversation.createdAt!)
+  }
+
   private func addConversation() {
     withAnimation {
       let newConversation = Conversation(context: viewContext)

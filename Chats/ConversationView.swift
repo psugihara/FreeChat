@@ -7,6 +7,24 @@
 
 import SwiftUI
 
+struct FTextFieldStyle: TextFieldStyle {
+  @FocusState private var isFocused: Bool
+  func _body(configuration: TextField<Self._Label>) -> some View {
+    configuration
+      .textFieldStyle(.plain)
+      .frame(maxWidth: .infinity)
+      .padding(6)
+      .cornerRadius(12)
+      .shadow(color: .black.opacity(0.25), radius: 2, x: 0, y: 0.5)
+      .focusable()
+      .focused($isFocused)
+      .overlay(
+        RoundedRectangle(cornerRadius: 10).stroke(Color.primary.opacity(0.5), lineWidth: 2).opacity(isFocused ? 1 : 0).scaleEffect(isFocused ? 1 : 1.04)
+      )
+      .animation(isFocused ? .easeIn(duration: 0.2) : .easeOut(duration: 0.0), value: isFocused)
+  }
+}
+
 struct ConversationView: View {
   enum Position {
     case bottom
@@ -53,12 +71,7 @@ struct ConversationView: View {
           TextField("Message", text: $input, axis: .vertical)
             .onSubmit { submit() }
             .focused($messageFieldFocused, equals: true)
-            .textFieldStyle(.roundedBorder)
-            .onAppear {
-              DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(500)) {
-                self.messageFieldFocused = true
-              }
-            }
+            .textFieldStyle(FTextFieldStyle())
             .padding(.all, 8)
             .background(.thinMaterial)
         }
@@ -69,7 +82,12 @@ struct ConversationView: View {
         .onChange(of: agent.pendingMessage) { _ in
           proxy.scrollTo(Position.bottom, anchor: .bottom)
         }
-        .onAppear {
+        .onChange(of: conversation) { _ in
+          DispatchQueue.main.asyncAfter(deadline: .now() + 0.7) {
+            self.messageFieldFocused = true
+          }
+        }
+        .task {
           proxy.scrollTo(Position.bottom, anchor: .bottom)
         }
       }
@@ -81,6 +99,7 @@ struct ConversationView: View {
         await agent.warmup()
       }
     }
+
   }
   
   func submit() {
