@@ -8,7 +8,7 @@
 import SwiftUI
 
 @main
-struct MantrasApp: App {
+struct ChatsApp: App {
     let persistenceController = PersistenceController.shared
 
     var body: some Scene {

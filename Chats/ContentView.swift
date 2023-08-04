@@ -33,6 +33,7 @@ struct ContentView: View {
             }
           }
       }
+      .frame(minWidth: 50)
       .toolbar {
         ToolbarItem {
           Spacer()
