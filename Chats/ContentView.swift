@@ -47,7 +47,6 @@ struct ContentView: View {
       Text("Select a conversation")
     }
     .onReceive(NotificationCenter.default.publisher(for: NSApplication.willTerminateNotification), perform: { output in
-      print("will terminate")
       agent.llama.stopServer()
     })
     .backgroundStyle(.ultraThinMaterial)
