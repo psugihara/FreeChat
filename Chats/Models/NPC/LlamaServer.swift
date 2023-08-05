@@ -6,14 +6,42 @@ class LlamaServer {
   private var outputPipe = Pipe()
   private var eventSource: EventSource?
   
+  private var monitor = Process()
+
   deinit {
     if process.isRunning {
       process.terminate()
     }
   }
   
+  // Start a monitor process that will terminate the server when our app dies.
+  private func startMonitor(serverPID: pid_t) throws {
+    HeartbeatManager.shared.startHeartbeat()
+    
+    monitor = Process()
+    monitor.executableURL = Bundle.main.url(forAuxiliaryExecutable: "server-watchdog")
+    monitor.arguments = [HeartbeatManager.shared.fileURL().path, String(serverPID)]
+    
+#if DEBUG
+    print("starting \(monitor.executableURL!.absoluteString) \(monitor.arguments!.joined(separator: " "))")
+#endif
+
+    monitor.standardInput = Pipe()
+
+#if !DEBUG
+    let monitorOutputPipe = Pipe()
+    monitor.standardOutput = monitorOutputPipe
+    monitor.standardError = monitorOutputPipe
+#endif
+
+    try monitor.run()
+
+    print("started monitor for \(serverPID)")
+  }
+  
   private func startServer() throws {
     if process.isRunning { return }
+    process = Process()
     
     let startTime = DispatchTime.now()
     
@@ -32,10 +60,9 @@ class LlamaServer {
     outputPipe = Pipe()
     process.standardInput = Pipe()  // fails without this being set!
     
-#if !DEBUG
+
     process.standardOutput = outputPipe
     process.standardError = outputPipe
-#endif
     
     guard
       outputPipe.fileHandleForWriting.fileDescriptor != -1,
@@ -45,6 +72,7 @@ class LlamaServer {
     }
     
     try process.run()
+    try startMonitor(serverPID: process.processIdentifier)
     
     let endTime = DispatchTime.now()
     let elapsedTime = Double(endTime.uptimeNanoseconds - startTime.uptimeNanoseconds) / 1_000_000

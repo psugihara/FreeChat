@@ -77,7 +77,9 @@ struct ConversationView: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .onChange(of: messages.count) { _ in
-          proxy.scrollTo(Position.bottom, anchor: .bottom)
+          DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            proxy.scrollTo(Position.bottom, anchor: .bottom)
+          }
         }
         .onChange(of: agent.pendingMessage) { _ in
           proxy.scrollTo(Position.bottom, anchor: .bottom)

@@ -17,11 +17,13 @@ Not sure what this is like to run on another machine. Try it out.
 - [ ] Chat with Llama 2 7B without installing anything else
   - [x] hook agent up, save convos to coredata
   - [ ] server should shut down more reliably, try storing pids and reaping orphans
+    - tried this but sandbox prevents killing processes that were not started by the current process. Could try starting a reaper daemon 
   - [ ] user can edit convo titles
   - [ ] make intel chips work by [making a universal `server` binary](https://developer.apple.com/documentation/apple-silicon/building-a-universal-macos-binary#Update-the-Architecture-List-of-Custom-Makefiles)
   - [ ] App icon
   - [ ] Conversation null state
   - [ ] user can copy conversation
+  - [ ] breaks on super long chats
 
 - [ ] Try any llama.cpp compatible model
 - [ ] Change system prompts to modify personas or expertise

@@ -15,6 +15,9 @@
 		A17A2E242A7A14D0006CDD90 /* llama-2-7b-chat.ggmlv3.q4_1.bin in Resources */ = {isa = PBXBuildFile; fileRef = A17A2E232A7A14D0006CDD90 /* llama-2-7b-chat.ggmlv3.q4_1.bin */; };
 		A17A2E2C2A7A205E006CDD90 /* server in Resources */ = {isa = PBXBuildFile; fileRef = A17A2E2B2A7A205E006CDD90 /* server */; };
 		A1A286E82A7D8A7D0004967A /* MessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1A286E72A7D8A7D0004967A /* MessageView.swift */; };
+		A1A286EC2A7E0FB70004967A /* Heartbeat.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1A286EB2A7E0FB70004967A /* Heartbeat.swift */; };
+		A1A286F52A7E17750004967A /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1A286F42A7E17750004967A /* main.swift */; };
+		A1A286FD2A7E1E460004967A /* server-watchdog in Embed helper tools */ = {isa = PBXBuildFile; fileRef = A1A286F22A7E17750004967A /* server-watchdog */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		A1F617262A782AA100F2048C /* ChatsApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1F617252A782AA100F2048C /* ChatsApp.swift */; };
 		A1F617282A782AA100F2048C /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1F617272A782AA100F2048C /* ContentView.swift */; };
 		A1F6172A2A782AA200F2048C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A1F617292A782AA200F2048C /* Assets.xcassets */; };
@@ -30,6 +33,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		A1A286FA2A7E1ACD0004967A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A1F6171A2A782AA100F2048C /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A1A286F12A7E17750004967A;
+			remoteInfo = "server-watchdog";
+		};
 		A1F617392A782AA200F2048C /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = A1F6171A2A782AA100F2048C /* Project object */;
@@ -46,6 +56,29 @@
 		};
 /* End PBXContainerItemProxy section */
 
+/* Begin PBXCopyFilesBuildPhase section */
+		A1A286F02A7E17750004967A /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
+		A1A286FC2A7E1E2D0004967A /* Embed helper tools */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 6;
+			files = (
+				A1A286FD2A7E1E460004967A /* server-watchdog in Embed helper tools */,
+			);
+			name = "Embed helper tools";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
 		A11721982A7D5274003B0358 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		A17A2E122A79A005006CDD90 /* Agent.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Agent.swift; sourceTree = "<group>"; };
@@ -53,6 +86,11 @@
 		A17A2E232A7A14D0006CDD90 /* llama-2-7b-chat.ggmlv3.q4_1.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; path = "llama-2-7b-chat.ggmlv3.q4_1.bin"; sourceTree = "<group>"; };
 		A17A2E2B2A7A205E006CDD90 /* server */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = server; sourceTree = "<group>"; };
 		A1A286E72A7D8A7D0004967A /* MessageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageView.swift; sourceTree = "<group>"; };
+		A1A286EB2A7E0FB70004967A /* Heartbeat.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Heartbeat.swift; sourceTree = "<group>"; };
+		A1A286F22A7E17750004967A /* server-watchdog */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "server-watchdog"; sourceTree = BUILT_PRODUCTS_DIR; };
+		A1A286F42A7E17750004967A /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
+		A1A286F92A7E197F0004967A /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		A1A286FE2A7E9F280004967A /* server-watchdog.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "server-watchdog.entitlements"; sourceTree = "<group>"; };
 		A1F617222A782AA100F2048C /* Chats.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Chats.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A1F617252A782AA100F2048C /* ChatsApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatsApp.swift; sourceTree = "<group>"; };
 		A1F617272A782AA100F2048C /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -72,6 +110,13 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		A1A286EF2A7E17750004967A /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		A1F6171F2A782AA100F2048C /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -105,13 +150,25 @@
 				A17A2E132A79A005006CDD90 /* LlamaServer.swift */,
 				A17A2E2B2A7A205E006CDD90 /* server */,
 				A17A2E232A7A14D0006CDD90 /* llama-2-7b-chat.ggmlv3.q4_1.bin */,
+				A1A286EB2A7E0FB70004967A /* Heartbeat.swift */,
+				A1A286F32A7E17750004967A /* server-watchdog */,
+				A1A286F92A7E197F0004967A /* README.md */,
 			);
 			path = NPC;
+			sourceTree = "<group>";
+		};
+		A1A286F32A7E17750004967A /* server-watchdog */ = {
+			isa = PBXGroup;
+			children = (
+				A1A286F42A7E17750004967A /* main.swift */,
+			);
+			path = "server-watchdog";
 			sourceTree = "<group>";
 		};
 		A1F617192A782AA100F2048C = {
 			isa = PBXGroup;
 			children = (
+				A1A286FE2A7E9F280004967A /* server-watchdog.entitlements */,
 				A11721982A7D5274003B0358 /* README.md */,
 				A1F617242A782AA100F2048C /* Chats */,
 				A1F6173B2A782AA200F2048C /* ChatsTests */,
@@ -126,6 +183,7 @@
 				A1F617222A782AA100F2048C /* Chats.app */,
 				A1F617382A782AA200F2048C /* ChatsTests.xctest */,
 				A1F617422A782AA200F2048C /* ChatsUITests.xctest */,
+				A1A286F22A7E17750004967A /* server-watchdog */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -133,7 +191,6 @@
 		A1F617242A782AA100F2048C /* Chats */ = {
 			isa = PBXGroup;
 			children = (
-				A17A2E1B2A79A00D006CDD90 /* NPC */,
 				A1F617252A782AA100F2048C /* ChatsApp.swift */,
 				A1F617272A782AA100F2048C /* ContentView.swift */,
 				A1F617292A782AA200F2048C /* Assets.xcassets */,
@@ -176,6 +233,7 @@
 		A1F617592A7838DB00F2048C /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				A17A2E1B2A79A00D006CDD90 /* NPC */,
 				A1F617572A7836AE00F2048C /* Message+Extensions.swift */,
 				A1F6175A2A7838F700F2048C /* Conversation+Extensions.swift */,
 			);
@@ -185,6 +243,23 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		A1A286F12A7E17750004967A /* server-watchdog */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A1A286F62A7E17750004967A /* Build configuration list for PBXNativeTarget "server-watchdog" */;
+			buildPhases = (
+				A1A286EE2A7E17750004967A /* Sources */,
+				A1A286EF2A7E17750004967A /* Frameworks */,
+				A1A286F02A7E17750004967A /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "server-watchdog";
+			productName = "server-watchdog";
+			productReference = A1A286F22A7E17750004967A /* server-watchdog */;
+			productType = "com.apple.product-type.tool";
+		};
 		A1F617212A782AA100F2048C /* Chats */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = A1F6174C2A782AA200F2048C /* Build configuration list for PBXNativeTarget "Chats" */;
@@ -192,10 +267,12 @@
 				A1F6171E2A782AA100F2048C /* Sources */,
 				A1F6171F2A782AA100F2048C /* Frameworks */,
 				A1F617202A782AA100F2048C /* Resources */,
+				A1A286FC2A7E1E2D0004967A /* Embed helper tools */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				A1A286FB2A7E1ACD0004967A /* PBXTargetDependency */,
 				A17A2E082A798F4C006CDD90 /* PBXTargetDependency */,
 			);
 			name = Chats;
@@ -253,6 +330,9 @@
 				LastSwiftUpdateCheck = 1430;
 				LastUpgradeCheck = 1500;
 				TargetAttributes = {
+					A1A286F12A7E17750004967A = {
+						CreatedOnToolsVersion = 14.3.1;
+					};
 					A1F617212A782AA100F2048C = {
 						CreatedOnToolsVersion = 14.3.1;
 					};
@@ -286,6 +366,7 @@
 				A1F617212A782AA100F2048C /* Chats */,
 				A1F617372A782AA200F2048C /* ChatsTests */,
 				A1F617412A782AA200F2048C /* ChatsUITests */,
+				A1A286F12A7E17750004967A /* server-watchdog */,
 			);
 		};
 /* End PBXProject section */
@@ -320,6 +401,14 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		A1A286EE2A7E17750004967A /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A1A286F52A7E17750004967A /* main.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		A1F6171E2A782AA100F2048C /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -327,6 +416,7 @@
 				A1F6175B2A7838F700F2048C /* Conversation+Extensions.swift in Sources */,
 				A1F6172F2A782AA200F2048C /* Persistence.swift in Sources */,
 				A1F617282A782AA100F2048C /* ContentView.swift in Sources */,
+				A1A286EC2A7E0FB70004967A /* Heartbeat.swift in Sources */,
 				A1F617322A782AA200F2048C /* Chats.xcdatamodeld in Sources */,
 				A1A286E82A7D8A7D0004967A /* MessageView.swift in Sources */,
 				A17A2E192A79A006006CDD90 /* LlamaServer.swift in Sources */,
@@ -361,6 +451,11 @@
 			isa = PBXTargetDependency;
 			productRef = A17A2E072A798F4C006CDD90 /* NPC */;
 		};
+		A1A286FB2A7E1ACD0004967A /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A1A286F12A7E17750004967A /* server-watchdog */;
+			targetProxy = A1A286FA2A7E1ACD0004967A /* PBXContainerItemProxy */;
+		};
 		A1F6173A2A782AA200F2048C /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = A1F617212A782AA100F2048C /* Chats */;
@@ -374,6 +469,38 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
+		A1A286F72A7E17750004967A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = "server-watchdog.entitlements";
+				CODE_SIGN_INJECT_BASE_ENTITLEMENTS = NO;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 6577JALN5F;
+				ENABLE_HARDENED_RUNTIME = YES;
+				OTHER_CODE_SIGN_FLAGS = "$(inherited) -i $(PRODUCT_BUNDLE_IDENTIFIER)";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.npc-pet.Chats.watchdog";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		A1A286F82A7E17750004967A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = "server-watchdog.entitlements";
+				CODE_SIGN_INJECT_BASE_ENTITLEMENTS = NO;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 6577JALN5F;
+				ENABLE_HARDENED_RUNTIME = YES;
+				OTHER_CODE_SIGN_FLAGS = "$(inherited) -i $(PRODUCT_BUNDLE_IDENTIFIER)";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.npc-pet.Chats.watchdog";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
 		A1F6174A2A782AA200F2048C /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -632,6 +759,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		A1A286F62A7E17750004967A /* Build configuration list for PBXNativeTarget "server-watchdog" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A1A286F72A7E17750004967A /* Debug */,
+				A1A286F82A7E17750004967A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		A1F6171D2A782AA100F2048C /* Build configuration list for PBXProject "Chats" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
