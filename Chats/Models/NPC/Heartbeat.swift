@@ -22,7 +22,7 @@ class HeartbeatManager {
   
   // Function to create the heartbeat file
   private func createHeartbeatFile() {
-    let success = FileManager.default.createFile(atPath: fileURL().path, contents: Data(count: 1), attributes: nil)
+    let success = FileManager.default.createFile(atPath: fileURL().path, contents: nil, attributes: nil)
     if !success {
       print("could not create heartbeat file at path \(fileURL().path)")
     }

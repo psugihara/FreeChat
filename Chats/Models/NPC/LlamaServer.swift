@@ -60,9 +60,10 @@ class LlamaServer {
     outputPipe = Pipe()
     process.standardInput = Pipe()  // fails without this being set!
     
-
+#if !DEBUG
     process.standardOutput = outputPipe
     process.standardError = outputPipe
+#endif
     
     guard
       outputPipe.fileHandleForWriting.fileDescriptor != -1,
@@ -87,7 +88,6 @@ class LlamaServer {
   }
   
   func complete(prompt: String, progressHandler: ((String) -> Void)? = nil) async throws -> String {
-    // debug
 #if DEBUG
      print("START PROMPT\n \(prompt) \nEND PROMPT\n\n")
 #endif

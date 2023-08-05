@@ -19,7 +19,7 @@ struct ContentView: View {
   @State private var selection: Set<FetchedResults<Conversation>.Element> = Set()
   @State private var showDeleteConfirmation = false
   
-  let agent: Agent = Agent(id: "0", prompt: "")
+  let agent: Agent = Agent(id: "Llama", prompt: "")
   
   var body: some View {
     NavigationSplitView {

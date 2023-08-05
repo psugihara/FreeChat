@@ -38,6 +38,7 @@ struct ConversationView: View {
   
   @ObservedObject var agent: Agent
   @FocusState var messageFieldFocused: Bool?
+  @State var pendingMessage: Message?
   
   var messages: [Message] {
     let set = conversation.messages as? Set<Message> ?? []
@@ -52,9 +53,8 @@ struct ConversationView: View {
         List(messages) { m in
           MessageView(m).id(m == messages.last && agent.status != .processing ? Position.bottom : nil)
           if m == messages.last {
-            if agent.pendingMessage != "" {
-              Text(agent.pendingMessage)
-                .id(Position.bottom)
+            if agent.pendingMessage != "" && pendingMessage != nil {
+              MessageView(pendingMessage!, overrideText: agent.pendingMessage).id(Position.bottom)
             } else if agent.status == .processing {
               Text("thinking...")
                 .id(Position.bottom)
@@ -117,9 +117,16 @@ struct ConversationView: View {
     input = ""
     _ = try! Message.create(text: submitted, fromId: Message.USER_SPEAKER_ID, conversation: conversation, inContext: viewContext)
     Task {
+      let m = Message(context: viewContext)
+      m.fromId = agent.id
+      m.createdAt = Date()
+      m.text = ""
+      pendingMessage = m
       agent.prompt = conversation.prompt ?? agent.prompt
       let text = await agent.listenThinkRespond(speakerId: Message.USER_SPEAKER_ID, message: submitted)
-      _ = try Message.create(text: text, fromId: agent.id, conversation: conversation, inContext: viewContext)
+      pendingMessage = nil
+      m.text = text
+      m.conversation = conversation
       conversation.prompt = agent.prompt
       try viewContext.save()
       agent.pendingMessage = ""

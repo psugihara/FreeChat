@@ -10,22 +10,24 @@ import MarkdownUI
 
 struct MessageView: View {
   let m: Message
+  let overrideText: String // for streaming replies
   
-  init(_ m: Message) {
+  init(_ m: Message, overrideText: String = "") {
     self.m = m
+    self.overrideText = overrideText
   }
-  
+
   var body: some View {
     VStack(alignment: .leading) {
       HStack(alignment: .firstTextBaseline) {
         Text(m.fromId == Message.USER_SPEAKER_ID ? "You" : (m.fromId ?? "bot"))
           .fontWeight(.bold)
-        Text(m.createdAt!, formatter: messageTimestampFormatter)
+        Text(m.createdAt ?? Date(), formatter: messageTimestampFormatter)
           .font(.caption)
           .foregroundColor(.gray)
       }.padding(.bottom, 4)
       
-      Markdown(m.text!)
+      Markdown(overrideText == "" && m.text != nil ? m.text! : overrideText)
         .markdownTheme(.docC)
         .padding(.horizontal)
     }.padding(.vertical)

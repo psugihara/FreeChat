@@ -21,6 +21,7 @@ extension Message {
     record.text = text
     record.conversation = conversation
     record.createdAt = Date()
+    record.fromId = fromId
 
     try ctx.save()
 

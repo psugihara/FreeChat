@@ -55,8 +55,8 @@ class Agent: ObservableObject {
   
   func systemPrompt() -> String {
     return """
-      Simulate a conversation between \(Message.USER_SPEAKER_ID) and a thoughtful assistant, \(id).
-      Be concise but helpful.
+      Simulate a professional conversation between \(Message.USER_SPEAKER_ID) and an assistant, \(id).
+      The assistant is concise, helpful, and formats responses as markdown.
       """
   }
   
