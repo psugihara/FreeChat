@@ -16,17 +16,26 @@ class LlamaServer {
   
   // Start a monitor process that will terminate the server when our app dies.
   private func startMonitor(serverPID: pid_t) throws {
-    HeartbeatManager.shared.startHeartbeat()
-    
     monitor = Process()
     monitor.executableURL = Bundle.main.url(forAuxiliaryExecutable: "server-watchdog")
-    monitor.arguments = [HeartbeatManager.shared.fileURL().path, String(serverPID)]
+    monitor.arguments = [String(serverPID)]
     
 #if DEBUG
     print("starting \(monitor.executableURL!.absoluteString) \(monitor.arguments!.joined(separator: " "))")
 #endif
 
-    monitor.standardInput = Pipe()
+    let hearbeat = Pipe()
+    // write a heartbeat to the pipe every 10 seconds
+    let timer = DispatchSource.makeTimerSource(queue: DispatchQueue.global())
+    timer.schedule(deadline: .now(), repeating: 10.0)
+    timer.setEventHandler { [weak hearbeat] in
+      guard let hearbeat = hearbeat else { return }
+      let data = ".".data(using: .utf8) ?? Data()
+      hearbeat.fileHandleForWriting.write(data)
+    }
+    timer.resume()
+    
+    monitor.standardInput = hearbeat
 
 #if !DEBUG
     let monitorOutputPipe = Pipe()

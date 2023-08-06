@@ -8,24 +8,6 @@
 import SwiftUI
 import MarkdownUI
 
-struct FTextFieldStyle: TextFieldStyle {
-  @FocusState private var isFocused: Bool
-  func _body(configuration: TextField<Self._Label>) -> some View {
-    configuration
-      .textFieldStyle(.plain)
-      .frame(maxWidth: .infinity)
-      .padding(6)
-      .cornerRadius(12)
-      .shadow(color: .black.opacity(0.25), radius: 2, x: 0, y: 0.5)
-      .focusable()
-      .focused($isFocused)
-      .overlay(
-        RoundedRectangle(cornerRadius: 10).stroke(Color.primary.opacity(0.5), lineWidth: 2).opacity(isFocused ? 1 : 0).scaleEffect(isFocused ? 1 : 1.04)
-      )
-      .animation(isFocused ? .easeIn(duration: 0.2) : .easeOut(duration: 0.0), value: isFocused)
-  }
-}
-
 struct ConversationView: View {
   enum Position {
     case bottom
@@ -34,7 +16,6 @@ struct ConversationView: View {
   @Environment(\.managedObjectContext) private var viewContext
   
   var conversation: Conversation
-  @State var input = ""
   
   @ObservedObject var agent: Agent
   @FocusState var messageFieldFocused: Bool?
@@ -51,29 +32,23 @@ struct ConversationView: View {
     ZStack(alignment: .bottom) {
       ScrollViewReader { proxy in
         List(messages) { m in
-          MessageView(m).id(m == messages.last && agent.status != .processing ? Position.bottom : nil)
           if m == messages.last {
-            if agent.pendingMessage != "" && pendingMessage != nil {
-              MessageView(pendingMessage!, overrideText: agent.pendingMessage).id(Position.bottom)
-            } else if agent.status == .processing {
-              Text("thinking...")
+            if pendingMessage != nil {
+              MessageView(pendingMessage!, overrideText: agent.pendingMessage == "" ? "..." : agent.pendingMessage)
                 .id(Position.bottom)
-                .onAppear {
-                  proxy.scrollTo(Position.bottom, anchor: .bottom)
-                }
+            } else {
+              MessageView(m).id(Position.bottom)
             }
+          } else {
+            MessageView(m)
           }
         }
         .textSelection(.enabled)
         .listRowSeparator(.visible)
         .safeAreaInset(edge: .bottom, spacing: 0) {
-          TextField("Message", text: $input, axis: .vertical)
-            .onSubmit { submit() }
-            .submitLabel(.send)
-            .focused($messageFieldFocused, equals: true)
-            .textFieldStyle(FTextFieldStyle())
-            .padding(.all, 8)
-            .background(.thinMaterial)
+          MessageTextField(onSubmit: { s in
+            submit(s)
+          })
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .onChange(of: messages.count) { _ in
@@ -108,25 +83,23 @@ struct ConversationView: View {
     
   }
   
-  func submit() {
+  func submit(_ input: String) {
     if (agent.status == .processing) {
-      input += "\n"
       return
     }
     let submitted = input
-    input = ""
     _ = try! Message.create(text: submitted, fromId: Message.USER_SPEAKER_ID, conversation: conversation, inContext: viewContext)
     Task {
       let m = Message(context: viewContext)
       m.fromId = agent.id
       m.createdAt = Date()
       m.text = ""
+      m.conversation = conversation
       pendingMessage = m
       agent.prompt = conversation.prompt ?? agent.prompt
       let text = await agent.listenThinkRespond(speakerId: Message.USER_SPEAKER_ID, message: submitted)
       pendingMessage = nil
       m.text = text
-      m.conversation = conversation
       conversation.prompt = agent.prompt
       try viewContext.save()
       agent.pendingMessage = ""

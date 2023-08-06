@@ -9,13 +9,13 @@
 /* Begin PBXBuildFile section */
 		A11721992A7D5274003B0358 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = A11721982A7D5274003B0358 /* README.md */; };
 		A117219C2A7D7B70003B0358 /* MarkdownUI in Frameworks */ = {isa = PBXBuildFile; productRef = A117219B2A7D7B70003B0358 /* MarkdownUI */; };
+		A15D50CF2A7EF73E00FC1681 /* MessageTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = A15D50CE2A7EF73E00FC1681 /* MessageTextField.swift */; };
 		A17A2E182A79A006006CDD90 /* Agent.swift in Sources */ = {isa = PBXBuildFile; fileRef = A17A2E122A79A005006CDD90 /* Agent.swift */; };
 		A17A2E192A79A006006CDD90 /* LlamaServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A17A2E132A79A005006CDD90 /* LlamaServer.swift */; };
 		A17A2E1F2A79A075006CDD90 /* EventSource in Frameworks */ = {isa = PBXBuildFile; productRef = A17A2E1E2A79A075006CDD90 /* EventSource */; };
 		A17A2E242A7A14D0006CDD90 /* llama-2-7b-chat.ggmlv3.q4_1.bin in Resources */ = {isa = PBXBuildFile; fileRef = A17A2E232A7A14D0006CDD90 /* llama-2-7b-chat.ggmlv3.q4_1.bin */; };
 		A17A2E2C2A7A205E006CDD90 /* server in Resources */ = {isa = PBXBuildFile; fileRef = A17A2E2B2A7A205E006CDD90 /* server */; };
 		A1A286E82A7D8A7D0004967A /* MessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1A286E72A7D8A7D0004967A /* MessageView.swift */; };
-		A1A286EC2A7E0FB70004967A /* Heartbeat.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1A286EB2A7E0FB70004967A /* Heartbeat.swift */; };
 		A1A286F52A7E17750004967A /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1A286F42A7E17750004967A /* main.swift */; };
 		A1A286FD2A7E1E460004967A /* server-watchdog in Embed helper tools */ = {isa = PBXBuildFile; fileRef = A1A286F22A7E17750004967A /* server-watchdog */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		A1F617262A782AA100F2048C /* ChatsApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1F617252A782AA100F2048C /* ChatsApp.swift */; };
@@ -81,12 +81,12 @@
 
 /* Begin PBXFileReference section */
 		A11721982A7D5274003B0358 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		A15D50CE2A7EF73E00FC1681 /* MessageTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageTextField.swift; sourceTree = "<group>"; };
 		A17A2E122A79A005006CDD90 /* Agent.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Agent.swift; sourceTree = "<group>"; };
 		A17A2E132A79A005006CDD90 /* LlamaServer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LlamaServer.swift; sourceTree = "<group>"; };
 		A17A2E232A7A14D0006CDD90 /* llama-2-7b-chat.ggmlv3.q4_1.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; path = "llama-2-7b-chat.ggmlv3.q4_1.bin"; sourceTree = "<group>"; };
 		A17A2E2B2A7A205E006CDD90 /* server */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = server; sourceTree = "<group>"; };
 		A1A286E72A7D8A7D0004967A /* MessageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageView.swift; sourceTree = "<group>"; };
-		A1A286EB2A7E0FB70004967A /* Heartbeat.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Heartbeat.swift; sourceTree = "<group>"; };
 		A1A286F22A7E17750004967A /* server-watchdog */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "server-watchdog"; sourceTree = BUILT_PRODUCTS_DIR; };
 		A1A286F42A7E17750004967A /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		A1A286F92A7E197F0004967A /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
@@ -143,6 +143,17 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		A15D50D02A7F49CD00FC1681 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				A1F617552A782E4F00F2048C /* ConversationView.swift */,
+				A15D50CE2A7EF73E00FC1681 /* MessageTextField.swift */,
+				A1A286E72A7D8A7D0004967A /* MessageView.swift */,
+				A1F617272A782AA100F2048C /* ContentView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
 		A17A2E1B2A79A00D006CDD90 /* NPC */ = {
 			isa = PBXGroup;
 			children = (
@@ -150,7 +161,6 @@
 				A17A2E132A79A005006CDD90 /* LlamaServer.swift */,
 				A17A2E2B2A7A205E006CDD90 /* server */,
 				A17A2E232A7A14D0006CDD90 /* llama-2-7b-chat.ggmlv3.q4_1.bin */,
-				A1A286EB2A7E0FB70004967A /* Heartbeat.swift */,
 				A1A286F32A7E17750004967A /* server-watchdog */,
 				A1A286F92A7E197F0004967A /* README.md */,
 			);
@@ -191,15 +201,13 @@
 		A1F617242A782AA100F2048C /* Chats */ = {
 			isa = PBXGroup;
 			children = (
+				A15D50D02A7F49CD00FC1681 /* Views */,
 				A1F617252A782AA100F2048C /* ChatsApp.swift */,
-				A1F617272A782AA100F2048C /* ContentView.swift */,
 				A1F617292A782AA200F2048C /* Assets.xcassets */,
 				A1F6172E2A782AA200F2048C /* Persistence.swift */,
 				A1F617332A782AA200F2048C /* Chats.entitlements */,
 				A1F617302A782AA200F2048C /* Chats.xcdatamodeld */,
 				A1F6172B2A782AA200F2048C /* Preview Content */,
-				A1F617552A782E4F00F2048C /* ConversationView.swift */,
-				A1A286E72A7D8A7D0004967A /* MessageView.swift */,
 				A1F617592A7838DB00F2048C /* Models */,
 			);
 			path = Chats;
@@ -416,12 +424,12 @@
 				A1F6175B2A7838F700F2048C /* Conversation+Extensions.swift in Sources */,
 				A1F6172F2A782AA200F2048C /* Persistence.swift in Sources */,
 				A1F617282A782AA100F2048C /* ContentView.swift in Sources */,
-				A1A286EC2A7E0FB70004967A /* Heartbeat.swift in Sources */,
 				A1F617322A782AA200F2048C /* Chats.xcdatamodeld in Sources */,
 				A1A286E82A7D8A7D0004967A /* MessageView.swift in Sources */,
 				A17A2E192A79A006006CDD90 /* LlamaServer.swift in Sources */,
 				A1F617582A7836AE00F2048C /* Message+Extensions.swift in Sources */,
 				A1F617262A782AA100F2048C /* ChatsApp.swift in Sources */,
+				A15D50CF2A7EF73E00FC1681 /* MessageTextField.swift in Sources */,
 				A17A2E182A79A006006CDD90 /* Agent.swift in Sources */,
 				A1F617562A782E4F00F2048C /* ConversationView.swift in Sources */,
 			);
