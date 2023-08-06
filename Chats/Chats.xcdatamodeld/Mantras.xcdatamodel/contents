@@ -4,7 +4,7 @@
         <attribute name="createdAt" attributeType="Date" defaultDateTimeInterval="712519080" usesScalarValueType="NO"/>
         <attribute name="prompt" attributeType="String" defaultValueString=""/>
         <attribute name="title" optional="YES" attributeType="String"/>
-        <attribute name="updatedAt" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="updatedAt" attributeType="Date" defaultDateTimeInterval="713047620" usesScalarValueType="NO"/>
         <relationship name="messages" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Message" inverseName="conversation" inverseEntity="Message"/>
     </entity>
     <entity name="Message" representedClassName="Message" syncable="YES" codeGenerationType="class">

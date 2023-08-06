@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct FTextFieldStyle: TextFieldStyle {
+struct ChatStyle: TextFieldStyle {
   @FocusState private var isFocused: Bool
   func _body(configuration: TextField<Self._Label>) -> some View {
     configuration
@@ -25,6 +25,8 @@ struct FTextFieldStyle: TextFieldStyle {
   }
 }
 
+let chatStyle = ChatStyle()
+
 struct MessageTextField: View {
   var onSubmit: (String) -> Void
   
@@ -36,6 +38,7 @@ struct MessageTextField: View {
         onSubmit(input)
         input = ""
       }
+      .textFieldStyle(chatStyle)
       .submitLabel(.send)
       .padding(.all, 8)
       .background(.thinMaterial)

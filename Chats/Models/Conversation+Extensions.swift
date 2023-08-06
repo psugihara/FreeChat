@@ -16,4 +16,23 @@ extension Conversation {
     try ctx.save()
     return record
   }
+
+  var titleWithDefault: String {
+    title ?? titleFormatter.string(from: createdAt ?? Date())
+  }
+
+  private var titleFormatter: DateFormatter {
+    let formatter = DateFormatter()
+    formatter.dateStyle = .short
+    formatter.timeStyle = .medium
+    return formatter
+  }
+
+  public override func willSave() {
+    super.willSave()
+
+    if !isDeleted, changedValues()["updatedAt"] == nil {
+      self.setValue(Date(), forKey: "updatedAt")
+    }
+  }
 }
