@@ -18,7 +18,7 @@ struct ConversationView: View {
   var conversation: Conversation
   
   @ObservedObject var agent: Agent
-  @FocusState var messageFieldFocused: Bool?
+  @FocusState var messageFieldFocused: Bool
   @State var pendingMessage: Message?
   
   var messages: [Message] {
@@ -46,7 +46,7 @@ struct ConversationView: View {
         .textSelection(.enabled)
         .listRowSeparator(.visible)
         .safeAreaInset(edge: .bottom, spacing: 0) {
-          MessageTextField(onSubmit: { s in
+          MessageTextField(conversation: conversation, onSubmit: { s in
             submit(s)
           })
         }
@@ -58,15 +58,6 @@ struct ConversationView: View {
         }
         .onChange(of: agent.pendingMessage) { _ in
           proxy.scrollTo(Position.bottom, anchor: .bottom)
-        }
-        .onChange(of: conversation) { newConversation in
-          DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-            let now = Date() // current date
-            let fiveSecondsAgo = now - TimeInterval(5) // 5 seconds ago
-            if newConversation.createdAt! >= fiveSecondsAgo, newConversation.messages?.count == 0 {
-              self.messageFieldFocused = true
-            }
-          }
         }
         .task {
           proxy.scrollTo(Position.bottom, anchor: .bottom)
@@ -80,7 +71,6 @@ struct ConversationView: View {
         await agent.warmup()
       }
     }
-    
   }
   
   func submit(_ input: String) {
@@ -105,6 +95,7 @@ struct ConversationView: View {
       agent.pendingMessage = ""
     }
   }
+
 }
 
 //struct ConversationView_Previews: PreviewProvider {

@@ -28,25 +28,43 @@ struct ChatStyle: TextFieldStyle {
 let chatStyle = ChatStyle()
 
 struct MessageTextField: View {
+  var conversation: Conversation
   var onSubmit: (String) -> Void
-  
+
   @State private var input = ""
-  
+  @FocusState private var focused: Bool
+
   var body: some View {
     TextField("Message", text: $input, axis: .vertical)
       .onSubmit {
         onSubmit(input)
         input = ""
       }
+      .focused($focused)
       .textFieldStyle(chatStyle)
       .submitLabel(.send)
       .padding(.all, 8)
       .background(.thinMaterial)
+      .onAppear {
+        self.focused = true
+      }
+      .onChange(of: conversation) { _ in
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+          let fiveSecondsAgo = Date() - TimeInterval(5) // 5 seconds ago
+          if conversation.createdAt! >= fiveSecondsAgo, conversation.messages?.count == 0 {
+            print("focus")
+            self.focused = true
+          }
+        }
+      }
   }
 }
 
-struct MessageTextField_Previews: PreviewProvider {
-  static var previews: some View {
-    MessageTextField(onSubmit: { s in print(s)})
-  }
-}
+//#if DEBUG
+//struct MessageTextField_Previews: PreviewProvider {
+//  static var previews: some View {
+//    MessageTextField(conversation: c, onSubmit: { _ in print("submit") })
+//      .environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
+//  }
+//}
+//#endif
