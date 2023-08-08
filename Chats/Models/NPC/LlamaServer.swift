@@ -2,6 +2,9 @@ import EventSource
 import Foundation
 
 class LlamaServer {
+  static let DEFAULT_MODEL_URL =  Bundle.main.url(forResource: "llama-2-7b-chat.ggmlv3.q4_1", withExtension: ".bin")!
+  var modelPath = LlamaServer.DEFAULT_MODEL_URL.path
+  
   private var process = Process()
   private var outputPipe = Pipe()
   private var eventSource: EventSource?
@@ -56,10 +59,9 @@ class LlamaServer {
     
     print("starting llama.cpp server")
     process.executableURL = Bundle.main.url(forResource: "server", withExtension: "")
-    let modelURL = Bundle.main.url(forResource: "llama-2-7b-chat.ggmlv3.q4_1", withExtension: ".bin")!
     let processes = ProcessInfo.processInfo.activeProcessorCount
     process.arguments = [
-      "--model", modelURL.path,
+      "--model", modelPath,
       "--threads", "\(max(1, ceil(Double(processes) / 2.0)))",
       "--rope-freq-scale", "1.0",
       "--ctx-size", "4096",

@@ -9,7 +9,7 @@ import SwiftUI
 
 @main
 struct ChatsApp: App {
-  let persistenceController = PersistenceController.shared
+  let persistenceController = PersistenceController.shared  
   
   var body: some Scene {
     WindowGroup {
@@ -24,5 +24,11 @@ struct ChatsApp: App {
       }
       SidebarCommands()
     }
+#if os(macOS)
+    Settings {
+      SettingsView()
+        .environment(\.managedObjectContext, persistenceController.container.viewContext)
+    }
+#endif
   }
 }

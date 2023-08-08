@@ -18,9 +18,10 @@ class Agent: ObservableObject {
   // each agent runs their own server
   let llama = LlamaServer()
   
-  init(id: String, prompt: String) {
+  init(id: String, prompt: String, modelPath: String) {
     self.id = id
     self.prompt = prompt
+    if modelPath != "" { llama.modelPath = modelPath }
   }
   
   // this is the main loop of the agent
@@ -55,8 +56,7 @@ class Agent: ObservableObject {
   
   func systemPrompt() -> String {
     return """
-      Simulate a professional conversation between \(Message.USER_SPEAKER_ID) and an assistant, \(id).
-      The assistant is concise, helpful, and formats responses as markdown.
+      You are a helpful AI assistant who speaks professionally without emoticons.
       """
   }
   

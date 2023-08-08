@@ -44,21 +44,22 @@ struct MessageTextField: View {
       .textFieldStyle(chatStyle)
       .submitLabel(.send)
       .padding(.all, 8)
-      .background(.thinMaterial)
       .onAppear {
         self.focused = true
       }
-      .onChange(of: conversation) { _ in
+      .onChange(of: conversation) { nextConversation in
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+          if nextConversation.createdAt == nil { return }
           let fiveSecondsAgo = Date() - TimeInterval(5) // 5 seconds ago
-          if conversation.createdAt! >= fiveSecondsAgo, conversation.messages?.count == 0 {
-            print("focus")
+          if nextConversation.createdAt! >= fiveSecondsAgo, nextConversation.messages?.count == 0 {
             self.focused = true
           }
         }
       }
   }
 }
+
+
 
 //#if DEBUG
 //struct MessageTextField_Previews: PreviewProvider {

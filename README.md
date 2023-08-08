@@ -39,5 +39,6 @@ Not sure what this is like to run on another machine. Try it out.
   - [ ] toast notif for errors https://github.com/sanzaru/SimpleToast
 
 - [ ] Try any llama.cpp compatible model
+  - [ ] configure model in Settings
 - [ ] Change system prompts to modify personas or expertise
 - [ ] Search conversations
