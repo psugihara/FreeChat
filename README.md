@@ -35,10 +35,11 @@ Not sure what this is like to run on another machine. Try it out.
   - [ ] Conversation null state
   - [ ] user can copy conversation
   - [ ] make it not crash on super long chats by limiting the context passed to llm
-  - [ ] new conversation should focus textarea
+  - [x] new conversation should focus textarea
   - [ ] toast notif for errors https://github.com/sanzaru/SimpleToast
 
 - [ ] Try any llama.cpp compatible model
-  - [ ] configure model in Settings
+  - [x] configure model in Settings
+  - [ ] explain how to download models
 - [ ] Change system prompts to modify personas or expertise
 - [ ] Search conversations
