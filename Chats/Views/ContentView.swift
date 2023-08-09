@@ -12,6 +12,7 @@ struct ContentView: View {
   @Environment(\.managedObjectContext) private var viewContext
 
   @AppStorage("selectedModelId") private var selectedModelId: String?
+  @AppStorage("systemPrompt") private var systemPrompt: String = Agent.DEFAULT_SYSTEM_PROMPT
   
   @FetchRequest(
     sortDescriptors: [NSSortDescriptor(keyPath: \Model.updatedAt, ascending: true)],
@@ -49,35 +50,19 @@ struct ContentView: View {
       .keyboardShortcut(.defaultAction)
       
     }
-    .onChange(of: selectedModelId) { newModelId in
-      let model = models.first { i in i.id?.uuidString == newModelId }
-      let url = model?.url == nil ? LlamaServer.DEFAULT_MODEL_URL : model!.url!
-      
-      print("loading agent onchange with url", url)
-
-      agent?.llama.stopServer()
-      agent = Agent(id: "Llama", prompt: agent?.prompt ?? "", modelPath: url.path)
-      Task {
-        print("hi from task")
-        await agent?.warmup()
-        print("bye from task")
-      }
-    }
-    .onAppear() {
+    .onChange(of: systemPrompt) { _ in rebootAgent() }
+    .onChange(of: selectedModelId) { _ in rebootAgent() }
+    .onAppear(perform: rebootAgent)
+  }
+  
+  private func rebootAgent() {
+    Task {
       let model = models.first { i in i.id?.uuidString == selectedModelId }
       let url = model?.url == nil ? LlamaServer.DEFAULT_MODEL_URL : model!.url!
       
-      print("loading agent with url", url)
-      fflush(stdin)
-
-      agent = Agent(id: "Llama", prompt: agent?.prompt ?? "", modelPath: url.path)
-      Task {
-        print("hi from tas2k")
-        await agent?.warmup()
-        print("bye from task")
-      }
+      agent = Agent(id: "Llama", prompt: agent?.prompt ?? "", systemPrompt: systemPrompt, modelPath: url.path)
+      await agent?.warmup()
     }
-    
   }
   
   private func deleteSelectedConversations() {

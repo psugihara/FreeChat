@@ -1,6 +1,10 @@
 import Foundation
 
 class Agent: ObservableObject {
+  static let DEFAULT_SYSTEM_PROMPT = """
+    You are a helpful AI assistant who speaks professionally without emoticons.
+    """
+  
   enum Status {
     case processing
     case ready
@@ -10,6 +14,7 @@ class Agent: ObservableObject {
   
   // prompt is the actual running prompt with the llm
   var prompt = ""
+  var systemPrompt = Agent.DEFAULT_SYSTEM_PROMPT
   
   // dialogue is the dialogue from prompt without system prompt / internal thoughts
   @Published var pendingMessage = ""
@@ -18,9 +23,10 @@ class Agent: ObservableObject {
   // each agent runs their own server
   let llama = LlamaServer()
   
-  init(id: String, prompt: String, modelPath: String) {
+  init(id: String, prompt: String, systemPrompt: String, modelPath: String) {
     self.id = id
     self.prompt = prompt
+    self.systemPrompt = systemPrompt
     if modelPath != "" { llama.modelPath = modelPath }
   }
   
@@ -33,7 +39,7 @@ class Agent: ObservableObject {
     }
     
     if prompt == "" {
-      prompt = systemPrompt()
+      prompt = systemPrompt
     }
     prompt += "\n\(Message.USER_SPEAKER_ID): \(message)\n"
     prompt += "\(id): "
@@ -52,12 +58,6 @@ class Agent: ObservableObject {
     }
     
     return response
-  }
-  
-  func systemPrompt() -> String {
-    return """
-      You are a helpful AI assistant who speaks professionally without emoticons.
-      """
   }
   
   func warmup() async {

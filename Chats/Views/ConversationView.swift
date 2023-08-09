@@ -29,44 +29,35 @@ struct ConversationView: View {
   }
   
   var body: some View {
-    ZStack(alignment: .bottom) {
-      ScrollViewReader { proxy in
-        List(messages) { m in
-          if m == messages.last {
-            if pendingMessage != nil {
-              MessageView(pendingMessage!, overrideText: agent.pendingMessage == "" ? "..." : agent.pendingMessage)
-                .id(Position.bottom)
-            } else {
-              MessageView(m).id(Position.bottom)
-            }
+    ScrollViewReader { proxy in
+      List(messages) { m in
+        if m == messages.last {
+          if pendingMessage != nil {
+            MessageView(pendingMessage!, overrideText: agent.pendingMessage == "" ? "..." : agent.pendingMessage)
+              .id(Position.bottom)
+              .onAppear {
+                proxy.scrollTo(Position.bottom, anchor: .bottom)
+              }
           } else {
-            MessageView(m)
+            MessageView(m).id(Position.bottom).onAppear {
+              proxy.scrollTo(Position.bottom, anchor: .bottom)
+            }
           }
-        }
-        .textSelection(.enabled)
-        .listRowSeparator(.visible)
-        .safeAreaInset(edge: .bottom, spacing: 0) {
-          MessageTextField(conversation: conversation, onSubmit: { s in
-            submit(s)
-          })
-        }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .onChange(of: messages.count) { _ in
-          DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-            proxy.scrollTo(Position.bottom, anchor: .bottom)
-          }
-        }
-        .onChange(of: agent.pendingMessage) { _ in
-          proxy.scrollTo(Position.bottom, anchor: .bottom)
-        }
-        .task {
-          proxy.scrollTo(Position.bottom, anchor: .bottom)
+        } else {
+          MessageView(m)
         }
       }
+      .textSelection(.enabled)
+      .listRowSeparator(.visible)
+      .safeAreaInset(edge: .bottom, spacing: 0) {
+        MessageTextField(conversation: conversation, onSubmit: { s in
+          submit(s)
+        })
+      }
+      .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
     .frame(maxWidth: .infinity, maxHeight: .infinity)
     .onAppear {
-      print("hi conversationview appeared")
       Task {
         agent.prompt = conversation.prompt ?? ""
         await agent.warmup()
@@ -96,7 +87,7 @@ struct ConversationView: View {
       agent.pendingMessage = ""
     }
   }
-
+  
 }
 
 //struct ConversationView_Previews: PreviewProvider {

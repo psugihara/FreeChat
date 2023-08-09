@@ -16,7 +16,7 @@ struct PersistenceController {
         for _ in 0..<10 {
             let newConversation = Conversation(context: viewContext)
             newConversation.createdAt = Date()
-        }
+        } 
         do {
             try viewContext.save()
         } catch {

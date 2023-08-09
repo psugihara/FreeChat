@@ -18,20 +18,49 @@ struct SettingsView: View {
   private var items: FetchedResults<Model>
   
   @AppStorage("selectedModelId") private var selectedModelId: String = SettingsView.defaultModelId
+  @AppStorage("systemPrompt") private var systemPrompt = Agent.DEFAULT_SYSTEM_PROMPT
   
+  @State private var pendingSystemPrompt = ""
+  private var systemPromptPendingSave: Bool {
+    pendingSystemPrompt != "" && pendingSystemPrompt != systemPrompt
+  }
+  @State private var didSaveSystemPrompt = false
   
   @State var showFileImporter = false
   
   var body: some View {
     Form {
+      Section("System prompt") {
+        ZStack {
+          TextEditor(text: $pendingSystemPrompt)
+            .padding()
+            .onAppear {
+              pendingSystemPrompt = systemPrompt
+            }
+          Group {
+            if systemPromptPendingSave {
+              Button("Save") {
+                systemPrompt = pendingSystemPrompt
+                didSaveSystemPrompt = true
+                DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+                  didSaveSystemPrompt = false
+                }
+              }
+            } else if didSaveSystemPrompt {
+              Image(systemName: "checkmark.circle.fill")
+            }
+          }
+          .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomTrailing)
+          .padding()
+        }.background(.white)
+      }
       
       Section("Model") {
-        List(items, id: \.id, selection: $selectedModelId) { i in
-          Text(i.name ?? i.url?.lastPathComponent ?? "Untitled").tag(i.id?.uuidString ?? "")
-          
-          if i == items.last {
-            Text("Default (Llama 2 7B Chat)").tag(SettingsView.defaultModelId)
+        List(selection: $selectedModelId) {
+          ForEach(items) { i in
+            Text(i.name ?? i.url?.lastPathComponent ?? "Untitled").tag(i.id?.uuidString ?? "")
           }
+          Text("Default (Llama 2 7B Chat)").tag(SettingsView.defaultModelId)
         }
         .listStyle(.automatic)
         .onDeleteCommand(perform: deleteSelected)
@@ -74,7 +103,7 @@ struct SettingsView: View {
         }
         
       }
-
+      
     }
     .padding(20)
     
@@ -86,12 +115,13 @@ struct SettingsView: View {
     let model = items.first(where: { m in m.id?.uuidString == selectedModelId })
     if model != nil {
       viewContext.delete(model!)
+      selectedModelId = SettingsView.defaultModelId
     }
   }
 }
 
 struct SettingsView_Previews: PreviewProvider {
   static var previews: some View {
-    SettingsView()
+    SettingsView().environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
   }
 }
