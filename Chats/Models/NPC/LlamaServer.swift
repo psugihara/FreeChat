@@ -12,9 +12,7 @@ class LlamaServer {
   private var monitor = Process()
 
   deinit {
-    if process.isRunning {
-      process.terminate()
-    }
+    stopServer()
   }
   
   // Start a monitor process that will terminate the server when our app dies.
@@ -95,7 +93,10 @@ class LlamaServer {
   }
   
   func stopServer() {
-    process.terminate()
+    if process.isRunning {
+      monitor.terminate()
+      process.terminate()
+    }
   }
   
   func complete(prompt: String, progressHandler: ((String) -> Void)? = nil) async throws -> String {

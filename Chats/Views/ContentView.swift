@@ -10,9 +10,16 @@ import CoreData
 
 struct ContentView: View {
   @Environment(\.managedObjectContext) private var viewContext
-  
-  @AppStorage("modelPath") private var modelPath = ""
 
+  @AppStorage("selectedModelId") private var selectedModelId: String?
+  
+  @FetchRequest(
+    sortDescriptors: [NSSortDescriptor(keyPath: \Model.updatedAt, ascending: true)],
+    animation: .default
+  )
+  private var models: FetchedResults<Model>
+
+  
   @State private var selection: Set<Conversation> = Set()
   @State private var showDeleteConfirmation = false
   
@@ -42,17 +49,32 @@ struct ContentView: View {
       .keyboardShortcut(.defaultAction)
       
     }
-    .onChange(of: modelPath) { newModelPath in
+    .onChange(of: selectedModelId) { newModelId in
+      let model = models.first { i in i.id?.uuidString == newModelId }
+      let url = model?.url == nil ? LlamaServer.DEFAULT_MODEL_URL : model!.url!
+      
+      print("loading agent onchange with url", url)
+
       agent?.llama.stopServer()
-      agent = Agent(id: "Llama", prompt: "", modelPath: newModelPath)
+      agent = Agent(id: "Llama", prompt: agent?.prompt ?? "", modelPath: url.path)
       Task {
+        print("hi from task")
         await agent?.warmup()
+        print("bye from task")
       }
     }
     .onAppear() {
-      agent = Agent(id: "Llama", prompt: "", modelPath: modelPath)
+      let model = models.first { i in i.id?.uuidString == selectedModelId }
+      let url = model?.url == nil ? LlamaServer.DEFAULT_MODEL_URL : model!.url!
+      
+      print("loading agent with url", url)
+      fflush(stdin)
+
+      agent = Agent(id: "Llama", prompt: agent?.prompt ?? "", modelPath: url.path)
       Task {
+        print("hi from tas2k")
         await agent?.warmup()
+        print("bye from task")
       }
     }
     

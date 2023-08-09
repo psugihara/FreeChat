@@ -12,13 +12,18 @@ extension Model {
     if bookmark == nil { return nil }
     var stale = false
     do {
-      let res = try URL(resolvingBookmarkData: bookmark!, bookmarkDataIsStale: &stale)
-      if stale {
-        bookmark = try res.bookmarkData(options: [.withSecurityScope, .securityScopeAllowOnlyReadAccess])
-      }
+      let res = try URL(resolvingBookmarkData: bookmark!, options: .withSecurityScope, bookmarkDataIsStale: &stale)
+
       guard res.startAccessingSecurityScopedResource() else {
+        print("error starting security scoped access")
         return nil
       }
+      
+      if stale {
+        print("renewing stale bookmark", res)
+        bookmark = try res.bookmarkData(options: [.withSecurityScope, .securityScopeAllowOnlyReadAccess])
+      }
+
       return res
     } catch (let error){
       print("Error resolving model bookmark", error.localizedDescription)

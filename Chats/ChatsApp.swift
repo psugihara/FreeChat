@@ -29,6 +29,7 @@ struct ChatsApp: App {
       SettingsView()
         .environment(\.managedObjectContext, persistenceController.container.viewContext)
     }
+    .windowResizability(.contentSize)
 #endif
   }
 }

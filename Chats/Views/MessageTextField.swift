@@ -35,27 +35,29 @@ struct MessageTextField: View {
   @FocusState private var focused: Bool
 
   var body: some View {
-    TextField("Message", text: $input, axis: .vertical)
-      .onSubmit {
-        onSubmit(input)
-        input = ""
-      }
-      .focused($focused)
-      .textFieldStyle(chatStyle)
-      .submitLabel(.send)
-      .padding(.all, 8)
-      .onAppear {
-        self.focused = true
-      }
-      .onChange(of: conversation) { nextConversation in
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-          if nextConversation.createdAt == nil { return }
-          let fiveSecondsAgo = Date() - TimeInterval(5) // 5 seconds ago
-          if nextConversation.createdAt! >= fiveSecondsAgo, nextConversation.messages?.count == 0 {
-            self.focused = true
+    Group {
+      TextField("Message", text: $input, axis: .vertical)
+        .onSubmit {
+          onSubmit(input)
+          input = ""
+        }
+        .focused($focused)
+        .textFieldStyle(chatStyle)
+        .submitLabel(.send)
+        .padding(.all, 8)
+        .onAppear {
+          self.focused = true
+        }
+        .onChange(of: conversation) { nextConversation in
+          DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            if nextConversation.createdAt == nil { return }
+            let fiveSecondsAgo = Date() - TimeInterval(5) // 5 seconds ago
+            if nextConversation.createdAt! >= fiveSecondsAgo, nextConversation.messages?.count == 0 {
+              self.focused = true
+            }
           }
         }
-      }
+    }.background(.ultraThinMaterial)
   }
 }
 

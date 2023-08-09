@@ -8,7 +8,7 @@ func log(_ line: String) {
 func terminateServerProcess(pid: Int32) {
   log("Terminating the server process with PID \(pid).")
   kill(pid, SIGTERM)
-  log("exiting")
+  log("terminated server, exiting")
   exit(0)
 }
 

@@ -66,6 +66,7 @@ struct ConversationView: View {
     }
     .frame(maxWidth: .infinity, maxHeight: .infinity)
     .onAppear {
+      print("hi conversationview appeared")
       Task {
         agent.prompt = conversation.prompt ?? ""
         await agent.warmup()
