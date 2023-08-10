@@ -1,5 +1,6 @@
 import EventSource
 import Foundation
+import Metal
 
 class LlamaServer {
   static let DEFAULT_MODEL_URL =  Bundle.main.url(forResource: "llama-2-7b-chat.ggmlv3.q4_1", withExtension: ".bin")!
@@ -55,7 +56,7 @@ class LlamaServer {
     
     let startTime = DispatchTime.now()
     
-    print("starting llama.cpp server")
+
     process.executableURL = Bundle.main.url(forResource: "server", withExtension: "")
     let processes = ProcessInfo.processInfo.activeProcessorCount
     process.arguments = [
@@ -64,7 +65,9 @@ class LlamaServer {
       "--rope-freq-scale", "1.0",
       "--ctx-size", "4096",
       "--rms-norm-eps", "1e-5",
+      "--gpu-layers", "1"
     ]
+    print("starting llama.cpp server \(process.arguments!.joined(separator: " "))")
     
     outputPipe = Pipe()
     process.standardInput = Pipe()  // fails without this being set!
@@ -145,7 +148,9 @@ class LlamaServer {
             let fragment = responseObj.content
             response.append(fragment)
             progressHandler?(fragment)
-            responseDiff = CFAbsoluteTimeGetCurrent() - start
+            if responseDiff == 0 {
+              responseDiff = CFAbsoluteTimeGetCurrent() - start
+            }
             
             if responseObj.stop {
               break listenLoop

@@ -4,6 +4,7 @@ func log(_ line: String) {
   print("[watchdog]", line)
 }
 
+
 // Function to terminate the server process (replace this with your actual termination logic)
 func terminateServerProcess(pid: Int32) {
   log("Terminating the server process with PID \(pid).")

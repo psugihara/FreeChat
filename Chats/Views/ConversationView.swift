@@ -84,7 +84,9 @@ struct ConversationView: View {
       m.text = text
       conversation.prompt = agent.prompt
       try viewContext.save()
-      agent.pendingMessage = ""
+      Task {
+        agent.pendingMessage = ""
+      }
     }
   }
   
