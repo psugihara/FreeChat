@@ -9,19 +9,19 @@ import SwiftUI
 
 struct ChatStyle: TextFieldStyle {
   @FocusState private var isFocused: Bool
+  @Environment(\.colorScheme) var colorScheme
   func _body(configuration: TextField<Self._Label>) -> some View {
     configuration
       .textFieldStyle(.plain)
       .frame(maxWidth: .infinity)
-      .padding(6)
+      .padding(EdgeInsets(top: 0, leading: 6, bottom: 0, trailing: 6))
+      .padding(8)
       .cornerRadius(12)
-      .shadow(color: .black.opacity(0.25), radius: 2, x: 0, y: 0.5)
       .focusable()
       .focused($isFocused)
       .overlay(
-        RoundedRectangle(cornerRadius: 10).stroke(Color.primary.opacity(0.5), lineWidth: 2).opacity(isFocused ? 1 : 0).scaleEffect(isFocused ? 1 : 1.04)
+        RoundedRectangle(cornerRadius: 16).stroke(Color.primary.opacity(0.2), lineWidth: 1)
       )
-      .animation(isFocused ? .easeIn(duration: 0.2) : .easeOut(duration: 0.0), value: isFocused)
   }
 }
 
@@ -44,7 +44,7 @@ struct MessageTextField: View {
         .focused($focused)
         .textFieldStyle(chatStyle)
         .submitLabel(.send)
-        .padding(.all, 8)
+        .padding(.all, 10)
         .onAppear {
           self.focused = true
         }
@@ -57,7 +57,8 @@ struct MessageTextField: View {
             }
           }
         }
-    }.background(.ultraThinMaterial)
+    }
+    .background(.ultraThinMaterial)
   }
 }
 

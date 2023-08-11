@@ -60,6 +60,11 @@ class Agent: ObservableObject {
     return response
   }
   
+  func interrupt() async  {
+    if status != .processing { return }
+    await llama.interrupt()
+  }
+  
   func warmup() async {
     if prompt == "" { return }
     do {

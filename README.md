@@ -3,12 +3,16 @@
 Chat with Meta’s Llama 2 on your MacBook without installing any other software or connecting to the internet. Every conversation is saved locally.
 
 - Try any llama.cpp compatible model
-- Customize personas and expertise with system prompts
-- Search conversations
+- Customize persona and expertise by changing the system prompt
 - Conversations sync via iCloud
 
 <img width="1162" alt="Screenshot 2023-08-05 at 8 30 04 PM" src="https://github.com/npc-pet/Chats/assets/282016/d34d87e2-3c0d-4359-a68a-0872f7066601">
 
+## Philosophy
+
+We have 2 goals with Chats:
+- A native macOS LLM appliance that runs completely locally. You should just be able to open it and ask your LLM a question without doing any configuration. Like OpenAI's chat without login or tracking. You should be able to install from the Mac App Store and use it immediatly.
+- Proof of concept for an architecture for running the llama.cpp server in a 0-config mac app.
 
 ## Install
 

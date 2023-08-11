@@ -1,6 +1,7 @@
 import EventSource
 import Foundation
-import Metal
+import os.lock
+
 
 class LlamaServer {
   static let DEFAULT_MODEL_URL =  Bundle.main.url(forResource: "llama-2-7b-chat.ggmlv3.q4_1", withExtension: ".bin")!
@@ -11,7 +12,7 @@ class LlamaServer {
   private var eventSource: EventSource?
   
   private var monitor = Process()
-
+  
   deinit {
     stopServer()
   }
@@ -25,7 +26,7 @@ class LlamaServer {
 #if DEBUG
     print("starting \(monitor.executableURL!.absoluteString) \(monitor.arguments!.joined(separator: " "))")
 #endif
-
+    
     let hearbeat = Pipe()
     // write a heartbeat to the pipe every 10 seconds
     let timer = DispatchSource.makeTimerSource(queue: DispatchQueue.global())
@@ -38,15 +39,15 @@ class LlamaServer {
     timer.resume()
     
     monitor.standardInput = hearbeat
-
+    
 #if !DEBUG
     let monitorOutputPipe = Pipe()
     monitor.standardOutput = monitorOutputPipe
     monitor.standardError = monitorOutputPipe
 #endif
-
+    
     try monitor.run()
-
+    
     print("started monitor for \(serverPID)")
   }
   
@@ -56,7 +57,7 @@ class LlamaServer {
     
     let startTime = DispatchTime.now()
     
-
+    
     process.executableURL = Bundle.main.url(forResource: "server", withExtension: "")
     let processes = ProcessInfo.processInfo.activeProcessorCount
     process.arguments = [
@@ -104,7 +105,7 @@ class LlamaServer {
   
   func complete(prompt: String, progressHandler: ((String) -> Void)? = nil) async throws -> String {
 #if DEBUG
-     print("START PROMPT\n \(prompt) \nEND PROMPT\n\n")
+    print("START PROMPT\n \(prompt) \nEND PROMPT\n\n")
 #endif
     
     try startServer()
@@ -134,32 +135,32 @@ class LlamaServer {
     
     var response = ""
     var responseDiff = 0.0
-    listenLoop: for await event in eventSource!.events {
-      switch event {
-        case .open:
-          continue
-        case .error(let error):
-          print("llama.cpp server error:", error.localizedDescription)
-        case .message(let message):
-          // parse json in message.data string then print the data.content value and append it to response
-          if let data = message.data?.data(using: .utf8) {
-            let decoder = JSONDecoder()
-            let responseObj = try decoder.decode(CompleteResponse.self, from: data)
-            let fragment = responseObj.content
-            response.append(fragment)
-            progressHandler?(fragment)
-            if responseDiff == 0 {
-              responseDiff = CFAbsoluteTimeGetCurrent() - start
-            }
-            
-            if responseObj.stop {
-              break listenLoop
-            }
+  listenLoop: for await event in eventSource!.events {
+    switch event {
+      case .open:
+        continue
+      case .error(let error):
+        print("llama.cpp server error:", error.localizedDescription)
+      case .message(let message):
+        // parse json in message.data string then print the data.content value and append it to response
+        if let data = message.data?.data(using: .utf8) {
+          let decoder = JSONDecoder()
+          let responseObj = try decoder.decode(CompleteResponse.self, from: data)
+          let fragment = responseObj.content
+          response.append(fragment)
+          progressHandler?(fragment)
+          if responseDiff == 0 {
+            responseDiff = CFAbsoluteTimeGetCurrent() - start
           }
-        case .closed:
-          break
-      }
+          
+          if responseObj.stop {
+            break listenLoop
+          }
+        }
+      case .closed:
+        break
     }
+  }
     
     
     if responseDiff > 0 {
@@ -168,6 +169,10 @@ class LlamaServer {
     }
     
     return response
+  }
+  
+  func interrupt() async {
+    await eventSource!.close()
   }
   
   struct CompleteParams: Codable {

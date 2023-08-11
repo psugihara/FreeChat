@@ -16,7 +16,7 @@ struct MessageView: View {
     self.m = m
     self.overrideText = overrideText
   }
-
+  
   var body: some View {
     VStack(alignment: .leading) {
       HStack(alignment: .firstTextBaseline) {
@@ -25,12 +25,13 @@ struct MessageView: View {
         Text(m.createdAt ?? Date(), formatter: messageTimestampFormatter)
           .font(.caption)
           .foregroundColor(.gray)
-      }.padding(.bottom, 4)
+      }.padding(.bottom, 1)
       
       Markdown(overrideText == "" && m.text != nil ? m.text! : overrideText)
         .markdownTheme(.docC)
-        .padding(.horizontal)
-    }.padding(.vertical)
+    }
+    .padding(.vertical, 3)
+    .padding(.horizontal, 3)
   }
 }
 
@@ -48,7 +49,7 @@ struct MessageView_Previews: PreviewProvider {
     let m = try! Message.create(text: "hello there, I'm well! How are **you**?", fromId: "User", conversation: c, inContext: ctx)
     return m
   }
-    
+  
   static var previews: some View {
     MessageView(MessageView_Previews.m).environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
   }

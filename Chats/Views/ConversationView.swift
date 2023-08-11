@@ -48,7 +48,6 @@ struct ConversationView: View {
         }
       }
       .textSelection(.enabled)
-      .listRowSeparator(.visible)
       .safeAreaInset(edge: .bottom, spacing: 0) {
         MessageTextField(conversation: conversation, onSubmit: { s in
           submit(s)
@@ -67,6 +66,10 @@ struct ConversationView: View {
   
   func submit(_ input: String) {
     if (agent.status == .processing) {
+      Task {
+        await agent.interrupt()
+        submit(input)
+      }
       return
     }
     let submitted = input
@@ -80,13 +83,14 @@ struct ConversationView: View {
       pendingMessage = m
       agent.prompt = conversation.prompt ?? agent.prompt
       let text = await agent.listenThinkRespond(speakerId: Message.USER_SPEAKER_ID, message: submitted)
-      pendingMessage = nil
-      m.text = text
       conversation.prompt = agent.prompt
-      try viewContext.save()
-      Task {
-        agent.pendingMessage = ""
+      pendingMessage = nil
+      m.text = text.trimmingCharacters(in: .whitespacesAndNewlines)
+      agent.pendingMessage = ""
+      if m.text == "" {
+        viewContext.delete(m)
       }
+      try viewContext.save()
     }
   }
   
