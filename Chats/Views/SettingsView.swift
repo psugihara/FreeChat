@@ -33,10 +33,16 @@ struct SettingsView: View {
       Section("System prompt") {
         ZStack {
           TextEditor(text: $pendingSystemPrompt)
-            .padding()
             .onAppear {
               pendingSystemPrompt = systemPrompt
             }
+            .frame(height: 120)
+            .padding(5)
+            .background {
+              RoundedRectangle(cornerRadius: 14)
+                .fill(.white)
+            }
+          
           Group {
             if systemPromptPendingSave {
               Button("Save") {
@@ -48,11 +54,14 @@ struct SettingsView: View {
               }
             } else if didSaveSystemPrompt {
               Image(systemName: "checkmark.circle.fill")
+            } else {
+              Spacer()
             }
           }
           .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomTrailing)
-          .padding()
-        }.background(.white)
+          .padding(4)
+        }
+        .background(Color("TextBackground"))
       }
       
       Section("Model") {

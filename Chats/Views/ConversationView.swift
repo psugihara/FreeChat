@@ -54,11 +54,22 @@ struct ConversationView: View {
         })
       }
       .frame(maxWidth: .infinity, maxHeight: .infinity)
+      .onChange(of: agent.pendingMessage) { _ in
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+          proxy.scrollTo(Position.bottom, anchor: .bottom)
+        }
+      }
     }
     .frame(maxWidth: .infinity, maxHeight: .infinity)
     .onAppear {
+      agent.prompt = conversation.prompt ?? ""
       Task {
-        agent.prompt = conversation.prompt ?? ""
+        await agent.warmup()
+      }
+    }
+    .onChange(of: conversation) { nextConvo in
+      agent.prompt = nextConvo.prompt ?? ""
+      Task {
         await agent.warmup()
       }
     }

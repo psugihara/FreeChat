@@ -41,6 +41,8 @@ Not sure what this is like to run on another machine. Try it out.
   - [ ] make it not crash on super long chats by limiting the context passed to llm
   - [x] new conversation should focus textarea
   - [ ] toast notif for errors https://github.com/sanzaru/SimpleToast
+  - [x] interrupt llama
+  - [ ] llama should pause for a moment before responding if text hasn't generated
 
 - [ ] Try any llama.cpp compatible model
   - [x] configure model in Settings
