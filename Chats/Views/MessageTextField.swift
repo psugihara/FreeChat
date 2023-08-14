@@ -49,13 +49,7 @@ struct MessageTextField: View {
           self.focused = true
         }
         .onChange(of: conversation) { nextConversation in
-          DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-            if nextConversation.createdAt == nil { return }
-            let fiveSecondsAgo = Date() - TimeInterval(5) // 5 seconds ago
-            if nextConversation.createdAt! >= fiveSecondsAgo, nextConversation.messages?.count == 0 {
-              self.focused = true
-            }
-          }
+          self.focused = true
         }
     }
     .background(.ultraThinMaterial)

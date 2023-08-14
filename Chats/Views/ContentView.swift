@@ -30,7 +30,7 @@ struct ContentView: View {
     NavigationSplitView {
       NavList(selection: $selection)
     } detail: {
-      if selection.first != nil, agent != nil {
+      if selection.count == 1, agent != nil {
         ConversationView(conversation: selection.first!, agent: agent!)
       } else {
         Text("Select a conversation")

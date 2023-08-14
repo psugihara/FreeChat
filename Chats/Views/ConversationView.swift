@@ -18,7 +18,6 @@ struct ConversationView: View {
   var conversation: Conversation
   
   @ObservedObject var agent: Agent
-  @FocusState var messageFieldFocused: Bool
   @State var pendingMessage: Message?
   
   var messages: [Message] {
@@ -32,7 +31,7 @@ struct ConversationView: View {
     ScrollViewReader { proxy in
       List(messages) { m in
         if m == messages.last {
-          if pendingMessage != nil {
+          if m == pendingMessage {
             MessageView(pendingMessage!, overrideText: agent.pendingMessage == "" ? "..." : agent.pendingMessage)
               .id(Position.bottom)
               .onAppear {
@@ -62,15 +61,19 @@ struct ConversationView: View {
     }
     .frame(maxWidth: .infinity, maxHeight: .infinity)
     .onAppear {
-      agent.prompt = conversation.prompt ?? ""
       Task {
-        await agent.warmup()
+        if agent.status == .ready, agent.prompt != conversation.prompt {
+          agent.prompt = conversation.prompt ?? ""
+          await agent.warmup()
+        }
       }
     }
     .onChange(of: conversation) { nextConvo in
-      agent.prompt = nextConvo.prompt ?? ""
       Task {
-        await agent.warmup()
+        if agent.status == .ready, agent.prompt != conversation.prompt {
+          agent.prompt = nextConvo.prompt ?? ""
+          await agent.warmup()
+        }
       }
     }
   }
@@ -93,8 +96,9 @@ struct ConversationView: View {
       m.conversation = conversation
       pendingMessage = m
       agent.prompt = conversation.prompt ?? agent.prompt
+      let currentConvo = conversation
       let text = await agent.listenThinkRespond(speakerId: Message.USER_SPEAKER_ID, message: submitted)
-      conversation.prompt = agent.prompt
+      currentConvo.prompt = agent.prompt
       pendingMessage = nil
       m.text = text.trimmingCharacters(in: .whitespacesAndNewlines)
       agent.pendingMessage = ""
