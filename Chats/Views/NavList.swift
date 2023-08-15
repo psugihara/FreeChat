@@ -38,8 +38,9 @@ struct NavList: View {
               editing = nil
             }
           }
+          .padding(.trailing, 6)
       } else {
-        Text(item.titleWithDefault)
+        Text(item.titleWithDefault).padding(.leading, 4)
       }
     }
     .frame(minWidth: 50)
