@@ -72,6 +72,7 @@ struct NavList: View {
   
   private func saveNewTitle(conversation: Conversation) {
     conversation.title = newTitle
+    newTitle = ""
     do {
       try viewContext.save()
     } catch {

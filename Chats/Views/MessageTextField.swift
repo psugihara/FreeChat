@@ -46,13 +46,23 @@ struct MessageTextField: View {
         .submitLabel(.send)
         .padding(.all, 10)
         .onAppear {
-          self.focused = true
+          maybeFocus(conversation)
         }
         .onChange(of: conversation) { nextConversation in
-          self.focused = true
+          DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            maybeFocus(nextConversation)
+          }
         }
     }
     .background(.ultraThinMaterial)
+  }
+  
+  private func maybeFocus(_ conversation: Conversation) {
+    if conversation.createdAt == nil { return }
+    let fiveSecondsAgo = Date() - TimeInterval(5) // 5 seconds ago
+    if conversation.createdAt! >= fiveSecondsAgo, conversation.messages?.count == 0 {
+      self.focused = true
+    }
   }
 }
 

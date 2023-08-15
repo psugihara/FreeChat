@@ -41,7 +41,6 @@ struct ContentView: View {
     .onReceive(NotificationCenter.default.publisher(for: NSApplication.willTerminateNotification), perform: { output in
       agent?.llama.stopServer()
     })
-    .backgroundStyle(.ultraThinMaterial)
     .onDeleteCommand { showDeleteConfirmation = true }
     .confirmationDialog("Are you sure you want to delete \(selection.count == 1 ? "this" : "\(selection.count)") conversation\(selection.count == 1 ? "" : "s")?", isPresented: $showDeleteConfirmation) {
       Button("Yes, delete", role: .destructive) {
