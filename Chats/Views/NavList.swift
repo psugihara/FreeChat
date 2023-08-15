@@ -16,6 +16,7 @@ struct NavList: View {
   private var items: FetchedResults<Conversation>
   
   @Binding var selection: Set<Conversation>
+  @Binding var showDeleteConfirmation: Bool
   
   @State var editing: Conversation?
   @State var newTitle = ""
@@ -67,6 +68,12 @@ struct NavList: View {
       if items.count > 1 { return }
       editing = items.first
       fieldFocused = true
+    }
+    .confirmationDialog("Are you sure you want to delete \(selection.count == 1 ? "this" : "\(selection.count)") conversation\(selection.count == 1 ? "" : "s")?", isPresented: $showDeleteConfirmation) {
+      Button("Yes, delete", role: .destructive) {
+        deleteSelectedConversations()
+      }
+      .keyboardShortcut(.defaultAction)
     }
   }
   
@@ -133,9 +140,10 @@ struct NavList: View {
 #if DEBUG
 struct NavList_Previews_Container : View {
   @State public var selection: Set<Conversation> = Set()
-  
+  @State public var showDeleteConfirmation = false
+
   var body: some View {
-    NavList(selection: $selection)
+    NavList(selection: $selection, showDeleteConfirmation: $showDeleteConfirmation)
       .environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
   }
 }

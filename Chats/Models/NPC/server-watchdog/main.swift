@@ -4,7 +4,6 @@ func log(_ line: String) {
   print("[watchdog]", line)
 }
 
-
 // Function to terminate the server process (replace this with your actual termination logic)
 func terminateServerProcess(pid: Int32) {
   log("Terminating the server process with PID \(pid).")
@@ -32,7 +31,6 @@ func checkHeartbeat(serverProcessPID: Int32) {
   }
 }
 
-// Start the watchdog process
 func startWatchdog() {
   guard CommandLine.arguments.count == 2 else {
     print("usage: server-watchdog <pid_to_kill>")
@@ -47,8 +45,6 @@ func startWatchdog() {
   log("Watchdog process started.")
   checkHeartbeat(serverProcessPID: serverProcessPID)
 }
-
-
 
 // Call the function to start the watchdog process
 startWatchdog()
