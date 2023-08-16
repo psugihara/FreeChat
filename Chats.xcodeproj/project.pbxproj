@@ -16,11 +16,11 @@
 		A17A2E192A79A006006CDD90 /* LlamaServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A17A2E132A79A005006CDD90 /* LlamaServer.swift */; };
 		A17A2E1F2A79A075006CDD90 /* EventSource in Frameworks */ = {isa = PBXBuildFile; productRef = A17A2E1E2A79A075006CDD90 /* EventSource */; };
 		A17A2E242A7A14D0006CDD90 /* llama-2-7b-chat.ggmlv3.q4_1.bin in Resources */ = {isa = PBXBuildFile; fileRef = A17A2E232A7A14D0006CDD90 /* llama-2-7b-chat.ggmlv3.q4_1.bin */; };
+		A19AFCBF2A8D62B000F96A4D /* ggml-metal.metal in Copy Metal */ = {isa = PBXBuildFile; fileRef = A1E4A69E2A85445200BF9D34 /* ggml-metal.metal */; };
 		A1A286E82A7D8A7D0004967A /* MessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1A286E72A7D8A7D0004967A /* MessageView.swift */; };
 		A1A286F52A7E17750004967A /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1A286F42A7E17750004967A /* main.swift */; };
 		A1A286FD2A7E1E460004967A /* server-watchdog in Embed helper tools */ = {isa = PBXBuildFile; fileRef = A1A286F22A7E17750004967A /* server-watchdog */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		A1E4A6942A82B41F00BF9D34 /* Model+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1E4A6932A82B41F00BF9D34 /* Model+Extensions.swift */; };
-		A1E4A69F2A85445200BF9D34 /* ggml-metal.metal in Resources */ = {isa = PBXBuildFile; fileRef = A1E4A69E2A85445200BF9D34 /* ggml-metal.metal */; };
 		A1E4A6A12A85447800BF9D34 /* server in Resources */ = {isa = PBXBuildFile; fileRef = A1E4A6A02A85447800BF9D34 /* server */; };
 		A1F617262A782AA100F2048C /* ChatsApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1F617252A782AA100F2048C /* ChatsApp.swift */; };
 		A1F617282A782AA100F2048C /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1F617272A782AA100F2048C /* ContentView.swift */; };
@@ -61,6 +61,17 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
+		A19AFCC02A8D631900F96A4D /* Copy Metal */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 7;
+			files = (
+				A19AFCBF2A8D62B000F96A4D /* ggml-metal.metal in Copy Metal */,
+			);
+			name = "Copy Metal";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		A1A286F02A7E17750004967A /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -288,6 +299,7 @@
 				A1F6171F2A782AA100F2048C /* Frameworks */,
 				A1F617202A782AA100F2048C /* Resources */,
 				A1A286FC2A7E1E2D0004967A /* Embed helper tools */,
+				A19AFCC02A8D631900F96A4D /* Copy Metal */,
 			);
 			buildRules = (
 			);
@@ -396,7 +408,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A1E4A69F2A85445200BF9D34 /* ggml-metal.metal in Resources */,
 				A1E4A6A12A85447800BF9D34 /* server in Resources */,
 				A17A2E242A7A14D0006CDD90 /* llama-2-7b-chat.ggmlv3.q4_1.bin in Resources */,
 				A11721992A7D5274003B0358 /* README.md in Resources */,
