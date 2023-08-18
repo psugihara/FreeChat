@@ -7,8 +7,11 @@
 
 import SwiftUI
 import MarkdownUI
+import Splash
 
 struct MessageView: View {
+  @Environment(\.colorScheme) private var colorScheme
+
   let m: Message
   let overrideText: String // for streaming replies
   
@@ -32,10 +35,21 @@ struct MessageView: View {
       }.padding(.bottom, 1)
       
       Markdown(overrideText == "" && m.text != nil ? m.text! : overrideText)
-        .markdownTheme(.docC)
+        .markdownTheme(.freeChat)
+        .markdownCodeSyntaxHighlighter(.splash(theme: self.theme))
     }
     .padding(.vertical, 3)
     .padding(.horizontal, 3)
+  }
+  
+  private var theme: Splash.Theme {
+    // NOTE: We are ignoring the Splash theme font
+    switch self.colorScheme {
+      case ColorScheme.dark:
+        return .wwdc17(withFont: .init(size: 16))
+      default:
+        return .sunset(withFont: .init(size: 16))
+    }
   }
 }
 

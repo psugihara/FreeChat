@@ -38,9 +38,7 @@ struct ConversationView: View {
                 proxy.scrollTo(Position.bottom, anchor: .bottom)
               }
           } else {
-            MessageView(m).id(Position.bottom).onAppear {
-              proxy.scrollTo(Position.bottom, anchor: .bottom)
-            }
+            MessageView(m).id(Position.bottom)
           }
         } else {
           MessageView(m)
@@ -53,11 +51,14 @@ struct ConversationView: View {
         })
       }
       .frame(maxWidth: .infinity, maxHeight: .infinity)
-      .onChange(of: agent.pendingMessage) { _ in
+      .onReceive(
+        agent.$pendingMessage.debounce(for: 1, scheduler: RunLoop.main)
+      ) { _ in
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
           proxy.scrollTo(Position.bottom, anchor: .bottom)
         }
       }
+
     }
     .frame(maxWidth: .infinity, maxHeight: .infinity)
     .onAppear {
