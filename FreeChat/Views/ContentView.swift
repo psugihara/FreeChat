@@ -36,7 +36,7 @@ struct ContentView: View {
         Text("Select a conversation")
       }
     }
-    .navigationTitle(selection.count == 1 ? selection.first!.titleWithDefault : "Chats")
+    .navigationTitle(selection.count == 1 ? selection.first!.titleWithDefault : "FreeChat")
     .navigationSplitViewColumnWidth(50)
     .onReceive(NotificationCenter.default.publisher(for: NSApplication.willTerminateNotification), perform: { output in
       agent?.llama.stopServer()

@@ -8,7 +8,7 @@
 import SwiftUI
 
 @main
-struct ChatsApp: App {
+struct FreeChatApp: App {
   let persistenceController = PersistenceController.shared  
   
   var body: some Scene {

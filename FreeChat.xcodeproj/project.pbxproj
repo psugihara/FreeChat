@@ -22,7 +22,7 @@
 		A1A286FD2A7E1E460004967A /* server-watchdog in Embed helper tools */ = {isa = PBXBuildFile; fileRef = A1A286F22A7E17750004967A /* server-watchdog */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		A1E4A6942A82B41F00BF9D34 /* Model+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1E4A6932A82B41F00BF9D34 /* Model+Extensions.swift */; };
 		A1E4A6A12A85447800BF9D34 /* server in Resources */ = {isa = PBXBuildFile; fileRef = A1E4A6A02A85447800BF9D34 /* server */; };
-		A1F617262A782AA100F2048C /* ChatsApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1F617252A782AA100F2048C /* ChatsApp.swift */; };
+		A1F617262A782AA100F2048C /* FreeChat.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1F617252A782AA100F2048C /* FreeChat.swift */; };
 		A1F617282A782AA100F2048C /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1F617272A782AA100F2048C /* ContentView.swift */; };
 		A1F6172A2A782AA200F2048C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A1F617292A782AA200F2048C /* Assets.xcassets */; };
 		A1F6172D2A782AA200F2048C /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A1F6172C2A782AA200F2048C /* Preview Assets.xcassets */; };
@@ -110,17 +110,17 @@
 		A1E4A6932A82B41F00BF9D34 /* Model+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Model+Extensions.swift"; sourceTree = "<group>"; };
 		A1E4A69E2A85445200BF9D34 /* ggml-metal.metal */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.metal; path = "ggml-metal.metal"; sourceTree = "<group>"; };
 		A1E4A6A02A85447800BF9D34 /* server */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = server; sourceTree = "<group>"; };
-		A1F617222A782AA100F2048C /* Chats.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Chats.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		A1F617252A782AA100F2048C /* ChatsApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatsApp.swift; sourceTree = "<group>"; };
+		A1F617222A782AA100F2048C /* FreeChat.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FreeChat.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		A1F617252A782AA100F2048C /* FreeChat.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FreeChat.swift; sourceTree = "<group>"; };
 		A1F617272A782AA100F2048C /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		A1F617292A782AA200F2048C /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		A1F6172C2A782AA200F2048C /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		A1F6172E2A782AA200F2048C /* Persistence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Persistence.swift; sourceTree = "<group>"; };
 		A1F617312A782AA200F2048C /* Mantras.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Mantras.xcdatamodel; sourceTree = "<group>"; };
-		A1F617332A782AA200F2048C /* Chats.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Chats.entitlements; sourceTree = "<group>"; };
-		A1F617382A782AA200F2048C /* ChatsTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ChatsTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		A1F617332A782AA200F2048C /* FreeChat.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = FreeChat.entitlements; sourceTree = "<group>"; };
+		A1F617382A782AA200F2048C /* FreeChatTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FreeChatTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		A1F6173C2A782AA200F2048C /* MantrasTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MantrasTests.swift; sourceTree = "<group>"; };
-		A1F617422A782AA200F2048C /* ChatsUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ChatsUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		A1F617422A782AA200F2048C /* FreeChatUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FreeChatUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		A1F617462A782AA200F2048C /* MantrasUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MantrasUITests.swift; sourceTree = "<group>"; };
 		A1F617482A782AA200F2048C /* MantrasUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MantrasUITestsLaunchTests.swift; sourceTree = "<group>"; };
 		A1F617552A782E4F00F2048C /* ConversationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationView.swift; sourceTree = "<group>"; };
@@ -202,7 +202,7 @@
 			children = (
 				A1A286FE2A7E9F280004967A /* server-watchdog.entitlements */,
 				A11721982A7D5274003B0358 /* README.md */,
-				A1F617242A782AA100F2048C /* Chats */,
+				A1F617242A782AA100F2048C /* FreeChat */,
 				A1F6173B2A782AA200F2048C /* ChatsTests */,
 				A1F617452A782AA200F2048C /* ChatsUITests */,
 				A1F617232A782AA100F2048C /* Products */,
@@ -212,27 +212,27 @@
 		A1F617232A782AA100F2048C /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				A1F617222A782AA100F2048C /* Chats.app */,
-				A1F617382A782AA200F2048C /* ChatsTests.xctest */,
-				A1F617422A782AA200F2048C /* ChatsUITests.xctest */,
+				A1F617222A782AA100F2048C /* FreeChat.app */,
+				A1F617382A782AA200F2048C /* FreeChatTests.xctest */,
+				A1F617422A782AA200F2048C /* FreeChatUITests.xctest */,
 				A1A286F22A7E17750004967A /* server-watchdog */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		A1F617242A782AA100F2048C /* Chats */ = {
+		A1F617242A782AA100F2048C /* FreeChat */ = {
 			isa = PBXGroup;
 			children = (
 				A15D50D02A7F49CD00FC1681 /* Views */,
-				A1F617252A782AA100F2048C /* ChatsApp.swift */,
+				A1F617252A782AA100F2048C /* FreeChat.swift */,
 				A1F617292A782AA200F2048C /* Assets.xcassets */,
 				A1F6172E2A782AA200F2048C /* Persistence.swift */,
-				A1F617332A782AA200F2048C /* Chats.entitlements */,
+				A1F617332A782AA200F2048C /* FreeChat.entitlements */,
 				A1F617302A782AA200F2048C /* Chats.xcdatamodeld */,
 				A1F6172B2A782AA200F2048C /* Preview Content */,
 				A1F617592A7838DB00F2048C /* Models */,
 			);
-			path = Chats;
+			path = FreeChat;
 			sourceTree = "<group>";
 		};
 		A1F6172B2A782AA200F2048C /* Preview Content */ = {
@@ -291,9 +291,9 @@
 			productReference = A1A286F22A7E17750004967A /* server-watchdog */;
 			productType = "com.apple.product-type.tool";
 		};
-		A1F617212A782AA100F2048C /* Chats */ = {
+		A1F617212A782AA100F2048C /* FreeChat */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = A1F6174C2A782AA200F2048C /* Build configuration list for PBXNativeTarget "Chats" */;
+			buildConfigurationList = A1F6174C2A782AA200F2048C /* Build configuration list for PBXNativeTarget "FreeChat" */;
 			buildPhases = (
 				A1F6171E2A782AA100F2048C /* Sources */,
 				A1F6171F2A782AA100F2048C /* Frameworks */,
@@ -307,18 +307,18 @@
 				A1A286FB2A7E1ACD0004967A /* PBXTargetDependency */,
 				A17A2E082A798F4C006CDD90 /* PBXTargetDependency */,
 			);
-			name = Chats;
+			name = FreeChat;
 			packageProductDependencies = (
 				A17A2E1E2A79A075006CDD90 /* EventSource */,
 				A117219B2A7D7B70003B0358 /* MarkdownUI */,
 			);
 			productName = Mantras;
-			productReference = A1F617222A782AA100F2048C /* Chats.app */;
+			productReference = A1F617222A782AA100F2048C /* FreeChat.app */;
 			productType = "com.apple.product-type.application";
 		};
-		A1F617372A782AA200F2048C /* ChatsTests */ = {
+		A1F617372A782AA200F2048C /* FreeChatTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = A1F6174F2A782AA200F2048C /* Build configuration list for PBXNativeTarget "ChatsTests" */;
+			buildConfigurationList = A1F6174F2A782AA200F2048C /* Build configuration list for PBXNativeTarget "FreeChatTests" */;
 			buildPhases = (
 				A1F617342A782AA200F2048C /* Sources */,
 				A1F617352A782AA200F2048C /* Frameworks */,
@@ -329,14 +329,14 @@
 			dependencies = (
 				A1F6173A2A782AA200F2048C /* PBXTargetDependency */,
 			);
-			name = ChatsTests;
+			name = FreeChatTests;
 			productName = MantrasTests;
-			productReference = A1F617382A782AA200F2048C /* ChatsTests.xctest */;
+			productReference = A1F617382A782AA200F2048C /* FreeChatTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
-		A1F617412A782AA200F2048C /* ChatsUITests */ = {
+		A1F617412A782AA200F2048C /* FreeChatUITests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = A1F617522A782AA200F2048C /* Build configuration list for PBXNativeTarget "ChatsUITests" */;
+			buildConfigurationList = A1F617522A782AA200F2048C /* Build configuration list for PBXNativeTarget "FreeChatUITests" */;
 			buildPhases = (
 				A1F6173E2A782AA200F2048C /* Sources */,
 				A1F6173F2A782AA200F2048C /* Frameworks */,
@@ -347,9 +347,9 @@
 			dependencies = (
 				A1F617442A782AA200F2048C /* PBXTargetDependency */,
 			);
-			name = ChatsUITests;
+			name = FreeChatUITests;
 			productName = MantrasUITests;
-			productReference = A1F617422A782AA200F2048C /* ChatsUITests.xctest */;
+			productReference = A1F617422A782AA200F2048C /* FreeChatUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
 /* End PBXNativeTarget section */
@@ -378,7 +378,7 @@
 					};
 				};
 			};
-			buildConfigurationList = A1F6171D2A782AA100F2048C /* Build configuration list for PBXProject "Chats" */;
+			buildConfigurationList = A1F6171D2A782AA100F2048C /* Build configuration list for PBXProject "FreeChat" */;
 			compatibilityVersion = "Xcode 14.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -395,9 +395,9 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				A1F617212A782AA100F2048C /* Chats */,
-				A1F617372A782AA200F2048C /* ChatsTests */,
-				A1F617412A782AA200F2048C /* ChatsUITests */,
+				A1F617212A782AA100F2048C /* FreeChat */,
+				A1F617372A782AA200F2048C /* FreeChatTests */,
+				A1F617412A782AA200F2048C /* FreeChatUITests */,
 				A1A286F12A7E17750004967A /* server-watchdog */,
 			);
 		};
@@ -453,7 +453,7 @@
 				A17A2E192A79A006006CDD90 /* LlamaServer.swift in Sources */,
 				A1F617582A7836AE00F2048C /* Message+Extensions.swift in Sources */,
 				A15D50D22A7F539800FC1681 /* NavList.swift in Sources */,
-				A1F617262A782AA100F2048C /* ChatsApp.swift in Sources */,
+				A1F617262A782AA100F2048C /* FreeChat.swift in Sources */,
 				A1E4A6942A82B41F00BF9D34 /* Model+Extensions.swift in Sources */,
 				A15D50CF2A7EF73E00FC1681 /* MessageTextField.swift in Sources */,
 				A17A2E182A79A006006CDD90 /* Agent.swift in Sources */,
@@ -493,12 +493,12 @@
 		};
 		A1F6173A2A782AA200F2048C /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = A1F617212A782AA100F2048C /* Chats */;
+			target = A1F617212A782AA100F2048C /* FreeChat */;
 			targetProxy = A1F617392A782AA200F2048C /* PBXContainerItemProxy */;
 		};
 		A1F617442A782AA200F2048C /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = A1F617212A782AA100F2048C /* Chats */;
+			target = A1F617212A782AA100F2048C /* FreeChat */;
 			targetProxy = A1F617432A782AA200F2048C /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -658,15 +658,15 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = Chats/Chats.entitlements;
+				CODE_SIGN_ENTITLEMENTS = FreeChat/FreeChat.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
-				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = YES;
-				DEVELOPMENT_ASSET_PATHS = "\"Chats/Preview Content\"";
-				DEVELOPMENT_TEAM = 6577JALN5F;
+				DEVELOPMENT_ASSET_PATHS = "\"FreeChat/Preview Content\"";
+				DEVELOPMENT_TEAM = "";
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -690,15 +690,15 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = Chats/Chats.entitlements;
+				CODE_SIGN_ENTITLEMENTS = FreeChat/FreeChat.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
-				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = YES;
-				DEVELOPMENT_ASSET_PATHS = "\"Chats/Preview Content\"";
-				DEVELOPMENT_TEAM = 6577JALN5F;
+				DEVELOPMENT_ASSET_PATHS = "\"FreeChat/Preview Content\"";
+				DEVELOPMENT_TEAM = "";
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -733,7 +733,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Chats.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Chats";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/FreeChat.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/FreeChat";
 			};
 			name = Debug;
 		};
@@ -753,7 +753,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Chats.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Chats";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/FreeChat.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/FreeChat";
 			};
 			name = Release;
 		};
@@ -805,7 +805,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		A1F6171D2A782AA100F2048C /* Build configuration list for PBXProject "Chats" */ = {
+		A1F6171D2A782AA100F2048C /* Build configuration list for PBXProject "FreeChat" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				A1F6174A2A782AA200F2048C /* Debug */,
@@ -814,7 +814,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		A1F6174C2A782AA200F2048C /* Build configuration list for PBXNativeTarget "Chats" */ = {
+		A1F6174C2A782AA200F2048C /* Build configuration list for PBXNativeTarget "FreeChat" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				A1F6174D2A782AA200F2048C /* Debug */,
@@ -823,7 +823,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		A1F6174F2A782AA200F2048C /* Build configuration list for PBXNativeTarget "ChatsTests" */ = {
+		A1F6174F2A782AA200F2048C /* Build configuration list for PBXNativeTarget "FreeChatTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				A1F617502A782AA200F2048C /* Debug */,
@@ -832,7 +832,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		A1F617522A782AA200F2048C /* Build configuration list for PBXNativeTarget "ChatsUITests" */ = {
+		A1F617522A782AA200F2048C /* Build configuration list for PBXNativeTarget "FreeChatUITests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				A1F617532A782AA200F2048C /* Debug */,

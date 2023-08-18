@@ -17,7 +17,7 @@
                BlueprintIdentifier = "A1A286F12A7E17750004967A"
                BuildableName = "server-watchdog"
                BlueprintName = "server-watchdog"
-               ReferencedContainer = "container:Chats.xcodeproj">
+               ReferencedContainer = "container:FreeChat.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -47,7 +47,7 @@
             BlueprintIdentifier = "A1A286F12A7E17750004967A"
             BuildableName = "server-watchdog"
             BlueprintName = "server-watchdog"
-            ReferencedContainer = "container:Chats.xcodeproj">
+            ReferencedContainer = "container:FreeChat.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -64,7 +64,7 @@
             BlueprintIdentifier = "A1A286F12A7E17750004967A"
             BuildableName = "server-watchdog"
             BlueprintName = "server-watchdog"
-            ReferencedContainer = "container:Chats.xcodeproj">
+            ReferencedContainer = "container:FreeChat.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

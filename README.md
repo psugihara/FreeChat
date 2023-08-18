@@ -10,9 +10,9 @@ Chat with Meta’s Llama 2 on your MacBook without installing any other software
 
 ## Philosophy
 
-We have 2 goals with Chats:
+We have 2 goals with:
 - A native macOS LLM appliance that runs completely locally. You should just be able to open it and ask your LLM a question without doing any configuration. Like OpenAI's chat without login or tracking. You should be able to install from the Mac App Store and use it immediatly.
-- Proof of concept for an architecture for running the llama.cpp server in a 0-config mac app.
+- Proof of concept for running llama.cpp server in a 0-config mac app.
 
 ## Install
 

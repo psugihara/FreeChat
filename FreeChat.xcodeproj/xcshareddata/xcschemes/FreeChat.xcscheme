@@ -15,9 +15,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "A1F617212A782AA100F2048C"
-               BuildableName = "Chats.app"
-               BlueprintName = "Chats"
-               ReferencedContainer = "container:Chats.xcodeproj">
+               BuildableName = "FreeChat.app"
+               BlueprintName = "FreeChat"
+               ReferencedContainer = "container:FreeChat.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -35,9 +35,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "A1F617372A782AA200F2048C"
-               BuildableName = "ChatsTests.xctest"
-               BlueprintName = "ChatsTests"
-               ReferencedContainer = "container:Chats.xcodeproj">
+               BuildableName = "FreeChatTests.xctest"
+               BlueprintName = "FreeChatTests"
+               ReferencedContainer = "container:FreeChat.xcodeproj">
             </BuildableReference>
          </TestableReference>
          <TestableReference
@@ -46,9 +46,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "A1F617412A782AA200F2048C"
-               BuildableName = "ChatsUITests.xctest"
-               BlueprintName = "ChatsUITests"
-               ReferencedContainer = "container:Chats.xcodeproj">
+               BuildableName = "FreeChatUITests.xctest"
+               BlueprintName = "FreeChatUITests"
+               ReferencedContainer = "container:FreeChat.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
@@ -68,9 +68,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "A1F617212A782AA100F2048C"
-            BuildableName = "Chats.app"
-            BlueprintName = "Chats"
-            ReferencedContainer = "container:Chats.xcodeproj">
+            BuildableName = "FreeChat.app"
+            BlueprintName = "FreeChat"
+            ReferencedContainer = "container:FreeChat.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -85,9 +85,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "A1F617212A782AA100F2048C"
-            BuildableName = "Chats.app"
-            BlueprintName = "Chats"
-            ReferencedContainer = "container:Chats.xcodeproj">
+            BuildableName = "FreeChat.app"
+            BlueprintName = "FreeChat"
+            ReferencedContainer = "container:FreeChat.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>
