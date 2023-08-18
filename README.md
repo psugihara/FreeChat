@@ -26,7 +26,7 @@ Or build from source.
 Not sure what this is like to run on another machine. Try it out.
 
 1. Download [llama-2-7b-chat.ggmlv3.q4_1.bin](https://huggingface.co/TheBloke/Llama-2-7B-Chat-GGML/tree/main) to Mantras/NPC
-2. Open Chats.xcodeproj
+2. Open FreeChat.xcodeproj
 3. Run and fix errors?
 
 ### Roadmap / TODO (roughly in order):
