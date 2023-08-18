@@ -1,4 +1,4 @@
-# Chats
+# FreeChat
 
 Chat with Meta’s Llama 2 on your MacBook without installing any other software or connecting to the internet. Every conversation is saved locally.
 
@@ -36,7 +36,7 @@ Not sure what this is like to run on another machine. Try it out.
   - [x] user can edit convo titles
   - [x] make intel chips work by [making a universal `server` binary](https://developer.apple.com/documentation/apple-silicon/building-a-universal-macos-binary#Update-the-Architecture-List-of-Custom-Makefiles)
   - [ ] App icon
-  - [ ] New name (I think Chats is taken)
+  - [x] New name
   - [ ] Conversation null state
   - [x] user can copy conversation
   - [x] new conversation should focus textarea
