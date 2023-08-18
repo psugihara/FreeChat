@@ -43,6 +43,11 @@ struct MessageView: View {
     }
     .padding(.vertical, 3)
     .padding(.horizontal, 3)
+    .contextMenu {
+      if m.text != nil, !m.text!.isEmpty {
+        CopyButton(text: m.text!, buttonText: "Copy to clipboard")
+      }
+    }
   }
   
   private var theme: Splash.Theme {

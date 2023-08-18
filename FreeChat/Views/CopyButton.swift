@@ -9,6 +9,7 @@ import SwiftUI
 
 struct CopyButton: View {
   var text: String
+  var buttonText: String = ""
   private let pasteboard = NSPasteboard.general
   @State var justCopied = false
   
@@ -22,8 +23,13 @@ struct CopyButton: View {
         justCopied = false
       }
     } label: {
-      Image(systemName: justCopied ? "checkmark.circle.fill" : "doc.on.doc")
-        .padding(.vertical, 2)
+      if buttonText.isEmpty {
+        Image(systemName: justCopied ? "checkmark.circle.fill" : "doc.on.doc")
+          .padding(.vertical, 2)
+      } else {
+        Label(buttonText, systemImage: justCopied ? "checkmark.circle.fill" : "doc.on.doc")
+          .padding(.vertical, 2)
+      }
     }
     .frame(alignment: .center)
   }
