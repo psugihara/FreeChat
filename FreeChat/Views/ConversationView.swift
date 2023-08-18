@@ -54,9 +54,7 @@ struct ConversationView: View {
       .onReceive(
         agent.$pendingMessage.debounce(for: 1, scheduler: RunLoop.main)
       ) { _ in
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-          proxy.scrollTo(Position.bottom, anchor: .bottom)
-        }
+        proxy.scrollTo(Position.bottom, anchor: .bottom)
       }
 
     }
