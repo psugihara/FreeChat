@@ -9,7 +9,7 @@ import CoreData
 import Foundation
 
 extension Message {
-  static let USER_SPEAKER_ID = "user"
+  static let USER_SPEAKER_ID = "### User"
 
   static func create(
     text: String,

@@ -2,7 +2,7 @@ import Foundation
 
 class Agent: ObservableObject {
   static let DEFAULT_SYSTEM_PROMPT = """
-    You are a helpful AI assistant who speaks professionally without emoticons.
+    You are a helpful and honest assistant. Always answer in the most accurate way possible.
     """
   
   enum Status {
@@ -39,10 +39,19 @@ class Agent: ObservableObject {
     }
     
     if prompt == "" {
-      prompt = systemPrompt
+      prompt = """
+      <s>[INST] <<SYS>>
+      \(systemPrompt)
+      <</SYS>>
+      
+      \(Message.USER_SPEAKER_ID): hi [/INST] ### Assistant: hello</s>
+      """
     }
-    prompt += "\n\(Message.USER_SPEAKER_ID): \(message)\n"
-    prompt += "\(id): "
+    if !prompt.hasSuffix("</s>") {
+      prompt += "</s>"
+    }
+    prompt += "<s>[INST]\(Message.USER_SPEAKER_ID): \(message)[/INST] "
+    prompt += "### Assistant:"
     await MainActor.run {
       self.pendingMessage = ""
     }

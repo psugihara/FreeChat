@@ -1,6 +1,8 @@
 import EventSource
 import Foundation
 import os.lock
+import MetalPerformanceShaders
+import Metal
 
 
 class LlamaServer {
@@ -10,6 +12,7 @@ class LlamaServer {
   private var process = Process()
   private var outputPipe = Pipe()
   private var eventSource: EventSource?
+  private let port = "8690"
   
   private var monitor = Process()
   
@@ -66,8 +69,13 @@ class LlamaServer {
       "--rope-freq-scale", "1.0",
       "--ctx-size", "4096",
       "--rms-norm-eps", "1e-5",
-      "--gpu-layers", "1"
+      "--port", port
     ]
+    
+    if MPSSupportsMTLDevice(MTLCreateSystemDefaultDevice()) {
+      process.arguments?.append(contentsOf: ["--gpu-layers", "1"])
+    }
+    
     print("starting llama.cpp server \(process.arguments!.joined(separator: " "))")
     
     outputPipe = Pipe()
@@ -116,11 +124,11 @@ class LlamaServer {
       prompt: prompt,
       stop: ["</s>",
              "\n\(Message.USER_SPEAKER_ID):",
-             "\n\(Message.USER_SPEAKER_ID.capitalized):"
+             "\n\(Message.USER_SPEAKER_ID.lowercased()):"
             ]
     )
     
-    let url = URL(string: "http://127.0.0.1:8080/completion")!
+    let url = URL(string: "http://127.0.0.1:\(port)/completion")!
     var request = URLRequest(url: url)
     request.httpMethod = "POST"
     request.setValue("application/json", forHTTPHeaderField: "Content-Type")
@@ -181,8 +189,8 @@ class LlamaServer {
     var stream = true
     var n_threads = 6
     
-    var n_predict = 700
-    var temperature = 0.2
+    var n_predict = 1000
+    var temperature = 0.19
     var repeat_last_n = 256  // 0 = disable penalty, -1 = context size
     var repeat_penalty = 1.18  // 1.0 = disabled
     var top_k = 40  // <= 0 to use vocab size
