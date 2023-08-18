@@ -6,7 +6,8 @@ Chat with Meta’s Llama 2 on your MacBook without installing any other software
 - Customize persona and expertise by changing the system prompt
 - Conversations sync via iCloud
 
-<img width="1162" alt="Screenshot 2023-08-05 at 8 30 04 PM" src="https://github.com/npc-pet/Chats/assets/282016/d34d87e2-3c0d-4359-a68a-0872f7066601">
+<img width="1308" alt="Screenshot 2023-08-18 at 4 06 42 PM" src="https://github.com/npc-pet/FreeChat/assets/282016/32ad0988-a391-40f4-b94a-479a06f9366d">
+
 
 ## Philosophy
 
@@ -37,12 +38,12 @@ Not sure what this is like to run on another machine. Try it out.
   - [ ] App icon
   - [ ] New name (I think Chats is taken)
   - [ ] Conversation null state
-  - [ ] user can copy conversation
+  - [x] user can copy conversation
   - [x] new conversation should focus textarea
   - [ ] toast notif for errors https://github.com/sanzaru/SimpleToast
   - [x] interrupt llama
   - [ ] llama should pause for a moment before responding if text hasn't generated
-  - [ ] convo scroll behavior breaks on code blocks, syntax highligting would be nice
+  - [x] convo scroll behavior breaks on code blocks, syntax highligting would be nice
 
 - [ ] Try any llama.cpp compatible model
   - [x] configure model in Settings
