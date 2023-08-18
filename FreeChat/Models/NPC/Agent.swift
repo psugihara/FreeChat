@@ -38,20 +38,32 @@ class Agent: ObservableObject {
       status = .processing
     }
     
+    // The llama 2 prompt format seems to work fine across models.
     if prompt == "" {
       prompt = """
-      <s>[INST] <<SYS>>
-      \(systemPrompt)
-      <</SYS>>
-      
-      \(Message.USER_SPEAKER_ID): hi [/INST] ### Assistant: hello</s>
-      """
+        <s>[INST] <<SYS>>
+        \(systemPrompt)
+        <</SYS>>
+        
+        \(Message.USER_SPEAKER_ID): hi [/INST] ### Assistant: hello</s>
+        """
     }
     if !prompt.hasSuffix("</s>") {
       prompt += "</s>"
     }
-    prompt += "<s>[INST]\(Message.USER_SPEAKER_ID): \(message)[/INST] "
-    prompt += "### Assistant:"
+    
+    if prompt.suffix(2000).contains(systemPrompt) {
+      prompt += "<s>[INST]\(Message.USER_SPEAKER_ID): \(message)[/INST] ### Assistant:"
+    } else {
+      // if the system prompt hasn't been covered in a while, pepper it in
+      prompt += """
+        <s>[INST] <<SYS>>
+        \(systemPrompt)
+        <<SYS>>
+        
+        \(Message.USER_SPEAKER_ID): \(message)[/INST] ### Assistant:
+        """
+    }
     await MainActor.run {
       self.pendingMessage = ""
     }

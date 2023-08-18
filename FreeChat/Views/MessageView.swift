@@ -11,7 +11,7 @@ import Splash
 
 struct MessageView: View {
   @Environment(\.colorScheme) private var colorScheme
-
+  
   let m: Message
   let overrideText: String // for streaming replies
   
@@ -32,11 +32,14 @@ struct MessageView: View {
             .font(.caption)
             .foregroundColor(.gray)
         }
-      }.padding(.bottom, 1)
+      }
+      .frame(maxWidth: .infinity, alignment: .leading)
+      .padding(.bottom, 1)
       
       Markdown(overrideText == "" && m.text != nil ? m.text! : overrideText)
         .markdownTheme(.freeChat)
         .markdownCodeSyntaxHighlighter(.splash(theme: self.theme))
+        .textSelection(.enabled)
     }
     .padding(.vertical, 3)
     .padding(.horizontal, 3)
@@ -56,7 +59,7 @@ struct MessageView: View {
 private let messageTimestampFormatter: DateFormatter = {
   let formatter = DateFormatter()
   formatter.dateStyle = .short
-  formatter.timeStyle = .medium
+  formatter.timeStyle = .short
   return formatter
 }()
 

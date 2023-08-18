@@ -52,6 +52,7 @@ struct ContentView: View {
       let model = models.first { i in i.id?.uuidString == selectedModelId }
       let url = model?.url == nil ? LlamaServer.DEFAULT_MODEL_URL : model!.url!
       
+      agent?.llama.stopServer()
       agent = Agent(id: "Llama", prompt: agent?.prompt ?? "", systemPrompt: systemPrompt, modelPath: url.path)
       await agent?.warmup()
     }

@@ -14,6 +14,8 @@
 		A13C8C602A8FF03800EC18D8 /* TextOutputFormat.swift in Sources */ = {isa = PBXBuildFile; fileRef = A13C8C5F2A8FF03800EC18D8 /* TextOutputFormat.swift */; };
 		A13C8C622A8FF27000EC18D8 /* Theme+FreeChat.swift in Sources */ = {isa = PBXBuildFile; fileRef = A13C8C612A8FF27000EC18D8 /* Theme+FreeChat.swift */; };
 		A13C8C642A8FF82D00EC18D8 /* VerticalScrollWorkaround.swift in Sources */ = {isa = PBXBuildFile; fileRef = A13C8C632A8FF82D00EC18D8 /* VerticalScrollWorkaround.swift */; };
+		A13C8C662A9027A200EC18D8 /* CopyButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = A13C8C652A9027A200EC18D8 /* CopyButton.swift */; };
+		A13C8C682A902A1200EC18D8 /* CGKeycode+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = A13C8C672A902A1200EC18D8 /* CGKeycode+Extensions.swift */; };
 		A15D50CF2A7EF73E00FC1681 /* MessageTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = A15D50CE2A7EF73E00FC1681 /* MessageTextField.swift */; };
 		A15D50D22A7F539800FC1681 /* NavList.swift in Sources */ = {isa = PBXBuildFile; fileRef = A15D50D12A7F539800FC1681 /* NavList.swift */; };
 		A15D50D42A80BCA900FC1681 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A15D50D32A80BCA900FC1681 /* SettingsView.swift */; };
@@ -105,6 +107,8 @@
 		A13C8C5F2A8FF03800EC18D8 /* TextOutputFormat.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextOutputFormat.swift; sourceTree = "<group>"; };
 		A13C8C612A8FF27000EC18D8 /* Theme+FreeChat.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Theme+FreeChat.swift"; sourceTree = "<group>"; };
 		A13C8C632A8FF82D00EC18D8 /* VerticalScrollWorkaround.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerticalScrollWorkaround.swift; sourceTree = "<group>"; };
+		A13C8C652A9027A200EC18D8 /* CopyButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CopyButton.swift; sourceTree = "<group>"; };
+		A13C8C672A902A1200EC18D8 /* CGKeycode+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CGKeycode+Extensions.swift"; sourceTree = "<group>"; };
 		A15D50CE2A7EF73E00FC1681 /* MessageTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageTextField.swift; sourceTree = "<group>"; };
 		A15D50D12A7F539800FC1681 /* NavList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavList.swift; sourceTree = "<group>"; };
 		A15D50D32A80BCA900FC1681 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
@@ -193,6 +197,8 @@
 				A1F617272A782AA100F2048C /* ContentView.swift */,
 				A15D50D12A7F539800FC1681 /* NavList.swift */,
 				A15D50D32A80BCA900FC1681 /* SettingsView.swift */,
+				A13C8C652A9027A200EC18D8 /* CopyButton.swift */,
+				A13C8C672A902A1200EC18D8 /* CGKeycode+Extensions.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -479,10 +485,12 @@
 				A1A286E82A7D8A7D0004967A /* MessageView.swift in Sources */,
 				A17A2E192A79A006006CDD90 /* LlamaServer.swift in Sources */,
 				A1F617582A7836AE00F2048C /* Message+Extensions.swift in Sources */,
+				A13C8C682A902A1200EC18D8 /* CGKeycode+Extensions.swift in Sources */,
 				A15D50D22A7F539800FC1681 /* NavList.swift in Sources */,
 				A1F617262A782AA100F2048C /* FreeChat.swift in Sources */,
 				A1E4A6942A82B41F00BF9D34 /* Model+Extensions.swift in Sources */,
 				A15D50CF2A7EF73E00FC1681 /* MessageTextField.swift in Sources */,
+				A13C8C662A9027A200EC18D8 /* CopyButton.swift in Sources */,
 				A17A2E182A79A006006CDD90 /* Agent.swift in Sources */,
 				A1F617562A782E4F00F2048C /* ConversationView.swift in Sources */,
 				A13C8C5A2A8FEEE400EC18D8 /* SplashCodeSyntaxHighlighter.swift in Sources */,

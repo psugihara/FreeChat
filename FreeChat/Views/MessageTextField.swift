@@ -38,8 +38,12 @@ struct MessageTextField: View {
     Group {
       TextField("Message", text: $input, axis: .vertical)
         .onSubmit {
-          onSubmit(input)
-          input = ""
+          if CGKeyCode.kVK_Shift.isPressed {
+            input += "\n"
+          } else {
+            onSubmit(input)
+            input = ""
+          }
         }
         .focused($focused)
         .textFieldStyle(chatStyle)
@@ -56,6 +60,8 @@ struct MessageTextField: View {
     }
     .background(.ultraThinMaterial)
   }
+  
+  
   
   private func maybeFocus(_ conversation: Conversation) {
     if conversation.createdAt == nil { return }
