@@ -54,7 +54,11 @@ struct ConversationView: View {
       .onReceive(
         agent.$pendingMessage.debounce(for: 1, scheduler: RunLoop.main)
       ) { _ in
-        proxy.scrollTo(Position.bottom, anchor: .bottom)
+        let fiveSecondsAgo = Date() - TimeInterval(5) // 5 seconds ago
+        let last = messages.last
+        if  last?.createdAt != nil, last!.createdAt! >= fiveSecondsAgo {
+          proxy.scrollTo(Position.bottom, anchor: .bottom)
+        }
       }
 
     }

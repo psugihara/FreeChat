@@ -62,12 +62,13 @@ struct SettingsView: View {
           .padding(4)
         }
         .background(Color("TextBackground"))
-      }
+      }.help("Customize chat behavior and personality")
       
       Section("Model") {
         List(selection: $selectedModelId) {
           ForEach(items) { i in
             Text(i.name ?? i.url?.lastPathComponent ?? "Untitled").tag(i.id?.uuidString ?? "")
+              .help(i.url?.path ?? "Unknown path")
           }
           Text("Default (Llama 2 7B Chat)").tag(SettingsView.defaultModelId)
         }

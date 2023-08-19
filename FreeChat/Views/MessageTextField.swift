@@ -66,7 +66,7 @@ struct MessageTextField: View {
   private func maybeFocus(_ conversation: Conversation) {
     if conversation.createdAt == nil { return }
     let fiveSecondsAgo = Date() - TimeInterval(5) // 5 seconds ago
-    if conversation.createdAt! >= fiveSecondsAgo, conversation.messages?.count == 0 {
+    if conversation.createdAt != nil, conversation.createdAt! >= fiveSecondsAgo, conversation.messages?.count == 0 {
       self.focused = true
     }
   }
