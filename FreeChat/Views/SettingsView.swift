@@ -38,10 +38,6 @@ struct SettingsView: View {
             }
             .frame(height: 120)
             .padding(5)
-            .background {
-              RoundedRectangle(cornerRadius: 14)
-                .fill(.white)
-            }
           
           Group {
             if systemPromptPendingSave {
