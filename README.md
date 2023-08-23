@@ -4,16 +4,17 @@ Chat with Meta’s Llama 2 on your MacBook without installing any other software
 
 - Customize persona and expertise by changing the system prompt
 - Try any llama.cpp compatible model
-- Conversations sync via iCloud
 - No internet connection required, all local
+- Conversations sync natively via iCloud
 
 <img width="1308" alt="Screenshot 2023-08-18 at 4 06 42 PM" src="https://github.com/npc-pet/FreeChat/assets/282016/32ad0988-a391-40f4-b94a-479a06f9366d">
 
 
 ## Technical goals
 
-- A native macOS LLM appliance that runs completely locally. You should just be able to open it and ask your LLM a question without doing any configuration. Like OpenAI's chat without login or tracking. You should be able to install from the Mac App Store and use it immediatly.
-- Proof of concept for running llama.cpp server in a 0-config mac app.
+FreeChat is a native LLM appliance for macOS that runs completely locally. Download it and ask your LLM a question without doing any configuration. Like OpenAI's chat without login or tracking. You should be able to install from the Mac App Store and use it immediatly.
+
+- No config. Usable by people who haven't heard of models, prompts, or LLMs.
 - Performance and simplicity over dev experience or features. Notes not Word, Swift not Elektron.
 - Local first. Core functionality should not require an internet connection. There are lots of great clients for GPT-4, claude, etc. This is not one of them.
 - No conversation tracking. Feel free to do whatever you want with your LLM, just like Notes.
@@ -47,6 +48,7 @@ Not sure what this is like to run on another machine. Try it out.
   - [x] interrupt llama
   - [ ] llama should pause for a moment before responding if text hasn't generated
   - [x] convo scroll behavior breaks on code blocks, syntax highligting would be nice
+  - [ ] indicate when the llama server is "warming up" and is expected to be slow
 
 - [ ] Try any llama.cpp compatible model
   - [x] configure model in Settings
