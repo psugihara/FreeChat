@@ -5,7 +5,7 @@ Chat with Meta’s Llama 2 on your MacBook without installing any other software
 - Customize persona and expertise by changing the system prompt
 - Try any llama.cpp compatible model
 - Conversations sync via iCloud
-- No conversation tracking
+- No internet connection required, all local
 
 <img width="1308" alt="Screenshot 2023-08-18 at 4 06 42 PM" src="https://github.com/npc-pet/FreeChat/assets/282016/32ad0988-a391-40f4-b94a-479a06f9366d">
 
