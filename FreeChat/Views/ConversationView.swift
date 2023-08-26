@@ -21,10 +21,7 @@ struct ConversationView: View {
   @State var pendingMessage: Message?
   
   var messages: [Message] {
-    let set = conversation.messages as? Set<Message> ?? []
-    return set.sorted {
-      $0.createdAt! < $1.createdAt!
-    }
+    conversation.orderedMessages
   }
   
   var body: some View {
@@ -32,7 +29,7 @@ struct ConversationView: View {
       List(messages) { m in
         if m == messages.last {
           if m == pendingMessage {
-            MessageView(pendingMessage!, overrideText: agent.pendingMessage == "" ? "..." : agent.pendingMessage)
+            MessageView(pendingMessage!, overrideText: agent.pendingMessage)
               .id(Position.bottom)
               .onAppear {
                 proxy.scrollTo(Position.bottom, anchor: .bottom)

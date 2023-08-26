@@ -16,9 +16,28 @@ extension Conversation {
     try ctx.save()
     return record
   }
+  
+  var orderedMessages: [Message] {
+    let set = messages as? Set<Message> ?? []
+    return set.sorted {
+      $0.createdAt! < $1.createdAt!
+    }
+  }
 
   var titleWithDefault: String {
-    title ?? titleFormatter.string(from: createdAt ?? Date())
+    if title != nil {
+      return title!
+    } else if messages?.count ?? 0 > 0 {
+      let firstMessage = orderedMessages.last!
+      let prefix = firstMessage.text?.prefix(20)
+      return prefix != nil ? String(prefix!) : dateTitle
+    } else {
+      return dateTitle
+    }
+  }
+  
+  var dateTitle: String {
+    titleFormatter.string(from: createdAt ?? Date())
   }
 
   private var titleFormatter: DateFormatter {

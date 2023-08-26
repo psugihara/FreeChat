@@ -21,31 +21,34 @@ struct MessageView: View {
   }
   
   var body: some View {
-    VStack(alignment: .leading) {
-      HStack(alignment: .firstTextBaseline) {
-        Text(m.fromId == Message.USER_SPEAKER_ID ? "You" : (m.fromId ?? "bot"))
-          .fontWeight(.bold)
-        if overrideText != "" {
-          ProgressView().controlSize(.mini).padding(.leading, 2)
-        } else {
-          Text(m.createdAt ?? Date(), formatter: messageTimestampFormatter)
-            .font(.caption)
-            .foregroundColor(.gray)
+    HStack(alignment: .top) {
+      Image(m.fromId == Message.USER_SPEAKER_ID ? "UserAvatar" : "LlamaAvatar")
+        .padding(.top, 2)
+      VStack(alignment: .leading) {
+        HStack(alignment: .firstTextBaseline) {
+          if overrideText != "" {
+            ProgressView().controlSize(.mini).padding(.leading, 2)
+          } else {
+            Text(m.createdAt ?? Date(), formatter: messageTimestampFormatter)
+              .font(.caption)
+              .foregroundColor(.gray)
+          }
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.bottom, 1)
+        
+        Markdown(overrideText == "" && m.text != nil ? m.text! : overrideText)
+          .markdownTheme(.freeChat)
+          .markdownCodeSyntaxHighlighter(.splash(theme: self.theme))
+          .textSelection(.enabled)
       }
-      .frame(maxWidth: .infinity, alignment: .leading)
-      .padding(.bottom, 1)
-      
-      Markdown(overrideText == "" && m.text != nil ? m.text! : overrideText)
-        .markdownTheme(.freeChat)
-        .markdownCodeSyntaxHighlighter(.splash(theme: self.theme))
-        .textSelection(.enabled)
-    }
-    .padding(.vertical, 3)
-    .padding(.horizontal, 3)
-    .contextMenu {
-      if m.text != nil, !m.text!.isEmpty {
-        CopyButton(text: m.text!, buttonText: "Copy to clipboard")
+      .padding(.top, 3)
+      .padding(.bottom, 8)
+      .padding(.horizontal, 3)
+      .contextMenu {
+        if m.text != nil, !m.text!.isEmpty {
+          CopyButton(text: m.text!, buttonText: "Copy to clipboard")
+        }
       }
     }
   }
