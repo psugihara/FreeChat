@@ -66,7 +66,6 @@ class LlamaServer {
     process.arguments = [
       "--model", modelPath,
       "--threads", "\(max(1, ceil(Double(processes) / 2.0)))",
-      "--rope-freq-scale", "1.0",
       "--ctx-size", "4096",
       "--port", port
     ]
