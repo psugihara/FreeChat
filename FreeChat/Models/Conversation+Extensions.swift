@@ -28,7 +28,7 @@ extension Conversation {
     if title != nil {
       return title!
     } else if messages?.count ?? 0 > 0 {
-      let firstMessage = orderedMessages.last!
+      let firstMessage = orderedMessages.first!
       let prefix = firstMessage.text?.prefix(20)
       return prefix != nil ? String(prefix!) : dateTitle
     } else {

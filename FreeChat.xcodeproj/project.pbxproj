@@ -9,6 +9,10 @@
 /* Begin PBXBuildFile section */
 		A11721992A7D5274003B0358 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = A11721982A7D5274003B0358 /* README.md */; };
 		A117219C2A7D7B70003B0358 /* MarkdownUI in Frameworks */ = {isa = PBXBuildFile; productRef = A117219B2A7D7B70003B0358 /* MarkdownUI */; };
+		A11AAE6E2A9A8824000D8BCD /* server in Resources */ = {isa = PBXBuildFile; fileRef = A11AAE6D2A9A8824000D8BCD /* server */; };
+		A11AAE702A9A9215000D8BCD /* ggml-metal.metal in Sources */ = {isa = PBXBuildFile; fileRef = A11AAE6F2A9A9215000D8BCD /* ggml-metal.metal */; };
+		A11AAE712A9A9306000D8BCD /* ggml-metal.metal in Copy Metal */ = {isa = PBXBuildFile; fileRef = A11AAE6F2A9A9215000D8BCD /* ggml-metal.metal */; };
+		A11AAE732A9AA88B000D8BCD /* codellama-7b-instruct.Q4_K_M.gguf in Resources */ = {isa = PBXBuildFile; fileRef = A11AAE722A9AA883000D8BCD /* codellama-7b-instruct.Q4_K_M.gguf */; };
 		A13C8C5A2A8FEEE400EC18D8 /* SplashCodeSyntaxHighlighter.swift in Sources */ = {isa = PBXBuildFile; fileRef = A13C8C592A8FEEE400EC18D8 /* SplashCodeSyntaxHighlighter.swift */; };
 		A13C8C5D2A8FEF0600EC18D8 /* Splash in Frameworks */ = {isa = PBXBuildFile; productRef = A13C8C5C2A8FEF0600EC18D8 /* Splash */; };
 		A13C8C602A8FF03800EC18D8 /* TextOutputFormat.swift in Sources */ = {isa = PBXBuildFile; fileRef = A13C8C5F2A8FF03800EC18D8 /* TextOutputFormat.swift */; };
@@ -22,13 +26,10 @@
 		A17A2E182A79A006006CDD90 /* Agent.swift in Sources */ = {isa = PBXBuildFile; fileRef = A17A2E122A79A005006CDD90 /* Agent.swift */; };
 		A17A2E192A79A006006CDD90 /* LlamaServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A17A2E132A79A005006CDD90 /* LlamaServer.swift */; };
 		A17A2E1F2A79A075006CDD90 /* EventSource in Frameworks */ = {isa = PBXBuildFile; productRef = A17A2E1E2A79A075006CDD90 /* EventSource */; };
-		A17A2E242A7A14D0006CDD90 /* llama-2-7b-chat.ggmlv3.q4_1.bin in Resources */ = {isa = PBXBuildFile; fileRef = A17A2E232A7A14D0006CDD90 /* llama-2-7b-chat.ggmlv3.q4_1.bin */; };
-		A19AFCBF2A8D62B000F96A4D /* ggml-metal.metal in Copy Metal */ = {isa = PBXBuildFile; fileRef = A1E4A69E2A85445200BF9D34 /* ggml-metal.metal */; };
 		A1A286E82A7D8A7D0004967A /* MessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1A286E72A7D8A7D0004967A /* MessageView.swift */; };
 		A1A286F52A7E17750004967A /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1A286F42A7E17750004967A /* main.swift */; };
 		A1A286FD2A7E1E460004967A /* server-watchdog in Embed helper tools */ = {isa = PBXBuildFile; fileRef = A1A286F22A7E17750004967A /* server-watchdog */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		A1E4A6942A82B41F00BF9D34 /* Model+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1E4A6932A82B41F00BF9D34 /* Model+Extensions.swift */; };
-		A1E4A6A12A85447800BF9D34 /* server in Resources */ = {isa = PBXBuildFile; fileRef = A1E4A6A02A85447800BF9D34 /* server */; };
 		A1F617262A782AA100F2048C /* FreeChat.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1F617252A782AA100F2048C /* FreeChat.swift */; };
 		A1F617282A782AA100F2048C /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1F617272A782AA100F2048C /* ContentView.swift */; };
 		A1F6172A2A782AA200F2048C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A1F617292A782AA200F2048C /* Assets.xcassets */; };
@@ -74,7 +75,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 7;
 			files = (
-				A19AFCBF2A8D62B000F96A4D /* ggml-metal.metal in Copy Metal */,
+				A11AAE712A9A9306000D8BCD /* ggml-metal.metal in Copy Metal */,
 			);
 			name = "Copy Metal";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -103,6 +104,9 @@
 
 /* Begin PBXFileReference section */
 		A11721982A7D5274003B0358 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		A11AAE6D2A9A8824000D8BCD /* server */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = server; sourceTree = "<group>"; };
+		A11AAE6F2A9A9215000D8BCD /* ggml-metal.metal */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.metal; path = "ggml-metal.metal"; sourceTree = "<group>"; };
+		A11AAE722A9AA883000D8BCD /* codellama-7b-instruct.Q4_K_M.gguf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "codellama-7b-instruct.Q4_K_M.gguf"; sourceTree = "<group>"; };
 		A13C8C592A8FEEE400EC18D8 /* SplashCodeSyntaxHighlighter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashCodeSyntaxHighlighter.swift; sourceTree = "<group>"; };
 		A13C8C5F2A8FF03800EC18D8 /* TextOutputFormat.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextOutputFormat.swift; sourceTree = "<group>"; };
 		A13C8C612A8FF27000EC18D8 /* Theme+FreeChat.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Theme+FreeChat.swift"; sourceTree = "<group>"; };
@@ -114,15 +118,12 @@
 		A15D50D32A80BCA900FC1681 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		A17A2E122A79A005006CDD90 /* Agent.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Agent.swift; sourceTree = "<group>"; };
 		A17A2E132A79A005006CDD90 /* LlamaServer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LlamaServer.swift; sourceTree = "<group>"; };
-		A17A2E232A7A14D0006CDD90 /* llama-2-7b-chat.ggmlv3.q4_1.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; path = "llama-2-7b-chat.ggmlv3.q4_1.bin"; sourceTree = "<group>"; };
 		A1A286E72A7D8A7D0004967A /* MessageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageView.swift; sourceTree = "<group>"; };
 		A1A286F22A7E17750004967A /* server-watchdog */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "server-watchdog"; sourceTree = BUILT_PRODUCTS_DIR; };
 		A1A286F42A7E17750004967A /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		A1A286F92A7E197F0004967A /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		A1A286FE2A7E9F280004967A /* server-watchdog.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "server-watchdog.entitlements"; sourceTree = "<group>"; };
 		A1E4A6932A82B41F00BF9D34 /* Model+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Model+Extensions.swift"; sourceTree = "<group>"; };
-		A1E4A69E2A85445200BF9D34 /* ggml-metal.metal */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.metal; path = "ggml-metal.metal"; sourceTree = "<group>"; };
-		A1E4A6A02A85447800BF9D34 /* server */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = server; sourceTree = "<group>"; };
 		A1F617222A782AA100F2048C /* FreeChat.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FreeChat.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A1F617252A782AA100F2048C /* FreeChat.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FreeChat.swift; sourceTree = "<group>"; };
 		A1F617272A782AA100F2048C /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -206,11 +207,11 @@
 		A17A2E1B2A79A00D006CDD90 /* NPC */ = {
 			isa = PBXGroup;
 			children = (
-				A1E4A6A02A85447800BF9D34 /* server */,
-				A1E4A69E2A85445200BF9D34 /* ggml-metal.metal */,
+				A11AAE6D2A9A8824000D8BCD /* server */,
+				A11AAE6F2A9A9215000D8BCD /* ggml-metal.metal */,
 				A17A2E122A79A005006CDD90 /* Agent.swift */,
 				A17A2E132A79A005006CDD90 /* LlamaServer.swift */,
-				A17A2E232A7A14D0006CDD90 /* llama-2-7b-chat.ggmlv3.q4_1.bin */,
+				A11AAE722A9AA883000D8BCD /* codellama-7b-instruct.Q4_K_M.gguf */,
 				A1A286F32A7E17750004967A /* server-watchdog */,
 				A1A286F92A7E197F0004967A /* README.md */,
 			);
@@ -438,11 +439,11 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A1E4A6A12A85447800BF9D34 /* server in Resources */,
-				A17A2E242A7A14D0006CDD90 /* llama-2-7b-chat.ggmlv3.q4_1.bin in Resources */,
+				A11AAE6E2A9A8824000D8BCD /* server in Resources */,
 				A11721992A7D5274003B0358 /* README.md in Resources */,
 				A1F6172D2A782AA200F2048C /* Preview Assets.xcassets in Resources */,
 				A1F6172A2A782AA200F2048C /* Assets.xcassets in Resources */,
+				A11AAE732A9AA88B000D8BCD /* codellama-7b-instruct.Q4_K_M.gguf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -484,6 +485,7 @@
 				A1F617322A782AA200F2048C /* Chats.xcdatamodeld in Sources */,
 				A1A286E82A7D8A7D0004967A /* MessageView.swift in Sources */,
 				A17A2E192A79A006006CDD90 /* LlamaServer.swift in Sources */,
+				A11AAE702A9A9215000D8BCD /* ggml-metal.metal in Sources */,
 				A1F617582A7836AE00F2048C /* Message+Extensions.swift in Sources */,
 				A13C8C682A902A1200EC18D8 /* CGKeycode+Extensions.swift in Sources */,
 				A15D50D22A7F539800FC1681 /* NavList.swift in Sources */,

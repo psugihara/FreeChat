@@ -53,7 +53,7 @@ class Agent: ObservableObject {
     }
     
     if prompt.suffix(2000).contains(systemPrompt) {
-      prompt += "<s>[INST]\(Message.USER_SPEAKER_ID): \(message)[/INST] ### Assistant:"
+      prompt += "<s>[INST] \(Message.USER_SPEAKER_ID): \(message) [/INST] ### Assistant:"
     } else {
       // if the system prompt hasn't been covered in a while, pepper it in
       prompt += """

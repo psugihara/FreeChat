@@ -66,7 +66,7 @@ struct SettingsView: View {
             Text(i.name ?? i.url?.lastPathComponent ?? "Untitled").tag(i.id?.uuidString ?? "")
               .help(i.url?.path ?? "Unknown path")
           }
-          Text("Default (Llama 2 7B Chat)").tag(SettingsView.defaultModelId)
+          Text("Default (CodeLlama 7B Instruct)").tag(SettingsView.defaultModelId)
         }
         .listStyle(.automatic)
         .onDeleteCommand(perform: deleteSelected)

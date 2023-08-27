@@ -1,5 +1,6 @@
 # Don't check in models
 *.bin
+*.gguf
 
 # Xcode
 #

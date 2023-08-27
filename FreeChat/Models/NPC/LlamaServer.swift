@@ -6,7 +6,7 @@ import Metal
 
 
 class LlamaServer {
-  static let DEFAULT_MODEL_URL =  Bundle.main.url(forResource: "llama-2-7b-chat.ggmlv3.q4_1", withExtension: ".bin")!
+  static let DEFAULT_MODEL_URL =  Bundle.main.url(forResource: "codellama-7b-instruct.Q4_K_M", withExtension: ".gguf")!
   var modelPath = LlamaServer.DEFAULT_MODEL_URL.path
   
   private var process = Process()
@@ -68,7 +68,6 @@ class LlamaServer {
       "--threads", "\(max(1, ceil(Double(processes) / 2.0)))",
       "--rope-freq-scale", "1.0",
       "--ctx-size", "4096",
-      "--rms-norm-eps", "1e-5",
       "--port", port
     ]
     
@@ -150,10 +149,12 @@ class LlamaServer {
       case .error(let error):
         print("llama.cpp server error:", error.localizedDescription)
       case .message(let message):
+        print("message \(message)")
         // parse json in message.data string then print the data.content value and append it to response
         if let data = message.data?.data(using: .utf8) {
           let decoder = JSONDecoder()
           let responseObj = try decoder.decode(CompleteResponse.self, from: data)
+          print("response obj \(responseObj)")
           let fragment = responseObj.content
           response.append(fragment)
           progressHandler?(fragment)
@@ -214,6 +215,7 @@ class LlamaServer {
   struct CompleteResponse: Codable {
     let content: String
     let stop: Bool
+    let tokens_evaluated: Int?
   }
 }
 
