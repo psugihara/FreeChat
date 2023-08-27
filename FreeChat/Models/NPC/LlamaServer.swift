@@ -149,12 +149,10 @@ class LlamaServer {
       case .error(let error):
         print("llama.cpp server error:", error.localizedDescription)
       case .message(let message):
-        print("message \(message)")
         // parse json in message.data string then print the data.content value and append it to response
         if let data = message.data?.data(using: .utf8) {
           let decoder = JSONDecoder()
           let responseObj = try decoder.decode(CompleteResponse.self, from: data)
-          print("response obj \(responseObj)")
           let fragment = responseObj.content
           response.append(fragment)
           progressHandler?(fragment)
