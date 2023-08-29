@@ -71,7 +71,7 @@ class LlamaServer {
     ]
     
     if MPSSupportsMTLDevice(MTLCreateSystemDefaultDevice()) {
-      process.arguments?.append(contentsOf: ["--gpu-layers", "1"])
+      process.arguments?.append(contentsOf: ["--gpu-layers", "12"])
     }
     
     print("starting llama.cpp server \(process.arguments!.joined(separator: " "))")
@@ -122,7 +122,10 @@ class LlamaServer {
       prompt: prompt,
       stop: ["</s>",
              "\n\(Message.USER_SPEAKER_ID):",
-             "\n\(Message.USER_SPEAKER_ID.lowercased()):"
+             "\n\(Message.USER_SPEAKER_ID.lowercased()):",
+             "[/INST]",
+             "[INST]",
+             "USER:"
             ]
     )
     
