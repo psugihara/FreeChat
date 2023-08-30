@@ -29,7 +29,7 @@ Or build from source via "Archive" in Xcode after completing dev setup below.
 
 Not sure what this is like to run on another machine. Try it out.
 
-1. Download [codellama-7b-instruct.Q4_K_M.gguf](https://huggingface.co/TheBloke/CodeLlama-7B-Instruct-GGUF/blob/main/codellama-7b-instruct.Q4_K_M.gguf) to FreeChat/NPC
+1. Download [codellama-7b-instruct.Q4_K_M.gguf](https://huggingface.co/TheBloke/CodeLlama-7B-Instruct-GGUF/blob/main/codellama-7b-instruct.Q4_K_M.gguf) to FreeChat/Models/NPC
 2. Open FreeChat.xcodeproj
 3. Run and fix errors?
 
