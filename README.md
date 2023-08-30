@@ -41,14 +41,13 @@ Not sure what this is like to run on another machine. Try it out.
   - [x] make intel chips work by [making a universal `server` binary](https://developer.apple.com/documentation/apple-silicon/building-a-universal-macos-binary#Update-the-Architecture-List-of-Custom-Makefiles)
   - [x] App icon
   - [x] New name
-  - [ ] Conversation null state
+  - [x] Conversation null state
   - [x] user can copy conversation
   - [x] new conversation should focus textarea
   - [ ] toast notif for errors https://github.com/sanzaru/SimpleToast
   - [x] interrupt llama
   - [ ] llama should pause for a moment before responding if text hasn't generated
   - [x] convo scroll behavior breaks on code blocks, syntax highligting would be nice
-  - [ ] indicate when the llama server is "warming up" and is expected to be slow
 
 - [ ] Try any llama.cpp compatible model
   - [x] configure model in Settings
