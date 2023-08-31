@@ -12,7 +12,8 @@
 		A11AAE6E2A9A8824000D8BCD /* server in Resources */ = {isa = PBXBuildFile; fileRef = A11AAE6D2A9A8824000D8BCD /* server */; };
 		A11AAE702A9A9215000D8BCD /* ggml-metal.metal in Sources */ = {isa = PBXBuildFile; fileRef = A11AAE6F2A9A9215000D8BCD /* ggml-metal.metal */; };
 		A11AAE712A9A9306000D8BCD /* ggml-metal.metal in Copy Metal */ = {isa = PBXBuildFile; fileRef = A11AAE6F2A9A9215000D8BCD /* ggml-metal.metal */; };
-		A11AAE732A9AA88B000D8BCD /* codellama-7b-instruct.Q4_K_M.gguf in Resources */ = {isa = PBXBuildFile; fileRef = A11AAE722A9AA883000D8BCD /* codellama-7b-instruct.Q4_K_M.gguf */; };
+		A12B52DA2A9FC30C00658707 /* AgentStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = A12B52D92A9FC30C00658707 /* AgentStatus.swift */; };
+		A12B52DC2AA10FB200658707 /* zaraxls-l2-7b.q5_K_M.gguf in Resources */ = {isa = PBXBuildFile; fileRef = A12B52DB2AA10FA100658707 /* zaraxls-l2-7b.q5_K_M.gguf */; };
 		A13C8C5A2A8FEEE400EC18D8 /* SplashCodeSyntaxHighlighter.swift in Sources */ = {isa = PBXBuildFile; fileRef = A13C8C592A8FEEE400EC18D8 /* SplashCodeSyntaxHighlighter.swift */; };
 		A13C8C5D2A8FEF0600EC18D8 /* Splash in Frameworks */ = {isa = PBXBuildFile; productRef = A13C8C5C2A8FEF0600EC18D8 /* Splash */; };
 		A13C8C602A8FF03800EC18D8 /* TextOutputFormat.swift in Sources */ = {isa = PBXBuildFile; fileRef = A13C8C5F2A8FF03800EC18D8 /* TextOutputFormat.swift */; };
@@ -106,7 +107,8 @@
 		A11721982A7D5274003B0358 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		A11AAE6D2A9A8824000D8BCD /* server */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = server; sourceTree = "<group>"; };
 		A11AAE6F2A9A9215000D8BCD /* ggml-metal.metal */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.metal; path = "ggml-metal.metal"; sourceTree = "<group>"; };
-		A11AAE722A9AA883000D8BCD /* codellama-7b-instruct.Q4_K_M.gguf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "codellama-7b-instruct.Q4_K_M.gguf"; sourceTree = "<group>"; };
+		A12B52D92A9FC30C00658707 /* AgentStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AgentStatus.swift; sourceTree = "<group>"; };
+		A12B52DB2AA10FA100658707 /* zaraxls-l2-7b.q5_K_M.gguf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "zaraxls-l2-7b.q5_K_M.gguf"; sourceTree = "<group>"; };
 		A13C8C592A8FEEE400EC18D8 /* SplashCodeSyntaxHighlighter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashCodeSyntaxHighlighter.swift; sourceTree = "<group>"; };
 		A13C8C5F2A8FF03800EC18D8 /* TextOutputFormat.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextOutputFormat.swift; sourceTree = "<group>"; };
 		A13C8C612A8FF27000EC18D8 /* Theme+FreeChat.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Theme+FreeChat.swift"; sourceTree = "<group>"; };
@@ -197,6 +199,7 @@
 				A1A286E72A7D8A7D0004967A /* MessageView.swift */,
 				A1F617272A782AA100F2048C /* ContentView.swift */,
 				A15D50D12A7F539800FC1681 /* NavList.swift */,
+				A12B52D92A9FC30C00658707 /* AgentStatus.swift */,
 				A15D50D32A80BCA900FC1681 /* SettingsView.swift */,
 				A13C8C652A9027A200EC18D8 /* CopyButton.swift */,
 				A13C8C672A902A1200EC18D8 /* CGKeycode+Extensions.swift */,
@@ -211,7 +214,7 @@
 				A11AAE6F2A9A9215000D8BCD /* ggml-metal.metal */,
 				A17A2E122A79A005006CDD90 /* Agent.swift */,
 				A17A2E132A79A005006CDD90 /* LlamaServer.swift */,
-				A11AAE722A9AA883000D8BCD /* codellama-7b-instruct.Q4_K_M.gguf */,
+				A12B52DB2AA10FA100658707 /* zaraxls-l2-7b.q5_K_M.gguf */,
 				A1A286F32A7E17750004967A /* server-watchdog */,
 				A1A286F92A7E197F0004967A /* README.md */,
 			);
@@ -442,8 +445,8 @@
 				A11AAE6E2A9A8824000D8BCD /* server in Resources */,
 				A11721992A7D5274003B0358 /* README.md in Resources */,
 				A1F6172D2A782AA200F2048C /* Preview Assets.xcassets in Resources */,
+				A12B52DC2AA10FB200658707 /* zaraxls-l2-7b.q5_K_M.gguf in Resources */,
 				A1F6172A2A782AA200F2048C /* Assets.xcassets in Resources */,
-				A11AAE732A9AA88B000D8BCD /* codellama-7b-instruct.Q4_K_M.gguf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -481,6 +484,7 @@
 				A13C8C622A8FF27000EC18D8 /* Theme+FreeChat.swift in Sources */,
 				A1F6172F2A782AA200F2048C /* Persistence.swift in Sources */,
 				A13C8C642A8FF82D00EC18D8 /* VerticalScrollWorkaround.swift in Sources */,
+				A12B52DA2A9FC30C00658707 /* AgentStatus.swift in Sources */,
 				A1F617282A782AA100F2048C /* ContentView.swift in Sources */,
 				A1F617322A782AA200F2048C /* Chats.xcdatamodeld in Sources */,
 				A1A286E82A7D8A7D0004967A /* MessageView.swift in Sources */,

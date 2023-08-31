@@ -14,20 +14,30 @@ struct MessageView: View {
   
   let m: Message
   let overrideText: String // for streaming replies
+  let agentStatus: Agent.Status?
   
-  init(_ m: Message, overrideText: String = "") {
+  init(_ m: Message, overrideText: String = "", agentStatus: Agent.Status?) {
     self.m = m
     self.overrideText = overrideText
+    self.agentStatus = agentStatus
   }
   
   var body: some View {
     HStack(alignment: .top) {
       Image(m.fromId == Message.USER_SPEAKER_ID ? "UserAvatar" : "LlamaAvatar")
+        .padding(2)
         .padding(.top, 2)
+        .shadow(color: .gray, radius: 1, x: 0, y: 1)
       VStack(alignment: .leading) {
         HStack(alignment: .firstTextBaseline) {
-          if overrideText != "" {
+          if agentStatus == .coldProcessing || agentStatus == .processing, m.fromId != Message.USER_SPEAKER_ID {
             ProgressView().controlSize(.mini).padding(.leading, 2)
+            if agentStatus == .coldProcessing, overrideText == "" {
+              Text("warming up...")
+                .padding(.leading, 2)
+                .font(.caption)
+                .foregroundColor(.gray)
+            }
           } else {
             Text(m.createdAt ?? Date(), formatter: messageTimestampFormatter)
               .font(.caption)
@@ -82,7 +92,7 @@ struct MessageView_Previews: PreviewProvider {
   
   static var previews: some View {
     List(MessageView_Previews.messages) {
-      MessageView($0)
+      MessageView($0, agentStatus: .cold)
     }.environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
   }
 }

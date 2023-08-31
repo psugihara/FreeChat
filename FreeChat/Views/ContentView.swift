@@ -29,6 +29,7 @@ struct ContentView: View {
   var body: some View {
     NavigationSplitView {
       NavList(selection: $selection, showDeleteConfirmation: $showDeleteConfirmation)
+        .navigationSplitViewColumnWidth(ideal: 160)
     } detail: {
       if selection.count == 1, agent != nil {
         ConversationView(conversation: selection.first!, agent: agent!)
@@ -37,7 +38,6 @@ struct ContentView: View {
       }
     }
     .navigationTitle(selection.count == 1 ? selection.first!.titleWithDefault : "FreeChat")
-    .navigationSplitViewColumnWidth(50)
     .onReceive(NotificationCenter.default.publisher(for: NSApplication.willTerminateNotification), perform: { output in
       agent?.llama.stopServer()
     })

@@ -29,16 +29,16 @@ struct ConversationView: View {
       List(messages) { m in
         if m == messages.last {
           if m == pendingMessage {
-            MessageView(pendingMessage!, overrideText: agent.pendingMessage)
+            MessageView(pendingMessage!, overrideText: agent.pendingMessage, agentStatus: agent.status)
               .id(Position.bottom)
               .onAppear {
                 proxy.scrollTo(Position.bottom, anchor: .bottom)
               }
           } else {
-            MessageView(m).id(Position.bottom)
+            MessageView(m, agentStatus: agent.status).id(Position.bottom)
           }
         } else {
-          MessageView(m)
+          MessageView(m, agentStatus: nil)
         }
       }
       .textSelection(.enabled)

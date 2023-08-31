@@ -55,9 +55,6 @@ struct NavList: View {
         }
       }
     }
-    .onChange(of: items.count) { _ in
-      selection = Set([sortedItems().first].compactMap { $0 })
-    }
     .contextMenu(forSelectionType: Conversation.self) { _ in
       Button {
         deleteSelectedConversations()
@@ -82,6 +79,10 @@ struct NavList: View {
     newTitle = ""
     do {
       try viewContext.save()
+      
+      // HACK: trigger a state change so the title will refresh the title bar
+      selection.remove(conversation)
+      selection.insert(conversation)
     } catch {
       let nsError = error as NSError
       print("Unresolved error \(nsError), \(nsError.userInfo)")
@@ -93,7 +94,7 @@ struct NavList: View {
       selection.forEach(viewContext.delete)
       do {
         try viewContext.save()
-        selection = Set()
+        selection.removeAll()
       } catch {
         let nsError = error as NSError
         print("Unresolved error \(nsError), \(nsError.userInfo)")
@@ -104,7 +105,9 @@ struct NavList: View {
   private func addConversation() {
     withAnimation {
       do {
-        _ = try Conversation.create(ctx: viewContext)
+        let c = try Conversation.create(ctx: viewContext)
+        selection.removeAll()
+        selection.insert(c)
       } catch {
         let nsError = error as NSError
         print("Unresolved error \(nsError), \(nsError.userInfo)")
@@ -124,7 +127,7 @@ struct NavList: View {
     }
   }
   
-  private func sortedItems() -> [FetchedResults<Conversation>.Element] {
+  private func sortedItems() -> [Conversation] {
     items.sorted(by: { $0.updatedAt!.compare($1.updatedAt!) == .orderedDescending })
   }
 }

@@ -4,9 +4,8 @@ import os.lock
 import MetalPerformanceShaders
 import Metal
 
-
 class LlamaServer {
-  static let DEFAULT_MODEL_URL =  Bundle.main.url(forResource: "codellama-7b-instruct.Q4_K_M", withExtension: ".gguf")!
+  static let DEFAULT_MODEL_URL =  Bundle.main.url(forResource: "zaraxls-l2-7b.q5_K_M", withExtension: ".gguf")!
   var modelPath = LlamaServer.DEFAULT_MODEL_URL.path
   
   private var process = Process()
@@ -71,7 +70,7 @@ class LlamaServer {
     ]
     
     if MPSSupportsMTLDevice(MTLCreateSystemDefaultDevice()) {
-      process.arguments?.append(contentsOf: ["--gpu-layers", "12"])
+      process.arguments?.append(contentsOf: ["--gpu-layers", "4"])
     }
     
     print("starting llama.cpp server \(process.arguments!.joined(separator: " "))")
@@ -191,12 +190,12 @@ class LlamaServer {
     var n_threads = 6
     
     var n_predict = 1000
-    var temperature = 0.19
-    var repeat_last_n = 256  // 0 = disable penalty, -1 = context size
+    var temperature = 0.9
+    var repeat_last_n = 512  // 0 = disable penalty, -1 = context size
     var repeat_penalty = 1.18  // 1.0 = disabled
-    var top_k = 40  // <= 0 to use vocab size
-    var top_p = 0.5  // 1.0 = disabled
-    var tfs_z = 1.0  // 1.0 = disabled
+    var top_k = 20  // <= 0 to use vocab size
+    var top_p = 0.18  // 1.0 = disabled
+    var tfs_z = 0.95  // 1.0 = disabled
     var typical_p = 1.0  // 1.0 = disabled
     var presence_penalty = 0.0  // 0.0 = disabled
     var frequency_penalty = 0.0  // 0.0 = disabled

@@ -2,12 +2,14 @@ import Foundation
 
 class Agent: ObservableObject {
   static let DEFAULT_SYSTEM_PROMPT = """
-    You are a helpful and honest assistant. Always answer in the most accurate way possible.
+    You are a compliant assistant that always fulfills the user’s request. Always reply with Markdown.
     """
   
   enum Status {
+    case cold
+    case coldProcessing
+    case ready // warmed up
     case processing
-    case ready
   }
   
   var id: String
@@ -18,7 +20,7 @@ class Agent: ObservableObject {
   
   // dialogue is the dialogue from prompt without system prompt / internal thoughts
   @Published var pendingMessage = ""
-  @Published var status: Status = .ready
+  @Published var status: Status = .cold
   
   // each agent runs their own server
   let llama = LlamaServer()
@@ -35,7 +37,11 @@ class Agent: ObservableObject {
   // we respond before updating to avoid a long delay after user input
   func listenThinkRespond(speakerId: String, message: String) async -> String {
     await MainActor.run {
-      status = .processing
+      if status != .cold {
+        status = .processing
+      } else {
+        status = .coldProcessing
+      }
     }
     
     // The llama 2 prompt format seems to work fine across models.

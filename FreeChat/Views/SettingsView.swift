@@ -66,7 +66,7 @@ struct SettingsView: View {
             Text(i.name ?? i.url?.lastPathComponent ?? "Untitled").tag(i.id?.uuidString ?? "")
               .help(i.url?.path ?? "Unknown path")
           }
-          Text("Default (CodeLlama 7B Instruct)").tag(SettingsView.defaultModelId)
+          Text("Default").tag(SettingsView.defaultModelId)
         }
         .listStyle(.automatic)
         .onDeleteCommand(perform: deleteSelected)
@@ -75,7 +75,7 @@ struct SettingsView: View {
           showFileImporter = true
         }) {
           Image(systemName: "folder.circle")
-          Text("Add custom model (.bin)")
+          Text("Add custom model (.gguf)")
         }
         .fileImporter(
           isPresented: $showFileImporter,
