@@ -49,12 +49,12 @@ struct ConversationView: View {
         .padding(.horizontal, 8)
         .padding(.vertical, 12)
         .onReceive(
-          agent.$pendingMessage.debounce(for: 1, scheduler: RunLoop.main)
+          agent.$pendingMessage.debounce(for: .seconds(1), scheduler: RunLoop.main)
         ) { _ in
           let fiveSecondsAgo = Date() - TimeInterval(5) // 5 seconds ago
           let last = messages.last
-          if  last?.createdAt != nil, last!.createdAt! >= fiveSecondsAgo {
-            proxy.scrollTo(Position.bottom, anchor: .bottom)
+          if last?.createdAt != nil, last!.createdAt! >= fiveSecondsAgo, last!.text != nil, last!.text! != "" {
+            proxy.scrollTo(Position.bottom, anchor: .top)
           }
         }
         
@@ -69,7 +69,7 @@ struct ConversationView: View {
     .frame(maxWidth: .infinity, maxHeight: .infinity)
     .onAppear {
       Task {
-        if agent.status == .ready, agent.prompt != conversation.prompt {
+        if agent.status == .cold, agent.prompt != conversation.prompt {
           agent.prompt = conversation.prompt ?? ""
           await agent.warmup()
         }
@@ -77,7 +77,7 @@ struct ConversationView: View {
     }
     .onChange(of: conversation) { nextConvo in
       Task {
-        if agent.status == .ready, agent.prompt != conversation.prompt {
+        if agent.status == .cold, agent.prompt != conversation.prompt {
           agent.prompt = nextConvo.prompt ?? ""
           await agent.warmup()
         }

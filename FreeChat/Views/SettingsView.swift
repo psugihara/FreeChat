@@ -58,7 +58,9 @@ struct SettingsView: View {
           .padding(4)
         }
         .background(Color("TextBackground"))
-      }.help("Customize chat behavior and personality")
+      }
+      .help("Customize chat behavior and personality")
+      .padding(.bottom, 12)
       
       Section("Model") {
         List(selection: $selectedModelId) {

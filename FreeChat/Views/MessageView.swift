@@ -28,7 +28,7 @@ struct MessageView: View {
       ZStack(alignment: .bottomTrailing) {
         Image(m.fromId == Message.USER_SPEAKER_ID ? "UserAvatar" : "LlamaAvatar")
           .shadow(color: .gray, radius: 1, x: 0, y: 1)
-        if agentStatus == .coldProcessing || agentStatus == .processing, m.fromId != Message.USER_SPEAKER_ID {
+        if agentStatus == .coldProcessing || agentStatus == .processing {
           ZStack {
             Circle()
               .fill(.background)

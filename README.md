@@ -46,7 +46,7 @@ Not sure what this is like to run on another machine. Try it out.
   - [x] new conversation should focus textarea
   - [ ] toast notif for errors https://github.com/sanzaru/SimpleToast
   - [x] interrupt llama
-  - [ ] llama should pause for a moment before responding if text hasn't generated
+  - [x] llama should pause for a moment before responding if text hasn't generated
   - [x] convo scroll behavior breaks on code blocks, syntax highligting would be nice
 
 - [ ] Try any llama.cpp compatible model
