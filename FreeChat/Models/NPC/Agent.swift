@@ -2,6 +2,7 @@ import Foundation
 
 func removeUnmatchedTrailingQuote(_ inputString: String) -> String {
   var outputString = inputString
+  if inputString.last != "\"" { return outputString }
   
   // Count the number of quotes in the string
   let countOfQuotes = outputString.reduce(0, { (count, character) -> Int in
