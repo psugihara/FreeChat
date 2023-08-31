@@ -57,7 +57,6 @@ struct ConversationView: View {
             proxy.scrollTo(Position.bottom, anchor: .top)
           }
         }
-        
       }
     }
     .textSelection(.enabled)

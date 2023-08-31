@@ -39,26 +39,25 @@ struct MessageView: View {
         }
       }
       .padding(2)
-      .padding(.top, 2)
+      .padding(.top, 1)
       
-      VStack(alignment: .leading) {
-        Group {
-          if agentStatus == .coldProcessing, overrideText == "" {
-            Text("warming up...")
-          } else {
-            Text(m.createdAt ?? Date(), formatter: messageTimestampFormatter)
-          }
+      VStack(alignment: .leading, spacing: 4) {
+        if agentStatus == .coldProcessing, overrideText == "" {
+          Text("warming up...")
+            .font(.caption)
+            .foregroundColor(.gray)
+        } else {
+          Text(m.createdAt ?? Date(), formatter: messageTimestampFormatter)
+            .font(.caption)
+            .foregroundColor(.gray)
         }
-        .font(.caption)
-        .foregroundColor(.gray)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(.bottom, 1)
         
         Markdown(overrideText == "" && m.text != nil ? m.text! : overrideText)
           .markdownTheme(.freeChat)
           .markdownCodeSyntaxHighlighter(.splash(theme: self.theme))
           .textSelection(.enabled)
       }
+      .frame(maxWidth: .infinity, alignment: .leading)
       .padding(.top, 3)
       .padding(.bottom, 8)
       .padding(.horizontal, 3)

@@ -1,5 +1,23 @@
 import Foundation
 
+func removeUnmatchedTrailingQuote(_ inputString: String) -> String {
+  var outputString = inputString
+  
+  // Count the number of quotes in the string
+  let countOfQuotes = outputString.reduce(0, { (count, character) -> Int in
+    return character == "\"" ? count + 1 : count
+  })
+  
+  // If there is an odd number of quotes, remove the last one
+  if countOfQuotes % 2 != 0 {
+    if let indexOfLastQuote = outputString.lastIndex(of: "\"") {
+      outputString.remove(at: indexOfLastQuote)
+    }
+  }
+  
+  return outputString
+}
+
 class Agent: ObservableObject {
   static let DEFAULT_SYSTEM_PROMPT = """
     You are a compliant assistant that always fulfills the user’s request. Always reply with Markdown.
@@ -44,7 +62,7 @@ class Agent: ObservableObject {
       }
     }
     
-    // The llama 2 prompt format seems to work fine across models.
+    // The llama 2 prompt format seems to work across many models.
     if prompt == "" {
       prompt = """
         <s>[INST] <<SYS>>
@@ -70,6 +88,7 @@ class Agent: ObservableObject {
         \(Message.USER_SPEAKER_ID): \(message)[/INST] ### Assistant:
         """
     }
+
     await MainActor.run {
       self.pendingMessage = ""
     }
@@ -80,11 +99,15 @@ class Agent: ObservableObject {
       }
     }
     
+    // adding a trailing quote is a common mistake with the smaller model output
+    let cleanResponse = removeUnmatchedTrailingQuote(response)
+    
     await MainActor.run {
+      self.pendingMessage = cleanResponse
       status = .ready
     }
     
-    return response
+    return cleanResponse
   }
   
   func interrupt() async  {
