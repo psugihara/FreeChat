@@ -11,7 +11,7 @@ struct NavList: View {
   @Environment(\.managedObjectContext) private var viewContext
   
   @FetchRequest(
-    sortDescriptors: [NSSortDescriptor(keyPath: \Conversation.createdAt, ascending: true)],
+    sortDescriptors: [NSSortDescriptor(keyPath: \Conversation.updatedAt, ascending: false)],
     animation: .default)
   private var items: FetchedResults<Conversation>
   
@@ -23,7 +23,7 @@ struct NavList: View {
   @FocusState var fieldFocused
   
   var body: some View {
-    List(sortedItems(), id: \.self, selection: $selection) { item in
+    List(items, id: \.self, selection: $selection) { item in
       if editing == item {
         TextField(item.titleWithDefault, text: $newTitle)
           .textFieldStyle(.plain)
@@ -54,6 +54,9 @@ struct NavList: View {
           Label("Add conversation", systemImage: "plus")
         }
       }
+    }
+    .onChange(of: items.count) { _ in
+      selection = Set([items.first].compactMap { $0 })
     }
     .contextMenu(forSelectionType: Conversation.self) { _ in
       Button {
@@ -104,14 +107,7 @@ struct NavList: View {
   
   private func addConversation() {
     withAnimation {
-      do {
-        let c = try Conversation.create(ctx: viewContext)
-        selection.removeAll()
-        selection.insert(c)
-      } catch {
-        let nsError = error as NSError
-        print("Unresolved error \(nsError), \(nsError.userInfo)")
-      }
+      _ = try? Conversation.create(ctx: viewContext)
     }
   }
   

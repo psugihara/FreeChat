@@ -15,8 +15,7 @@ struct ContentView: View {
   @AppStorage("systemPrompt") private var systemPrompt: String = Agent.DEFAULT_SYSTEM_PROMPT
   
   @FetchRequest(
-    sortDescriptors: [NSSortDescriptor(keyPath: \Model.updatedAt, ascending: true)],
-    animation: .default
+    sortDescriptors: [NSSortDescriptor(keyPath: \Model.updatedAt, ascending: true)]
   )
   private var models: FetchedResults<Model>
   

@@ -19,7 +19,7 @@ struct FreeChatApp: App {
     .commands {
       CommandGroup(replacing: .newItem) {
         Button("New Chat") {
-          _ = try! Conversation.create(ctx: persistenceController.container.viewContext)
+          _ = try? Conversation.create(ctx: persistenceController.container.viewContext)
         }.keyboardShortcut(KeyboardShortcut("N"))
       }
       SidebarCommands()

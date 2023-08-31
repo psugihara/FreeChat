@@ -15,7 +15,7 @@ struct ConversationView: View {
   
   @Environment(\.managedObjectContext) private var viewContext
   
-  var conversation: Conversation
+  @ObservedObject var conversation: Conversation
   
   @ObservedObject var agent: Agent
   @State var pendingMessage: Message?
@@ -24,40 +24,47 @@ struct ConversationView: View {
     conversation.orderedMessages
   }
   
+  @State var pendingMessageOpacity = 0.0
+  
   var body: some View {
-    ScrollViewReader { proxy in
-      List(messages) { m in
-        if m == messages.last {
-          if m == pendingMessage {
-            MessageView(pendingMessage!, overrideText: agent.pendingMessage, agentStatus: agent.status)
-              .id(Position.bottom)
-              .onAppear {
-                proxy.scrollTo(Position.bottom, anchor: .bottom)
+    ScrollView {
+      ScrollViewReader { proxy in
+        VStack(alignment: .leading) {
+          ForEach(messages) { m in
+            if m == messages.last {
+              if m == pendingMessage {
+                MessageView(pendingMessage!, overrideText: agent.pendingMessage, agentStatus: agent.status)
+                  .id(Position.bottom)
+                  .opacity(pendingMessageOpacity)
+                  .offset(x: -20 * (1 - pendingMessageOpacity))
+                  .animation(Animation.easeOut(duration: 0.6).delay(0.6), value: pendingMessageOpacity)
+              } else {
+                MessageView(m, agentStatus: nil).id(Position.bottom)
               }
-          } else {
-            MessageView(m, agentStatus: agent.status).id(Position.bottom)
+            } else {
+              MessageView(m, agentStatus: nil).transition(.opacity)
+            }
           }
-        } else {
-          MessageView(m, agentStatus: nil)
         }
-      }
-      .textSelection(.enabled)
-      .safeAreaInset(edge: .bottom, spacing: 0) {
-        MessageTextField(conversation: conversation, onSubmit: { s in
-          submit(s)
-        })
-      }
-      .frame(maxWidth: .infinity, maxHeight: .infinity)
-      .onReceive(
-        agent.$pendingMessage.debounce(for: 1, scheduler: RunLoop.main)
-      ) { _ in
-        let fiveSecondsAgo = Date() - TimeInterval(5) // 5 seconds ago
-        let last = messages.last
-        if  last?.createdAt != nil, last!.createdAt! >= fiveSecondsAgo {
-          proxy.scrollTo(Position.bottom, anchor: .bottom)
+        .padding(.horizontal, 8)
+        .padding(.vertical, 12)
+        .onReceive(
+          agent.$pendingMessage.debounce(for: 1, scheduler: RunLoop.main)
+        ) { _ in
+          let fiveSecondsAgo = Date() - TimeInterval(5) // 5 seconds ago
+          let last = messages.last
+          if  last?.createdAt != nil, last!.createdAt! >= fiveSecondsAgo {
+            proxy.scrollTo(Position.bottom, anchor: .bottom)
+          }
         }
+        
       }
-
+    }
+    .textSelection(.enabled)
+    .safeAreaInset(edge: .bottom, spacing: 0) {
+      MessageTextField(conversation: conversation, onSubmit: { s in
+        submit(s)
+      })
     }
     .frame(maxWidth: .infinity, maxHeight: .infinity)
     .onAppear {
@@ -88,6 +95,7 @@ struct ConversationView: View {
     }
     let submitted = input
     _ = try! Message.create(text: submitted, fromId: Message.USER_SPEAKER_ID, conversation: conversation, inContext: viewContext)
+    pendingMessageOpacity = 0
     Task {
       let m = Message(context: viewContext)
       m.fromId = agent.id
@@ -96,6 +104,9 @@ struct ConversationView: View {
       m.conversation = conversation
       pendingMessage = m
       agent.prompt = conversation.prompt ?? agent.prompt
+      withAnimation {
+        pendingMessageOpacity = 1
+      }
       let currentConvo = conversation
       let text = await agent.listenThinkRespond(speakerId: Message.USER_SPEAKER_ID, message: submitted)
       currentConvo.prompt = agent.prompt

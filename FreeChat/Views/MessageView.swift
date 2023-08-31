@@ -9,6 +9,7 @@ import SwiftUI
 import MarkdownUI
 import Splash
 
+
 struct MessageView: View {
   @Environment(\.colorScheme) private var colorScheme
   
@@ -24,26 +25,32 @@ struct MessageView: View {
   
   var body: some View {
     HStack(alignment: .top) {
-      Image(m.fromId == Message.USER_SPEAKER_ID ? "UserAvatar" : "LlamaAvatar")
-        .padding(2)
-        .padding(.top, 2)
-        .shadow(color: .gray, radius: 1, x: 0, y: 1)
+      ZStack(alignment: .bottomTrailing) {
+        Image(m.fromId == Message.USER_SPEAKER_ID ? "UserAvatar" : "LlamaAvatar")
+          .shadow(color: .gray, radius: 1, x: 0, y: 1)
+        if agentStatus == .coldProcessing || agentStatus == .processing, m.fromId != Message.USER_SPEAKER_ID {
+          ZStack {
+            Circle()
+              .fill(.background)
+              .frame(width: 14, height: 14)
+            ProgressView().controlSize(.mini)
+          }
+          .transition(.opacity)
+        }
+      }
+      .padding(2)
+      .padding(.top, 2)
+      
       VStack(alignment: .leading) {
-        HStack(alignment: .firstTextBaseline) {
-          if agentStatus == .coldProcessing || agentStatus == .processing, m.fromId != Message.USER_SPEAKER_ID {
-            ProgressView().controlSize(.mini).padding(.leading, 2)
-            if agentStatus == .coldProcessing, overrideText == "" {
-              Text("warming up...")
-                .padding(.leading, 2)
-                .font(.caption)
-                .foregroundColor(.gray)
-            }
+        Group {
+          if agentStatus == .coldProcessing, overrideText == "" {
+            Text("warming up...")
           } else {
             Text(m.createdAt ?? Date(), formatter: messageTimestampFormatter)
-              .font(.caption)
-              .foregroundColor(.gray)
           }
         }
+        .font(.caption)
+        .foregroundColor(.gray)
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.bottom, 1)
         
