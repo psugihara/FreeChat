@@ -4,6 +4,25 @@ import os.lock
 import MetalPerformanceShaders
 import Metal
 
+func removeUnmatchedTrailingQuote(_ inputString: String) -> String {
+  var outputString = inputString
+  if inputString.last != "\"" { return outputString }
+  
+  // Count the number of quotes in the string
+  let countOfQuotes = outputString.reduce(0, { (count, character) -> Int in
+    return character == "\"" ? count + 1 : count
+  })
+  
+  // If there is an odd number of quotes, remove the last one
+  if countOfQuotes % 2 != 0 {
+    if let indexOfLastQuote = outputString.lastIndex(of: "\"") {
+      outputString.remove(at: indexOfLastQuote)
+    }
+  }
+  
+  return outputString
+}
+
 actor LlamaServer {
   static let DEFAULT_MODEL_URL =  Bundle.main.url(forResource: "zaraxls-l2-7b.q5_K_M", withExtension: ".gguf")!
   var modelPath = LlamaServer.DEFAULT_MODEL_URL.path
@@ -17,10 +36,6 @@ actor LlamaServer {
   
   init(modelPath: String) {
     self.modelPath = modelPath
-  }
-  
-  deinit {
-    stopServer()
   }
   
   // Start a monitor process that will terminate the server when our app dies.
@@ -112,7 +127,7 @@ actor LlamaServer {
     }
   }
   
-  func complete(prompt: String, progressHandler: ((String) -> Void)? = nil) async throws -> String {
+  func complete(prompt: String, progressHandler: ((String) -> Void)? = nil) async throws -> CompleteResponse {
 #if DEBUG
     print("START PROMPT\n \(prompt) \nEND PROMPT\n\n")
 #endif
@@ -147,6 +162,7 @@ actor LlamaServer {
     
     var response = ""
     var responseDiff = 0.0
+    var stopResponse: StopResponse?
     listenLoop: for await event in eventSource!.events {
       switch event {
         case .open:
@@ -157,7 +173,7 @@ actor LlamaServer {
           // parse json in message.data string then print the data.content value and append it to response
           if let data = message.data?.data(using: .utf8) {
             let decoder = JSONDecoder()
-            let responseObj = try decoder.decode(CompleteResponse.self, from: data)
+            let responseObj = try decoder.decode(Response.self, from: data)
             let fragment = responseObj.content
             response.append(fragment)
             progressHandler?(fragment)
@@ -166,6 +182,10 @@ actor LlamaServer {
             }
             
             if responseObj.stop {
+              stopResponse = try decoder.decode(StopResponse.self, from: data)
+#if DEBUG
+              print("server.cpp stopResponse", stopResponse.debugDescription)
+#endif
               break listenLoop
             }
           }
@@ -179,13 +199,29 @@ actor LlamaServer {
       print("\n\n🦙 started response in \(responseDiff) seconds")
     }
     
-    return response
+    // adding a trailing quote or space is a common mistake with the smaller model output
+    let cleanText = removeUnmatchedTrailingQuote(response).trimmingCharacters(in: .whitespacesAndNewlines)
+
+    let modelName = stopResponse?.model.split(separator: "/").last?.map { String($0) }.joined()
+    return CompleteResponse(
+      text: cleanText,
+      responseStartSeconds: responseDiff,
+      predictedPerSecond: stopResponse?.timings.predicted_per_second,
+      modelName: modelName
+    )
   }
   
   func interrupt() async {
     if eventSource != nil {
       await eventSource!.close()
     }
+  }
+  
+  struct CompleteResponse {
+    var text: String
+    var responseStartSeconds: Double
+    var predictedPerSecond: Double?
+    var modelName: String?
   }
   
   struct CompleteParams: Codable {
@@ -216,10 +252,29 @@ actor LlamaServer {
     }
   }
   
-  struct CompleteResponse: Codable {
+  struct Timings: Codable {
+    let prompt_n: Int
+    let prompt_ms: Double
+    let prompt_per_token_ms: Double
+    let prompt_per_second: Double
+    
+    let predicted_n: Int
+    let predicted_ms: Double
+    let predicted_per_token_ms: Double
+    let predicted_per_second: Double
+  }
+  
+  struct Response: Codable {
     let content: String
     let stop: Bool
-    let tokens_evaluated: Int?
+  }
+  
+  struct StopResponse: Codable {
+    let content: String
+    let model: String
+    let tokens_predicted: Int
+    let tokens_evaluated: Int
+    let timings: Timings
   }
 }
 

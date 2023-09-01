@@ -17,10 +17,34 @@ struct MessageView: View {
   let overrideText: String // for streaming replies
   let agentStatus: Agent.Status?
   
+  @State var showInfoPopover = false
+  
   init(_ m: Message, overrideText: String = "", agentStatus: Agent.Status?) {
     self.m = m
     self.overrideText = overrideText
     self.agentStatus = agentStatus
+  }
+  
+  var infoText: some View {
+    (agentStatus == .coldProcessing && overrideText == ""
+     ? Text("warming up...")
+     : Text(m.createdAt ?? Date(), formatter: messageTimestampFormatter))
+    .font(.caption)
+    .foregroundColor(.gray)
+  }
+  
+  var info: String {
+    var parts: [String] = []
+    if m.responseStartSeconds > 0 {
+      parts.append("Response started in: \(String(format: "%.3f", m.responseStartSeconds)) seconds")
+    }
+    if m.predictedPerSecond > 0 {
+      parts.append("Tokens generated per second: \(String(format: "%.3f", m.predictedPerSecond))")
+    }
+    if m.modelName != nil, !m.modelName!.isEmpty {
+      parts.append("Model: \(m.modelName!)")
+    }
+    return parts.joined(separator: "\n")
   }
   
   var body: some View {
@@ -42,29 +66,37 @@ struct MessageView: View {
       .padding(.top, 1)
       
       VStack(alignment: .leading, spacing: 4) {
-        if agentStatus == .coldProcessing, overrideText == "" {
-          Text("warming up...")
-            .font(.caption)
-            .foregroundColor(.gray)
+        if m.responseStartSeconds > 0 {
+          Button(action: {
+            self.showInfoPopover = !showInfoPopover
+          }) {
+            infoText
+          }
+          .textSelection(.enabled)
+          .buttonStyle(.plain)
+          .popover(isPresented: $showInfoPopover) {
+            Text(info).padding(12).font(.caption).textSelection(.enabled)
+          }
         } else {
-          Text(m.createdAt ?? Date(), formatter: messageTimestampFormatter)
-            .font(.caption)
-            .foregroundColor(.gray)
+          infoText
         }
         
         Markdown(overrideText == "" && m.text != nil ? m.text! : overrideText)
           .markdownTheme(.freeChat)
           .markdownCodeSyntaxHighlighter(.splash(theme: self.theme))
           .textSelection(.enabled)
+          .frame(maxWidth: .infinity, alignment: .leading)
       }
-      .frame(maxWidth: .infinity, alignment: .leading)
       .padding(.top, 3)
       .padding(.bottom, 8)
       .padding(.horizontal, 3)
-      .contextMenu {
-        if m.text != nil, !m.text!.isEmpty {
-          CopyButton(text: m.text!, buttonText: "Copy to clipboard")
-        }
+    }
+    .padding(.vertical, 3)
+    .padding(.horizontal, 8)
+    .background(Color(white: 1, opacity: 0.000001)) // makes contextMenu work
+    .contextMenu {
+      if m.text != nil, !m.text!.isEmpty {
+        CopyButton(text: m.text!, buttonText: "Copy to clipboard")
       }
     }
   }

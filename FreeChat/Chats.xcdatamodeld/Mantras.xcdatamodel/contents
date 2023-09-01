@@ -10,6 +10,9 @@
     <entity name="Message" representedClassName="Message" syncable="YES" codeGenerationType="class">
         <attribute name="createdAt" attributeType="Date" defaultDateTimeInterval="712518960" usesScalarValueType="NO"/>
         <attribute name="fromId" attributeType="String" defaultValueString="npc"/>
+        <attribute name="modelName" optional="YES" attributeType="String"/>
+        <attribute name="predictedPerSecond" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="responseStartSeconds" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
         <attribute name="text" attributeType="String" defaultValueString=""/>
         <relationship name="conversation" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Conversation" inverseName="messages" inverseEntity="Conversation"/>
     </entity>

@@ -46,7 +46,6 @@ struct ConversationView: View {
             }
           }
         }
-        .padding(.horizontal, 8)
         .padding(.vertical, 12)
         .onReceive(
           agent.$pendingMessage.debounce(for: .seconds(1), scheduler: RunLoop.main)
@@ -112,11 +111,14 @@ struct ConversationView: View {
     let currentConvo = conversation
     
     Task {
-      let text = await agent.listenThinkRespond(speakerId: Message.USER_SPEAKER_ID, message: input)
+      let response = await agent.listenThinkRespond(speakerId: Message.USER_SPEAKER_ID, message: input)
       
       DispatchQueue.main.async {
         currentConvo.prompt = agent.prompt
-        m.text = text
+        m.text = response.text
+        m.predictedPerSecond = response.predictedPerSecond ?? -1
+        m.responseStartSeconds = response.responseStartSeconds ?? -1
+        m.modelName = response.modelName
         if m.text == "" {
           viewContext.delete(m)
         }

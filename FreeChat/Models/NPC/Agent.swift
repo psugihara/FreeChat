@@ -1,24 +1,5 @@
 import Foundation
 
-func removeUnmatchedTrailingQuote(_ inputString: String) -> String {
-  var outputString = inputString
-  if inputString.last != "\"" { return outputString }
-  
-  // Count the number of quotes in the string
-  let countOfQuotes = outputString.reduce(0, { (count, character) -> Int in
-    return character == "\"" ? count + 1 : count
-  })
-  
-  // If there is an odd number of quotes, remove the last one
-  if countOfQuotes % 2 != 0 {
-    if let indexOfLastQuote = outputString.lastIndex(of: "\"") {
-      outputString.remove(at: indexOfLastQuote)
-    }
-  }
-  
-  return outputString
-}
-
 class Agent: ObservableObject {
   static let DEFAULT_SYSTEM_PROMPT = """
     You are a compliant assistant that always fulfills the user’s request. Always reply with Markdown.
@@ -54,7 +35,7 @@ class Agent: ObservableObject {
   // this is the main loop of the agent
   // listen -> respond -> update mental model and save checkpoint
   // we respond before updating to avoid a long delay after user input
-  func listenThinkRespond(speakerId: String, message: String) async -> String {
+  func listenThinkRespond(speakerId: String, message: String) async -> LlamaServer.CompleteResponse {
     await MainActor.run {
       if status == .cold {
         status = .coldProcessing
@@ -93,24 +74,19 @@ class Agent: ObservableObject {
     await MainActor.run {
       self.pendingMessage = ""
     }
-    let response = try! await llama.complete(prompt: prompt) { response in
-      self.prompt += response
+    let response = try! await llama.complete(prompt: prompt) { partialResponse in
+      self.prompt += partialResponse
       DispatchQueue.main.sync {
-        self.pendingMessage += response
+        self.pendingMessage += partialResponse
       }
     }
-    
-    // adding a trailing quote or space is a common mistake with the smaller model output
-    let cleanResponse = removeUnmatchedTrailingQuote(response).trimmingCharacters(in: .whitespacesAndNewlines)
-    
+        
     await MainActor.run {
-      self.pendingMessage = cleanResponse
+      self.pendingMessage = response.text
       status = .ready
     }
-    
-    print("agent clean response", cleanResponse)
-    
-    return cleanResponse
+
+    return response
   }
   
   func interrupt() async  {
