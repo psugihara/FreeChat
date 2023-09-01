@@ -26,7 +26,33 @@ struct SettingsView: View {
   }
   @State private var didSaveSystemPrompt = false
   
+  @State var showModelHelp = false
   @State var showFileImporter = false
+  
+  var modelHeader: some View {
+    HStack {
+      Text("Model")
+      Button(action: {
+        showModelHelp = !showModelHelp
+      }) {
+        Image(systemName: showModelHelp ?  "questionmark.circle.fill" : "questionmark.circle")
+      }
+      .buttonStyle(.plain)
+      .popover(isPresented: $showModelHelp) {
+        VStack(alignment: .leading) {
+          Text("The model is FreeChat's brain. FreeChat comes with a general purpose small (7B) model that works on most computers. Larger models are slower but smarter. Some models specialize in certain tasks like coding Python. If you have a powerful machine, you should try a larger model. FreeChat is compatible with most models in GGUF format.")
+            .fixedSize(horizontal: false, vertical: true)
+          
+          Text("Where can I find models?").padding(.top).font(.title3)
+          Text("New models are being trained every day.")
+          Link("Find them on HuggingFace",
+               destination: URL(string: "https://huggingface.co/models?search=GGUF")!)
+          
+        }.padding()
+          .frame(width: 400)
+      }
+    }
+  }
   
   var body: some View {
     Form {
@@ -60,9 +86,10 @@ struct SettingsView: View {
         .background(Color("TextBackground"))
       }
       .help("Customize chat behavior and personality")
-      .padding(.bottom, 12)
+
+      Spacer().padding()
       
-      Section("Model") {
+      Section(header: modelHeader) {
         List(selection: $selectedModelId) {
           ForEach(items) { i in
             Text(i.name ?? i.url?.lastPathComponent ?? "Untitled").tag(i.id?.uuidString ?? "")
@@ -112,10 +139,7 @@ struct SettingsView: View {
         
       }
       
-    }
-    .padding(20)
-    
-    
+    }.padding(20)
   }
   
   
