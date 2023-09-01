@@ -4,7 +4,7 @@ import os.lock
 import MetalPerformanceShaders
 import Metal
 
-class LlamaServer {
+actor LlamaServer {
   static let DEFAULT_MODEL_URL =  Bundle.main.url(forResource: "zaraxls-l2-7b.q5_K_M", withExtension: ".gguf")!
   var modelPath = LlamaServer.DEFAULT_MODEL_URL.path
   
@@ -14,6 +14,10 @@ class LlamaServer {
   private let port = "8690"
   
   private var monitor = Process()
+  
+  init(modelPath: String) {
+    self.modelPath = modelPath
+  }
   
   deinit {
     stopServer()
@@ -143,33 +147,32 @@ class LlamaServer {
     
     var response = ""
     var responseDiff = 0.0
-  listenLoop: for await event in eventSource!.events {
-    switch event {
-      case .open:
-        continue
-      case .error(let error):
-        print("llama.cpp server error:", error.localizedDescription)
-      case .message(let message):
-        // parse json in message.data string then print the data.content value and append it to response
-        if let data = message.data?.data(using: .utf8) {
-          let decoder = JSONDecoder()
-          let responseObj = try decoder.decode(CompleteResponse.self, from: data)
-          let fragment = responseObj.content
-          response.append(fragment)
-          progressHandler?(fragment)
-          if responseDiff == 0 {
-            responseDiff = CFAbsoluteTimeGetCurrent() - start
+    listenLoop: for await event in eventSource!.events {
+      switch event {
+        case .open:
+          continue
+        case .error(let error):
+          print("llama.cpp server error:", error.localizedDescription)
+        case .message(let message):
+          // parse json in message.data string then print the data.content value and append it to response
+          if let data = message.data?.data(using: .utf8) {
+            let decoder = JSONDecoder()
+            let responseObj = try decoder.decode(CompleteResponse.self, from: data)
+            let fragment = responseObj.content
+            response.append(fragment)
+            progressHandler?(fragment)
+            if responseDiff == 0 {
+              responseDiff = CFAbsoluteTimeGetCurrent() - start
+            }
+            
+            if responseObj.stop {
+              break listenLoop
+            }
           }
-          
-          if responseObj.stop {
-            break listenLoop
-          }
-        }
-      case .closed:
-        break
+        case .closed:
+          break listenLoop
+      }
     }
-  }
-    
     
     if responseDiff > 0 {
       print("response: \(response)")
@@ -180,7 +183,9 @@ class LlamaServer {
   }
   
   func interrupt() async {
-    await eventSource!.close()
+    if eventSource != nil {
+      await eventSource!.close()
+    }
   }
   
   struct CompleteParams: Codable {

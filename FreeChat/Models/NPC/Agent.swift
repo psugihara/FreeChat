@@ -42,13 +42,13 @@ class Agent: ObservableObject {
   @Published var status: Status = .cold
   
   // each agent runs their own server
-  let llama = LlamaServer()
+  var llama: LlamaServer
   
   init(id: String, prompt: String, systemPrompt: String, modelPath: String) {
     self.id = id
     self.prompt = prompt
     self.systemPrompt = systemPrompt
-    if modelPath != "" { llama.modelPath = modelPath }
+    llama = LlamaServer(modelPath: modelPath)
   }
   
   // this is the main loop of the agent
@@ -56,10 +56,10 @@ class Agent: ObservableObject {
   // we respond before updating to avoid a long delay after user input
   func listenThinkRespond(speakerId: String, message: String) async -> String {
     await MainActor.run {
-      if status != .cold {
-        status = .processing
-      } else {
+      if status == .cold {
         status = .coldProcessing
+      } else {
+        status = .processing
       }
     }
     
@@ -100,19 +100,21 @@ class Agent: ObservableObject {
       }
     }
     
-    // adding a trailing quote is a common mistake with the smaller model output
-    let cleanResponse = removeUnmatchedTrailingQuote(response)
+    // adding a trailing quote or space is a common mistake with the smaller model output
+    let cleanResponse = removeUnmatchedTrailingQuote(response).trimmingCharacters(in: .whitespacesAndNewlines)
     
     await MainActor.run {
       self.pendingMessage = cleanResponse
       status = .ready
     }
     
+    print("agent clean response", cleanResponse)
+    
     return cleanResponse
   }
   
   func interrupt() async  {
-    if status != .processing { return }
+    if status != .processing, status != .coldProcessing { return }
     await llama.interrupt()
   }
   

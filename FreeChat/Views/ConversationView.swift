@@ -84,38 +84,53 @@ struct ConversationView: View {
     }
   }
   
+  @MainActor
   func submit(_ input: String) {
-    if (agent.status == .processing) {
+    if (agent.status == .processing || agent.status == .coldProcessing) {
       Task {
         await agent.interrupt()
         submit(input)
       }
       return
     }
-    let submitted = input
-    _ = try! Message.create(text: submitted, fromId: Message.USER_SPEAKER_ID, conversation: conversation, inContext: viewContext)
+    
+    // Create user's message
+    _ = try! Message.create(text: input, fromId: Message.USER_SPEAKER_ID, conversation: conversation, inContext: viewContext)
     pendingMessageOpacity = 0
+
+    // Pending message for bot's reply
+    let m = Message(context: viewContext)
+    m.fromId = agent.id
+    m.createdAt = Date()
+    m.text = ""
+    m.conversation = conversation
+    pendingMessage = m
+    agent.prompt = conversation.prompt ?? agent.prompt
+    withAnimation {
+      pendingMessageOpacity = 1
+    }
+    let currentConvo = conversation
+    
     Task {
-      let m = Message(context: viewContext)
-      m.fromId = agent.id
-      m.createdAt = Date()
-      m.text = ""
-      m.conversation = conversation
-      pendingMessage = m
-      agent.prompt = conversation.prompt ?? agent.prompt
-      withAnimation {
-        pendingMessageOpacity = 1
+      let text = await agent.listenThinkRespond(speakerId: Message.USER_SPEAKER_ID, message: input)
+      
+      DispatchQueue.main.async {
+        currentConvo.prompt = agent.prompt
+        m.text = text
+        if m.text == "" {
+          viewContext.delete(m)
+        }
+        do {
+          try viewContext.save()
+        } catch (let error) {
+          print("error creating message", error.localizedDescription)
+        }
+        withAnimation {
+          pendingMessage = nil
+          agent.pendingMessage = ""
+        }
+
       }
-      let currentConvo = conversation
-      let text = await agent.listenThinkRespond(speakerId: Message.USER_SPEAKER_ID, message: submitted)
-      currentConvo.prompt = agent.prompt
-      pendingMessage = nil
-      m.text = text.trimmingCharacters(in: .whitespacesAndNewlines)
-      agent.pendingMessage = ""
-      if m.text == "" {
-        viewContext.delete(m)
-      }
-      try viewContext.save()
     }
   }
   

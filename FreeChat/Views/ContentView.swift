@@ -38,7 +38,9 @@ struct ContentView: View {
     }
     .navigationTitle(selection.count == 1 ? selection.first!.titleWithDefault : "FreeChat")
     .onReceive(NotificationCenter.default.publisher(for: NSApplication.willTerminateNotification), perform: { output in
-      agent?.llama.stopServer()
+      Task {
+        await agent?.llama.stopServer()
+      }
     })
     .onDeleteCommand { showDeleteConfirmation = true }
     .onChange(of: systemPrompt) { _ in rebootAgent() }
@@ -51,9 +53,11 @@ struct ContentView: View {
       let model = models.first { i in i.id?.uuidString == selectedModelId }
       let url = model?.url == nil ? LlamaServer.DEFAULT_MODEL_URL : model!.url!
       
-      agent?.llama.stopServer()
-      agent = Agent(id: "Llama", prompt: agent?.prompt ?? "", systemPrompt: systemPrompt, modelPath: url.path)
-      await agent?.warmup()
+      Task {
+        await agent?.llama.stopServer()
+        agent = Agent(id: "Llama", prompt: agent?.prompt ?? "", systemPrompt: systemPrompt, modelPath: url.path)
+        await agent?.warmup()
+      }
     }
   }
 }
