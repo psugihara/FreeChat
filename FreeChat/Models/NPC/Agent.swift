@@ -36,6 +36,8 @@ class Agent: ObservableObject {
   // listen -> respond -> update mental model and save checkpoint
   // we respond before updating to avoid a long delay after user input
   func listenThinkRespond(speakerId: String, message: String) async -> LlamaServer.CompleteResponse {
+    dispatchPrecondition(condition: .notOnQueue(.main))
+
     await MainActor.run {
       if status == .cold {
         status = .coldProcessing

@@ -131,7 +131,6 @@ extension Theme {
         .background(Color.secondaryBackground)
         .clipShape(RoundedRectangle(cornerRadius: 6))
         .markdownMargin(top: 0, bottom: 16)
-        .workaroundForVerticalScrollingBugInMacOS()
        
         CopyButton(text: configuration.content).padding(10)
       }

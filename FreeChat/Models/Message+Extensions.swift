@@ -27,4 +27,12 @@ extension Message {
 
     return record
   }
+  
+  public override func willSave() {
+    super.willSave()
+    
+    if !isDeleted, changedValues()["updatedAt"] == nil {
+      self.setValue(Date(), forKey: "updatedAt")
+    }
+  }
 }

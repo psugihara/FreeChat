@@ -9,10 +9,6 @@ import SwiftUI
 import MarkdownUI
 
 struct ConversationView: View {
-  enum Position {
-    case bottom
-  }
-  
   @Environment(\.managedObjectContext) private var viewContext
   
   @ObservedObject var conversation: Conversation
@@ -20,29 +16,39 @@ struct ConversationView: View {
   @ObservedObject var agent: Agent
   @State var pendingMessage: Message?
   
-  var messages: [Message] {
-    conversation.orderedMessages
-  }
+  @State var messages: [Message] = []
   
   @State var pendingMessageOpacity = 0.0
+  @State private var scrollPositions = [String: CGFloat]()
   
+
   var body: some View {
     ScrollView {
       ScrollViewReader { proxy in
         VStack(alignment: .leading) {
           ForEach(messages) { m in
-            if m == messages.last {
+            if m == messages.last! {
               if m == pendingMessage {
-                MessageView(pendingMessage!, overrideText: agent.pendingMessage, agentStatus: agent.status)
-                  .id(Position.bottom)
+                Group {
+                  MessageView(pendingMessage!, overrideText: agent.pendingMessage, agentStatus: agent.status)
+                    .onAppear {
+                      scrollToLastIfRecent(proxy)
+                    }
+                }.offset(x: -30 * (1 - pendingMessageOpacity))
                   .opacity(pendingMessageOpacity)
-                  .offset(x: -20 * (1 - pendingMessageOpacity))
-                  .animation(Animation.easeOut(duration: 0.6).delay(0.6), value: pendingMessageOpacity)
+                  .animation(Animation.easeOut(duration: 0.6), value: pendingMessageOpacity)
+                  .id("\(m.id)\(m.updatedAt as Date?)")
+
               } else {
-                MessageView(m, agentStatus: nil).id(Position.bottom)
+                MessageView(m, agentStatus: nil)
+                  .id("\(m.id)\(m.updatedAt as Date?)")
+                  .transition(.opacity)
+                  .onAppear {
+                    scrollToLastIfRecent(proxy)
+                  }
               }
             } else {
-              MessageView(m, agentStatus: nil).transition(.opacity)
+              MessageView(m, agentStatus: nil).transition(.opacity).id("\(m.id)\(m.updatedAt as Date?)")
             }
           }
         }
@@ -50,11 +56,7 @@ struct ConversationView: View {
         .onReceive(
           agent.$pendingMessage.debounce(for: .seconds(1), scheduler: RunLoop.main)
         ) { _ in
-          let fiveSecondsAgo = Date() - TimeInterval(5) // 5 seconds ago
-          let last = messages.last
-          if last?.createdAt != nil, last!.createdAt! >= fiveSecondsAgo, last!.text != nil, last!.text! != "" {
-            proxy.scrollTo(Position.bottom, anchor: .top)
-          }
+          scrollToLastIfRecent(proxy)
         }
       }
     }
@@ -64,8 +66,9 @@ struct ConversationView: View {
         submit(s)
       })
     }
-    .frame(maxWidth: .infinity, maxHeight: .infinity)
+    .frame(maxWidth: .infinity)
     .onAppear {
+      messages = conversation.orderedMessages
       Task {
         if agent.status == .cold, agent.prompt != conversation.prompt {
           agent.prompt = conversation.prompt ?? ""
@@ -74,12 +77,21 @@ struct ConversationView: View {
       }
     }
     .onChange(of: conversation) { nextConvo in
-      Task {
-        if agent.status == .cold, agent.prompt != conversation.prompt {
-          agent.prompt = nextConvo.prompt ?? ""
+      messages = nextConvo.orderedMessages
+      if agent.status == .cold, agent.prompt != conversation.prompt {
+        agent.prompt = nextConvo.prompt ?? ""
+        Task {
           await agent.warmup()
         }
       }
+    }
+  }
+  
+  func scrollToLastIfRecent(_ proxy: ScrollViewProxy) {
+    let fiveSecondsAgo = Date() - TimeInterval(5) // 5 seconds ago
+    let last = messages.last
+    if last?.updatedAt != nil, last!.updatedAt! >= fiveSecondsAgo {
+      proxy.scrollTo(last!.id, anchor: .bottom)
     }
   }
   
@@ -95,30 +107,38 @@ struct ConversationView: View {
     
     // Create user's message
     _ = try! Message.create(text: input, fromId: Message.USER_SPEAKER_ID, conversation: conversation, inContext: viewContext)
+    messages = conversation.orderedMessages
     pendingMessageOpacity = 0
-
+    
     // Pending message for bot's reply
     let m = Message(context: viewContext)
     m.fromId = agent.id
     m.createdAt = Date()
+    m.updatedAt = m.createdAt
     m.text = ""
-    m.conversation = conversation
     pendingMessage = m
     agent.prompt = conversation.prompt ?? agent.prompt
-    withAnimation {
-      pendingMessageOpacity = 1
-    }
     let currentConvo = conversation
+    
+    DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
+      m.conversation = conversation
+      messages = conversation.orderedMessages
+      
+      withAnimation {
+        pendingMessageOpacity = 1
+      }
+    }
     
     Task {
       let response = await agent.listenThinkRespond(speakerId: Message.USER_SPEAKER_ID, message: input)
       
-      DispatchQueue.main.async {
+      await MainActor.run {
         currentConvo.prompt = agent.prompt
         m.text = response.text
         m.predictedPerSecond = response.predictedPerSecond ?? -1
-        m.responseStartSeconds = response.responseStartSeconds ?? -1
+        m.responseStartSeconds = response.responseStartSeconds
         m.modelName = response.modelName
+        m.updatedAt = Date()
         if m.text == "" {
           viewContext.delete(m)
         }
@@ -128,10 +148,10 @@ struct ConversationView: View {
           print("error creating message", error.localizedDescription)
         }
         withAnimation {
+          messages = conversation.orderedMessages
           pendingMessage = nil
           agent.pendingMessage = ""
         }
-
       }
     }
   }

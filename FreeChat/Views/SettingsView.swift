@@ -33,7 +33,7 @@ struct SettingsView: View {
     HStack {
       Text("Model")
       Button(action: {
-        showModelHelp = !showModelHelp
+        showModelHelp.toggle()
       }) {
         Image(systemName: showModelHelp ?  "questionmark.circle.fill" : "questionmark.circle")
       }
@@ -43,7 +43,6 @@ struct SettingsView: View {
           Text("The model is FreeChat's brain. FreeChat comes with a general purpose small (7B) model that works on most computers. Larger models are slower but smarter. Some models specialize in certain tasks like coding Python. If you have a powerful machine, you should try a larger model. FreeChat is compatible with most models in GGUF format.")
             .fixedSize(horizontal: false, vertical: true)
           
-          Text("Where can I find models?").padding(.top).font(.title3)
           Text("New models are being trained every day.")
           Link("Find them on HuggingFace",
                destination: URL(string: "https://huggingface.co/models?search=GGUF")!)

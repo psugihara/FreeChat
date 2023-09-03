@@ -256,7 +256,7 @@ actor LlamaServer {
     let prompt_n: Int
     let prompt_ms: Double
     let prompt_per_token_ms: Double
-    let prompt_per_second: Double
+    let prompt_per_second: Double?
     
     let predicted_n: Int
     let predicted_ms: Double

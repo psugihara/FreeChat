@@ -68,7 +68,7 @@ struct MessageView: View {
       VStack(alignment: .leading, spacing: 4) {
         if m.responseStartSeconds > 0 {
           Button(action: {
-            self.showInfoPopover = !showInfoPopover
+            self.showInfoPopover.toggle()
           }) {
             infoText
           }
