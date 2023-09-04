@@ -70,7 +70,7 @@ struct NavList: View {
       fieldFocused = true
     }
     .confirmationDialog("Are you sure you want to delete \(selection.count == 1 ? "this" : "\(selection.count)") conversation\(selection.count == 1 ? "" : "s")?", isPresented: $showDeleteConfirmation) {
-      Button("Yes, delete", role: .destructive) {
+      Button("Yes, delete") {
         deleteSelectedConversations()
       }
       .keyboardShortcut(.defaultAction)
@@ -98,6 +98,9 @@ struct NavList: View {
       do {
         try viewContext.save()
         selection.removeAll()
+        if items.count > 0 {
+          selection.insert(items.first!)
+        }
       } catch {
         let nsError = error as NSError
         print("Unresolved error \(nsError), \(nsError.userInfo)")

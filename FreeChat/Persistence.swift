@@ -17,11 +17,14 @@ struct PersistenceController {
       let newConversation = Conversation(context: viewContext)
       newConversation.createdAt = Date()
     }
+    let _ = Model(context: viewContext)
+    let _ = SystemPrompt(context: viewContext)
+    let _ = Message(context: viewContext)
     do {
       try viewContext.save()
     } catch {
       let nsError = error as NSError
-      print("Unresolved error \(nsError), \(nsError.userInfo)")
+      print("Error creating preview conversations \(nsError), \(nsError.userInfo)")
     }
     return result
   }()

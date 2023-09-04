@@ -13,12 +13,18 @@ struct ContentView: View {
 
   @AppStorage("selectedModelId") private var selectedModelId: String?
   @AppStorage("systemPrompt") private var systemPrompt: String = Agent.DEFAULT_SYSTEM_PROMPT
+  @AppStorage("firstLaunchComplete") private var firstLaunchComplete = false
   
   @FetchRequest(
     sortDescriptors: [NSSortDescriptor(keyPath: \Model.updatedAt, ascending: true)]
   )
   private var models: FetchedResults<Model>
-  
+
+  @FetchRequest(
+    sortDescriptors: [NSSortDescriptor(keyPath: \Conversation.updatedAt, ascending: true)]
+  )
+  private var conversations: FetchedResults<Conversation>
+
 
   @State private var selection: Set<Conversation> = Set()
   @State private var showDeleteConfirmation = false
@@ -32,6 +38,8 @@ struct ContentView: View {
     } detail: {
       if selection.count == 1, agent != nil {
         ConversationView(conversation: selection.first!, agent: agent!)
+      } else if conversations.count == 0 {
+        Text("Hit “+” to start a conversation")
       } else {
         Text("Select a conversation")
       }
@@ -46,26 +54,35 @@ struct ContentView: View {
     .onChange(of: systemPrompt) { _ in rebootAgent() }
     .onChange(of: selectedModelId) { _ in rebootAgent() }
     .onAppear(perform: rebootAgent)
+    .onAppear(perform: initializeFirstLaunchData)
+  }
+  
+  private func initializeFirstLaunchData() {
+    if firstLaunchComplete { return }
+    do {
+      let c = try Conversation.create(ctx: viewContext)
+      selection.insert(c)
+    } catch (let error) {
+      print("error creating initial conversation", error.localizedDescription)
+    }
+    firstLaunchComplete = true
   }
   
   private func rebootAgent() {
+    let model = models.first { i in i.id?.uuidString == selectedModelId }
+    let url = model?.url == nil ? LlamaServer.DEFAULT_MODEL_URL : model!.url!
+    
     Task {
-      let model = models.first { i in i.id?.uuidString == selectedModelId }
-      let url = model?.url == nil ? LlamaServer.DEFAULT_MODEL_URL : model!.url!
-      
-      Task {
-        await agent?.llama.stopServer()
-        agent = Agent(id: "Llama", prompt: agent?.prompt ?? "", systemPrompt: systemPrompt, modelPath: url.path)
-        await agent?.warmup()
-      }
+      await agent?.llama.stopServer()
+      agent = Agent(id: "Llama", prompt: agent?.prompt ?? "", systemPrompt: systemPrompt, modelPath: url.path)
+      await agent?.warmup()
     }
   }
 }
 
-#if DEBUG
 struct ContentView_Previews: PreviewProvider {
   static var previews: some View {
-    ContentView().environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
+    let context = PersistenceController.preview.container.viewContext
+    ContentView().environment(\.managedObjectContext, context)
   }
 }
-#endif

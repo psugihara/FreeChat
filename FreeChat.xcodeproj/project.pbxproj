@@ -13,6 +13,8 @@
 		A11AAE702A9A9215000D8BCD /* ggml-metal.metal in Sources */ = {isa = PBXBuildFile; fileRef = A11AAE6F2A9A9215000D8BCD /* ggml-metal.metal */; };
 		A11AAE712A9A9306000D8BCD /* ggml-metal.metal in Copy Metal */ = {isa = PBXBuildFile; fileRef = A11AAE6F2A9A9215000D8BCD /* ggml-metal.metal */; };
 		A12B52DC2AA10FB200658707 /* zaraxls-l2-7b.q5_K_M.gguf in Resources */ = {isa = PBXBuildFile; fileRef = A12B52DB2AA10FA100658707 /* zaraxls-l2-7b.q5_K_M.gguf */; };
+		A12B52DE2AA5228100658707 /* EditModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = A12B52DD2AA5228100658707 /* EditModels.swift */; };
+		A12B52E42AA5A99E00658707 /* EditSystemPrompt.swift in Sources */ = {isa = PBXBuildFile; fileRef = A12B52E32AA5A99E00658707 /* EditSystemPrompt.swift */; };
 		A13C8C5A2A8FEEE400EC18D8 /* SplashCodeSyntaxHighlighter.swift in Sources */ = {isa = PBXBuildFile; fileRef = A13C8C592A8FEEE400EC18D8 /* SplashCodeSyntaxHighlighter.swift */; };
 		A13C8C5D2A8FEF0600EC18D8 /* Splash in Frameworks */ = {isa = PBXBuildFile; productRef = A13C8C5C2A8FEF0600EC18D8 /* Splash */; };
 		A13C8C602A8FF03800EC18D8 /* TextOutputFormat.swift in Sources */ = {isa = PBXBuildFile; fileRef = A13C8C5F2A8FF03800EC18D8 /* TextOutputFormat.swift */; };
@@ -106,6 +108,8 @@
 		A11AAE6D2A9A8824000D8BCD /* server */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = server; sourceTree = "<group>"; };
 		A11AAE6F2A9A9215000D8BCD /* ggml-metal.metal */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.metal; path = "ggml-metal.metal"; sourceTree = "<group>"; };
 		A12B52DB2AA10FA100658707 /* zaraxls-l2-7b.q5_K_M.gguf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "zaraxls-l2-7b.q5_K_M.gguf"; sourceTree = "<group>"; };
+		A12B52DD2AA5228100658707 /* EditModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditModels.swift; sourceTree = "<group>"; };
+		A12B52E32AA5A99E00658707 /* EditSystemPrompt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditSystemPrompt.swift; sourceTree = "<group>"; };
 		A13C8C592A8FEEE400EC18D8 /* SplashCodeSyntaxHighlighter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashCodeSyntaxHighlighter.swift; sourceTree = "<group>"; };
 		A13C8C5F2A8FF03800EC18D8 /* TextOutputFormat.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextOutputFormat.swift; sourceTree = "<group>"; };
 		A13C8C612A8FF27000EC18D8 /* Theme+FreeChat.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Theme+FreeChat.swift"; sourceTree = "<group>"; };
@@ -195,6 +199,8 @@
 				A1F617272A782AA100F2048C /* ContentView.swift */,
 				A15D50D12A7F539800FC1681 /* NavList.swift */,
 				A15D50D32A80BCA900FC1681 /* SettingsView.swift */,
+				A12B52DD2AA5228100658707 /* EditModels.swift */,
+				A12B52E32AA5A99E00658707 /* EditSystemPrompt.swift */,
 				A13C8C652A9027A200EC18D8 /* CopyButton.swift */,
 				A13C8C672A902A1200EC18D8 /* CGKeycode+Extensions.swift */,
 			);
@@ -477,6 +483,7 @@
 				A1F6175B2A7838F700F2048C /* Conversation+Extensions.swift in Sources */,
 				A13C8C622A8FF27000EC18D8 /* Theme+FreeChat.swift in Sources */,
 				A1F6172F2A782AA200F2048C /* Persistence.swift in Sources */,
+				A12B52E42AA5A99E00658707 /* EditSystemPrompt.swift in Sources */,
 				A1F617282A782AA100F2048C /* ContentView.swift in Sources */,
 				A1F617322A782AA200F2048C /* Chats.xcdatamodeld in Sources */,
 				A1A286E82A7D8A7D0004967A /* MessageView.swift in Sources */,
@@ -487,6 +494,7 @@
 				A15D50D22A7F539800FC1681 /* NavList.swift in Sources */,
 				A1F617262A782AA100F2048C /* FreeChat.swift in Sources */,
 				A1E4A6942A82B41F00BF9D34 /* Model+Extensions.swift in Sources */,
+				A12B52DE2AA5228100658707 /* EditModels.swift in Sources */,
 				A15D50CF2A7EF73E00FC1681 /* MessageTextField.swift in Sources */,
 				A13C8C662A9027A200EC18D8 /* CopyButton.swift in Sources */,
 				A17A2E182A79A006006CDD90 /* Agent.swift in Sources */,
@@ -694,13 +702,12 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = FreeChat/FreeChat.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
-				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "\"FreeChat/Preview Content\"";
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = 6577JALN5F;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
@@ -727,13 +734,12 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = FreeChat/FreeChat.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
-				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "\"FreeChat/Preview Content\"";
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = 6577JALN5F;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;

@@ -6,148 +6,91 @@
 //
 
 import SwiftUI
+import Combine
 
 struct SettingsView: View {
   private static let defaultModelId = "default"
-  
+  private static let customizeModelsId = "customizeModels"
+
   @Environment(\.managedObjectContext) private var viewContext
   
+  // TODO: add dropdown like models for storing multiple system prompts?
+//  @FetchRequest(
+//    sortDescriptors: [NSSortDescriptor(keyPath: \SystemPrompt.updatedAt, ascending: true)],
+//    animation: .default)
+//  private var systemPrompts: FetchedResults<SystemPrompt>
+
   @FetchRequest(
     sortDescriptors: [NSSortDescriptor(keyPath: \Model.updatedAt, ascending: true)],
     animation: .default)
-  private var items: FetchedResults<Model>
+  private var models: FetchedResults<Model>
   
   @AppStorage("selectedModelId") private var selectedModelId: String = SettingsView.defaultModelId
   @AppStorage("systemPrompt") private var systemPrompt = Agent.DEFAULT_SYSTEM_PROMPT
   
-  @State private var pendingSystemPrompt = ""
-  private var systemPromptPendingSave: Bool {
-    pendingSystemPrompt != "" && pendingSystemPrompt != systemPrompt
-  }
-  @State private var didSaveSystemPrompt = false
   
-  @State var showModelHelp = false
-  @State var showFileImporter = false
-  
-  var modelHeader: some View {
-    HStack {
-      Text("Model")
-      Button(action: {
-        showModelHelp.toggle()
-      }) {
-        Image(systemName: showModelHelp ?  "questionmark.circle.fill" : "questionmark.circle")
-      }
-      .buttonStyle(.plain)
-      .popover(isPresented: $showModelHelp) {
-        VStack(alignment: .leading) {
-          Text("The model is FreeChat's brain. FreeChat comes with a general purpose small (7B) model that works on most computers. Larger models are slower but smarter. Some models specialize in certain tasks like coding Python. If you have a powerful machine, you should try a larger model. FreeChat is compatible with most models in GGUF format.")
-            .fixedSize(horizontal: false, vertical: true)
-          
-          Text("New models are being trained every day.")
-          Link("Find them on HuggingFace",
-               destination: URL(string: "https://huggingface.co/models?search=GGUF")!)
-          
-        }.padding()
-          .frame(width: 400)
-      }
-    }
-  }
-  
+  @State var pickedModel: String = ""
+  @State var customizeModels = false
+  @State var editSystemPrompt = false
+    
   var body: some View {
     Form {
-      Section("System prompt") {
-        ZStack {
-          TextEditor(text: $pendingSystemPrompt)
-            .onAppear {
-              pendingSystemPrompt = systemPrompt
-            }
-            .frame(height: 120)
-            .padding(5)
-          
-          Group {
-            if systemPromptPendingSave {
-              Button("Save") {
-                systemPrompt = pendingSystemPrompt
-                didSaveSystemPrompt = true
-                DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
-                  didSaveSystemPrompt = false
-                }
-              }
-            } else if didSaveSystemPrompt {
-              Image(systemName: "checkmark.circle.fill")
-            } else {
-              Spacer()
-            }
-          }
-          .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomTrailing)
-          .padding(4)
-        }
-        .background(Color("TextBackground"))
-      }
-      .help("Customize chat behavior and personality")
-
-      Spacer().padding()
+      LabeledContent("System Prompt") {
+        Text(systemPrompt)
+          .font(.subheadline)
+          .multilineTextAlignment(.leading)
+          .lineLimit(4)
+          .frame(height: 40)
+          .padding(.trailing)
+        
+        Button(action: {
+          editSystemPrompt.toggle()
+        }, label: {
+          Text("Edit")
+        })
+        
+      }.padding(.bottom, 12)
       
-      Section(header: modelHeader) {
-        List(selection: $selectedModelId) {
-          ForEach(items) { i in
+      if pickedModel != "" {
+        Picker("Model", selection: $pickedModel) {
+          Text("Default").tag(SettingsView.defaultModelId)
+          ForEach(models) { i in
             Text(i.name ?? i.url?.lastPathComponent ?? "Untitled").tag(i.id?.uuidString ?? "")
               .help(i.url?.path ?? "Unknown path")
           }
-          Text("Default").tag(SettingsView.defaultModelId)
-        }
-        .listStyle(.automatic)
-        .onDeleteCommand(perform: deleteSelected)
-        
-        Button(action: {
-          showFileImporter = true
-        }) {
-          Image(systemName: "folder.circle")
-          Text("Add custom model (.gguf)")
-        }
-        .fileImporter(
-          isPresented: $showFileImporter,
-          allowedContentTypes: [.data]
-        ) { result in
-          switch result {
-            case .success(let fileURL):
-              // gain access to the directory
-              let gotAccess = fileURL.startAccessingSecurityScopedResource()
-              if !gotAccess { return }
-              
-              do {
-                let model = Model(context: viewContext)
-                model.id = UUID()
-                model.name = fileURL.lastPathComponent
-                model.bookmark = try fileURL.bookmarkData(options: [.withSecurityScope, .securityScopeAllowOnlyReadAccess])
-                try viewContext.save()
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                  selectedModelId = model.id!.uuidString
-                }
-              } catch (let error) {
-                print("error creating Model", error.localizedDescription)
-              }
-              // release access
-              fileURL.stopAccessingSecurityScopedResource()
-            case .failure(let error):
-              // handle error
-              print(error)
-          }
           
+          Divider()
+          Text("Customize models...").tag(SettingsView.customizeModelsId)
+        }.onReceive(Just(pickedModel)) { _ in
+          if pickedModel == SettingsView.customizeModelsId {
+            customizeModels = true
+            pickedModel = selectedModelId
+          } else {
+            selectedModelId = pickedModel
+          }
         }
-        
       }
-      
-    }.padding(20)
+    }
+    .sheet(isPresented: $customizeModels, onDismiss: dismissCustomizeModels) {
+      EditModels()
+    }
+    .sheet(isPresented: $editSystemPrompt, onDismiss: dismissEditSystemPrompt) {
+      EditSystemPrompt()
+    }
+    .padding(16)
+    .navigationTitle("Settings")
+    .onAppear {
+      pickedModel = selectedModelId
+    }
+    .frame(idealWidth: 300)
   }
   
+  private func dismissEditSystemPrompt() {
+    editSystemPrompt = false
+  }
   
-  private func deleteSelected() {
-    let model = items.first(where: { m in m.id?.uuidString == selectedModelId })
-    if model != nil {
-      viewContext.delete(model!)
-      selectedModelId = SettingsView.defaultModelId
-    }
+  private func dismissCustomizeModels() {
+    customizeModels = false
   }
 }
 
