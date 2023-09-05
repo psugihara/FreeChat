@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct GrayBorderedCapsuleButtonStyle: PrimitiveButtonStyle {
+struct CapsuleButtonStyle: ButtonStyle {
   @State var hovered = false
   func makeBody(configuration: Configuration) -> some View {
     configuration.label
@@ -15,14 +15,17 @@ struct GrayBorderedCapsuleButtonStyle: PrimitiveButtonStyle {
       .background(
         Capsule()
           .strokeBorder(Color.secondary, lineWidth: 1)
-          .foregroundColor(hovered ? Color.blue : Color.clear)
+          .foregroundColor(Color.primary)
+          .background(hovered ? Color.secondary.opacity(0.2) : Color.clear)
       )
+      .clipShape(Capsule())
       .multilineTextAlignment(.leading) // Center-align multiline text
       .lineLimit(nil) // Allow unlimited lines
       .onHover(perform: { hovering in
         hovered = hovering
-        print("hover")
+        print("hover", hovering)
       })
+      .animation(Animation.easeInOut(duration: 0.1), value: hovered)
   }
 }
 
@@ -75,7 +78,7 @@ struct QuickPromptButton: View {
       .padding(.vertical, 8)
       .padding(.horizontal, 12)
     })
-    .buttonStyle(GrayBorderedCapsuleButtonStyle())
+    .buttonStyle(CapsuleButtonStyle())
   }
 }
 
