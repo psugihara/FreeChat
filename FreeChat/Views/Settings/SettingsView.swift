@@ -34,75 +34,71 @@ struct SettingsView: View {
   @State var editSystemPrompt = false
   
   var systemPromptEditor: some View {
-    LabeledContent("System prompt:") {
-      VStack(alignment: .leading) {
+    LabeledContent("System prompt") {
         Text(systemPrompt)
           .font(.body)
           .multilineTextAlignment(.leading)
           .lineLimit(4)
           .fixedSize(horizontal: false, vertical: true)
-          .padding(.trailing)
+          .foregroundColor(Color(NSColor.secondaryLabelColor))
         
+      HStack {
         Button(action: {
           editSystemPrompt.toggle()
         }, label: {
-          Text("Edit prompt")
+          Text("Customize")
         })
-      }
-    }.padding(.bottom, 10)
+      }.frame(maxWidth: .infinity, alignment: .trailing)
+    }
   }
   
   var modelPicker: some View {
-    LabeledContent("Model:") {
-      VStack(alignment: .leading) {
-        Picker("", selection: $pickedModel) {
-          Text("Default").tag(SettingsView.defaultModelId)
-          ForEach(models) { i in
-            Text(i.name ?? i.url?.lastPathComponent ?? "Untitled").tag(i.id?.uuidString ?? "")
-              .help(i.url?.path ?? "Unknown path")
-          }
-          
-          Divider()
-          Text("Add or remove models...").tag(SettingsView.customizeModelsId)
-        }.onReceive(Just(pickedModel)) { _ in
-          if pickedModel == SettingsView.customizeModelsId {
-            customizeModels = true
-            pickedModel = selectedModelId
-          } else {
-            selectedModelId = pickedModel
-          }
-        }.labelsHidden()
+    VStack(alignment: .leading) {
+      Picker("Model", selection: $pickedModel) {
+        Text("Default").tag(SettingsView.defaultModelId)
+        ForEach(models) { i in
+          Text(i.name ?? i.url?.lastPathComponent ?? "Untitled").tag(i.id?.uuidString ?? "")
+            .help(i.url?.path ?? "Unknown path")
+        }
         
-        Text("The default model is general purpose, small (7B), and works on most computers. Larger models are slower but smarter. Some models specialize in certain tasks like coding Python. FreeChat is compatible with most models in GGUF format.\n\n[Find new models](https://huggingface.co/models?search=GGUF)")
-          .font(.caption)
-          .lineLimit(5)
-          .fixedSize(horizontal: false, vertical: true)
-          .font(.footnote)
-        .font(.footnote)
+        Divider()
+        Text("Add or remove models...").tag(SettingsView.customizeModelsId)
+      }.onReceive(Just(pickedModel)) { _ in
+        if pickedModel == SettingsView.customizeModelsId {
+          customizeModels = true
+          pickedModel = selectedModelId
+        } else {
+          selectedModelId = pickedModel
+        }
       }
+      
+      Text("The default model is general purpose, small (7B), and works on most computers. Larger models are slower but smarter. Some models specialize in certain tasks like coding Python. FreeChat is compatible with most models in GGUF format. [Find new models](https://huggingface.co/models?search=GGUF)")
+        .font(.caption)
+        .foregroundColor(Color(NSColor.secondaryLabelColor))
+        .lineLimit(5)
+        .fixedSize(horizontal: false, vertical: true)
     }
   }
   
   var body: some View {
-      Form {
-        systemPromptEditor
-        if pickedModel != "" {
-          modelPicker
-        }
+    Form {
+      systemPromptEditor
+      if pickedModel != "" {
+        modelPicker
       }
-      .sheet(isPresented: $customizeModels, onDismiss: dismissCustomizeModels) {
-        EditModels()
-      }
-      .sheet(isPresented: $editSystemPrompt, onDismiss: dismissEditSystemPrompt) {
-        EditSystemPrompt()
-      }
-      .padding(20)
-      .navigationTitle("Settings")
-      .onAppear {
-        pickedModel = selectedModelId
-      }
-      .frame(maxWidth: 900, maxHeight: 300)
-
+    }
+    .formStyle(.grouped)
+    .sheet(isPresented: $customizeModels, onDismiss: dismissCustomizeModels) {
+      EditModels()
+    }
+    .sheet(isPresented: $editSystemPrompt, onDismiss: dismissEditSystemPrompt) {
+      EditSystemPrompt()
+    }
+    .navigationTitle("Settings")
+    .onAppear {
+      pickedModel = selectedModelId
+    }
+    .frame(minWidth: 300, maxWidth: 600, minHeight: 220, idealHeight: 260, maxHeight: 400, alignment: .center)
   }
   
   private func dismissEditSystemPrompt() {
