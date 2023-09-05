@@ -18,13 +18,26 @@ struct ConversationView: View {
   
   @State var messages: [Message] = []
   
+  @State var input = ""
   @State var pendingMessageOpacity = 0.0
   @State private var scrollPositions = [String: CGFloat]()
+  @State var quickPrompts = QuickPromptButton.quickPrompts.shuffled().prefix(4)
   
-
+  var nullState: some View {
+    Grid {
+      GridRow {
+        ForEach(quickPrompts) { prompt in
+          QuickPromptButton(input: $input, prompt: prompt)
+        }
+      }
+    }
+    .padding()
+    .frame(maxWidth: .infinity)
+  }
+  
   var body: some View {
-    ScrollView {
-      ScrollViewReader { proxy in
+    ScrollViewReader { proxy in
+      ScrollView {
         VStack(alignment: .leading) {
           ForEach(messages) { m in
             if m == messages.last! {
@@ -38,7 +51,7 @@ struct ConversationView: View {
                   .opacity(pendingMessageOpacity)
                   .animation(Animation.easeOut(duration: 0.6), value: pendingMessageOpacity)
                   .id("\(m.id)\(m.updatedAt as Date?)")
-
+                
               } else {
                 MessageView(m, agentStatus: nil)
                   .id("\(m.id)\(m.updatedAt as Date?)")
@@ -54,34 +67,40 @@ struct ConversationView: View {
         }
         .padding(.vertical, 12)
         .onReceive(
-          agent.$pendingMessage.debounce(for: .seconds(1), scheduler: RunLoop.main)
+            agent.$pendingMessage.debounce(for: .seconds(1), scheduler: RunLoop.main)
         ) { _ in
           scrollToLastIfRecent(proxy)
         }
       }
-    }
-    .textSelection(.enabled)
-    .safeAreaInset(edge: .bottom, spacing: 0) {
-      MessageTextField(conversation: conversation, onSubmit: { s in
-        submit(s)
-      })
-    }
-    .frame(maxWidth: .infinity)
-    .onAppear {
-      messages = conversation.orderedMessages
-      Task {
-        if agent.status == .cold, agent.prompt != conversation.prompt {
-          agent.prompt = conversation.prompt ?? ""
-          await agent.warmup()
+      .textSelection(.enabled)
+      .safeAreaInset(edge: .bottom, spacing: 0) {
+        VStack(spacing: 0) {
+          if messages.count == 0 {
+            nullState
+          }
+          MessageTextField(input: $input, conversation: conversation, onSubmit: { s in
+            submit(input)
+          })
         }
       }
-    }
-    .onChange(of: conversation) { nextConvo in
-      messages = nextConvo.orderedMessages
-      if agent.status == .cold, agent.prompt != conversation.prompt {
-        agent.prompt = nextConvo.prompt ?? ""
+      .frame(maxWidth: .infinity)
+      .onAppear {
+        messages = conversation.orderedMessages
         Task {
-          await agent.warmup()
+          if agent.status == .cold, agent.prompt != conversation.prompt {
+            agent.prompt = conversation.prompt ?? ""
+            await agent.warmup()
+          }
+        }
+      }
+      .onChange(of: conversation) { nextConvo in
+        quickPrompts = QuickPromptButton.quickPrompts.shuffled()[0...4]
+        messages = nextConvo.orderedMessages
+        if agent.status == .cold, agent.prompt != conversation.prompt {
+          agent.prompt = nextConvo.prompt ?? ""
+          Task {
+            await agent.warmup()
+          }
         }
       }
     }
@@ -158,15 +177,22 @@ struct ConversationView: View {
   
 }
 
-//struct ConversationView_Previews: PreviewProvider {
-//  static var previews: some View {
-//    let ctx = PersistenceController.preview.container.viewContext
-//    let c = try! Conversation.create(ctx: ctx)
-//    let _ = try! Message.create(text: "hello", conversation: c, inContext: ctx)
-//    let _ = try! Message.create(text: "Hi", conversation: c, inContext: ctx)
+//struct ConversationView_Previews_Container: View {
+//  var body: some View {
 //
-//
-//    ConversationView(conversation: c).environment(\.managedObjectContext, ctx)
 //  }
 //}
+
+struct ConversationView_Previews: PreviewProvider {
+  static var previews: some View {
+    let ctx = PersistenceController.preview.container.viewContext
+    let c = try! Conversation.create(ctx: ctx)
+    let a = Agent(id: "llama", prompt: "", systemPrompt: "", modelPath: "")
+    //    let _ = try! Message.create(text: "hello", conversation: c, inContext: ctx)
+    //    let _ = try! Message.create(text: "Hi", conversation: c, inContext: ctx)
+    
+    //    ConversationView_Previews_Container
+    ConversationView(conversation: c, agent: a).environment(\.managedObjectContext, ctx)
+  }
+}
 

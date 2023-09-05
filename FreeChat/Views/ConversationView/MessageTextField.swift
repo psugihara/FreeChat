@@ -28,15 +28,16 @@ struct ChatStyle: TextFieldStyle {
 let chatStyle = ChatStyle()
 
 struct MessageTextField: View {
+  @Binding var input: String
   var conversation: Conversation
   var onSubmit: (String) -> Void
 
-  @State private var input = ""
   @FocusState private var focused: Bool
 
   var body: some View {
     Group {
       TextField("Message", text: $input, axis: .vertical)
+        .help("⌥ + ⏎ for new line")
         .onSubmit {
           if CGKeyCode.kVK_Shift.isPressed {
             input += "\n"

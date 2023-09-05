@@ -19,7 +19,8 @@ struct EditSystemPrompt: View {
   
   var body: some View {
     VStack(alignment: .leading) {
-      Text("Edit the system prompt to customize behavior and personality.").font(.caption).padding(.horizontal, 8)
+      Text("Edit the system prompt to customize behavior and personality.").font(.callout).padding(.horizontal, 8)
+        .foregroundColor(.secondary)
       Group {
         TextEditor(text: $pendingSystemPrompt).onAppear {
           pendingSystemPrompt = systemPrompt
