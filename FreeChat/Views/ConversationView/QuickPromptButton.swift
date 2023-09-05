@@ -38,11 +38,11 @@ struct QuickPromptButton: View {
   static let quickPrompts = [
     QuickPrompt(
       title: "Write an email",
-      rest: "to a co-worker that includes the following points:\n"
+      rest: "politely asking a colleague for a status update"
     ),
     QuickPrompt(
       title: "Outline an essay",
-      rest: "that will include these ideas:\n"
+      rest: "about the French Revolution"
     ),
     QuickPrompt(
       title: "Design a DB schema",
@@ -54,11 +54,23 @@ struct QuickPromptButton: View {
     ),
     QuickPrompt(
       title: "How do you",
-      rest: "know when a steak is done"
+      rest: "know when a steak is done?"
     ),
     QuickPrompt(
-      title: "Provide a recipe",
+      title: "Write a recipe",
       rest: "for the perfect martini"
+    ),
+    QuickPrompt(
+      title: "Write a tweet",
+      rest: "about what's going on today"
+    ),
+    QuickPrompt(
+      title: "Write a joke",
+      rest: "about an AI walking into a bar"
+    ),
+    QuickPrompt(
+      title: "Write a 1-liner",
+      rest: "to count lines of code in a directory, ignoring comments"
     )
   ]
   
