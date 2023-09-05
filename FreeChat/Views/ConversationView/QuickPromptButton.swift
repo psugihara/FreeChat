@@ -23,7 +23,6 @@ struct CapsuleButtonStyle: ButtonStyle {
       .lineLimit(nil) // Allow unlimited lines
       .onHover(perform: { hovering in
         hovered = hovering
-        print("hover", hovering)
       })
       .animation(Animation.easeInOut(duration: 0.1), value: hovered)
   }
@@ -77,6 +76,7 @@ struct QuickPromptButton: View {
       }
       .padding(.vertical, 8)
       .padding(.horizontal, 12)
+      .frame(maxWidth: .infinity, alignment: .leading)
     })
     .buttonStyle(CapsuleButtonStyle())
   }

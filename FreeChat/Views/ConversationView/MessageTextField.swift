@@ -28,38 +28,55 @@ struct ChatStyle: TextFieldStyle {
 let chatStyle = ChatStyle()
 
 struct MessageTextField: View {
-  @Binding var input: String
+  @State var input: String = ""
   var conversation: Conversation
   var onSubmit: (String) -> Void
 
   @FocusState private var focused: Bool
+  
+  var nullState: some View {
+    ScrollView(.horizontal, showsIndicators: false) {
+      HStack {
+        ForEach(QuickPromptButton.quickPrompts) { p in
+          QuickPromptButton(input: $input, prompt: p)
+        }
+      }.padding(.horizontal, 10)
+      
+    }.frame(maxWidth: .infinity)
+      
+  }
 
+  
   var body: some View {
-    Group {
-      TextField("Message", text: $input, axis: .vertical)
-        .help("⌥ + ⏎ for new line")
-        .onSubmit {
-          if CGKeyCode.kVK_Shift.isPressed {
-            input += "\n"
-          } else {
-            onSubmit(input)
-            input = ""
+    VStack {
+      if conversation.messages == nil || conversation.messages!.count == 0 {
+        nullState
+      }
+      Group {
+        TextField("Message (⌥ + ⏎ for new line)", text: $input, axis: .vertical)
+          .onSubmit {
+            if CGKeyCode.kVK_Shift.isPressed {
+              input += "\n"
+            } else {
+              onSubmit(input)
+              input = ""
+            }
           }
-        }
-        .focused($focused)
-        .textFieldStyle(chatStyle)
-        .submitLabel(.send)
-        .padding(.all, 10)
-        .onAppear {
-          maybeFocus(conversation)
-        }
-        .onChange(of: conversation) { nextConversation in
-          DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-            maybeFocus(nextConversation)
+          .focused($focused)
+          .textFieldStyle(chatStyle)
+          .submitLabel(.send)
+          .padding(.all, 10)
+          .onAppear {
+            maybeFocus(conversation)
           }
-        }
+          .onChange(of: conversation) { nextConversation in
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+              maybeFocus(nextConversation)
+            }
+          }
+      }
+      .background(.ultraThinMaterial)
     }
-    .background(.ultraThinMaterial)
   }
   
   

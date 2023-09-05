@@ -18,23 +18,9 @@ struct ConversationView: View {
   
   @State var messages: [Message] = []
   
-  @State var input = ""
   @State var pendingMessageOpacity = 0.0
   @State private var scrollPositions = [String: CGFloat]()
-  @State var quickPrompts = QuickPromptButton.quickPrompts.shuffled().prefix(4)
-  
-  var nullState: some View {
-    Grid {
-      GridRow {
-        ForEach(quickPrompts) { prompt in
-          QuickPromptButton(input: $input, prompt: prompt)
-        }
-      }
-    }
-    .padding()
-    .frame(maxWidth: .infinity)
-  }
-  
+    
   var body: some View {
     ScrollViewReader { proxy in
       ScrollView {
@@ -75,11 +61,8 @@ struct ConversationView: View {
       .textSelection(.enabled)
       .safeAreaInset(edge: .bottom, spacing: 0) {
         VStack(spacing: 0) {
-          if messages.count == 0 {
-            nullState
-          }
-          MessageTextField(input: $input, conversation: conversation, onSubmit: { s in
-            submit(input)
+          MessageTextField(conversation: conversation, onSubmit: { s in
+            submit(s)
           })
         }
       }
@@ -94,7 +77,6 @@ struct ConversationView: View {
         }
       }
       .onChange(of: conversation) { nextConvo in
-        quickPrompts = QuickPromptButton.quickPrompts.shuffled()[0...4]
         messages = nextConvo.orderedMessages
         if agent.status == .cold, agent.prompt != conversation.prompt {
           agent.prompt = nextConvo.prompt ?? ""
