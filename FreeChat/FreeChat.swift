@@ -17,6 +17,12 @@ struct FreeChatApp: App {
         .environment(\.managedObjectContext, persistenceController.container.viewContext)
     }
     .commands {
+      // TODO
+//      CommandGroup(after: .toolbar) {
+//        Button("View Prompt") {
+//          print("hello")
+//        }
+//      }
       CommandGroup(replacing: .newItem) {
         Button("New Chat") {
           _ = try? Conversation.create(ctx: persistenceController.container.viewContext)

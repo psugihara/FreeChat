@@ -19,12 +19,14 @@ struct EditSystemPrompt: View {
   
   var body: some View {
     VStack(alignment: .leading) {
-      Text("Edit the system prompt to customize behavior and personality.").font(.callout).padding(.horizontal, 8)
+      Text("Edit the system prompt to customize behavior and personality.").padding(.horizontal, 8)
         .foregroundColor(.secondary)
+        .font(.body)
       Group {
         TextEditor(text: $pendingSystemPrompt).onAppear {
           pendingSystemPrompt = systemPrompt
         }
+        .font(.body)
         .frame(minWidth: 200,
                idealWidth: 250,
                maxWidth: .infinity,
@@ -52,9 +54,8 @@ struct EditSystemPrompt: View {
         }
         .disabled(!systemPromptPendingSave)
       }
-      .frame(maxWidth: .infinity, alignment: .trailing)
-      .padding(.bottom)
-    }.padding()
+      .frame(maxWidth: .infinity, alignment: .bottomTrailing)
+    }.padding(10)
   }
 }
 

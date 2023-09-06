@@ -44,7 +44,6 @@ struct ContentView: View {
         Text("Select a conversation")
       }
     }
-    .navigationTitle(selection.count == 1 ? selection.first!.titleWithDefault : "FreeChat")
     .onReceive(NotificationCenter.default.publisher(for: NSApplication.willTerminateNotification), perform: { output in
       Task {
         await agent?.llama.stopServer()

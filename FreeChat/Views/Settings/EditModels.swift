@@ -60,8 +60,7 @@ struct EditModels: View {
         Spacer()
         Button("Done") {
           dismiss()
-        }.padding(.horizontal, 10).keyboardShortcut(.defaultAction)
-          .buttonStyle(.borderless)
+        }.padding(.horizontal, 10).keyboardShortcut(.escape)
       }
       .frame(maxWidth: .infinity, maxHeight: 27, alignment: .leading)
     }

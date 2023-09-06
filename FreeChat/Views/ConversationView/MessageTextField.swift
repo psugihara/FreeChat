@@ -74,6 +74,9 @@ struct MessageTextField: View {
               maybeFocus(nextConversation)
             }
           }
+          .onChange(of: input) { _ in
+            focused = true
+          }
       }
       .background(.thinMaterial)
     }

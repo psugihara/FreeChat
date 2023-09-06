@@ -76,7 +76,7 @@ struct NavList: View {
       .keyboardShortcut(.defaultAction)
     }
   }
-  
+
   private func saveNewTitle(conversation: Conversation) {
     conversation.title = newTitle
     newTitle = ""

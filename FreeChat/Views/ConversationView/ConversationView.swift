@@ -96,9 +96,11 @@ struct ConversationView: View {
 
     }
     .background(Color("TextBackground"))
+    .navigationTitle(conversation.titleWithDefault)
+    .navigationSubtitle(messages.count > 1 ? "Last message \(Text(messages.last!.createdAt ?? Date(), format: .relative(presentation: .numeric)))" : "")
   }
   
-  func scrollToLastIfRecent(_ proxy: ScrollViewProxy) {
+  private func scrollToLastIfRecent(_ proxy: ScrollViewProxy) {
     let fiveSecondsAgo = Date() - TimeInterval(5) // 5 seconds ago
     let last = messages.last
     if last?.updatedAt != nil, last!.updatedAt! >= fiveSecondsAgo {

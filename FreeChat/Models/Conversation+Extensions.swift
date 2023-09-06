@@ -37,16 +37,17 @@ extension Conversation {
   }
   
   var dateTitle: String {
-    titleFormatter.string(from: createdAt ?? Date())
+    (createdAt ?? Date())!.formatted(Conversation.titleFormat)
   }
 
-  private var titleFormatter: DateFormatter {
-    let formatter = DateFormatter()
-    formatter.dateStyle = .short
-    formatter.timeStyle = .short
-    return formatter
-  }
-
+  static let titleFormat = Date.FormatStyle()
+    .year()
+    .day()
+    .month()
+    .hour()
+    .minute()
+    .locale(Locale(identifier: "en_US"))
+  
   public override func willSave() {
     super.willSave()
 
