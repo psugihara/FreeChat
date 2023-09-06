@@ -86,6 +86,7 @@ struct MessageView: View {
           .markdownCodeSyntaxHighlighter(.splash(theme: self.theme))
           .textSelection(.enabled)
           .frame(maxWidth: .infinity, alignment: .leading)
+          .transition(.identity)
       }
       .padding(.top, 3)
       .padding(.bottom, 8)

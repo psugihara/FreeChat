@@ -14,9 +14,9 @@ struct CapsuleButtonStyle: ButtonStyle {
       .font(hovered ? .body.bold() : .body)
       .background(
         Capsule()
-          .strokeBorder(Color.secondary, lineWidth: 1)
+          .strokeBorder(Color.primary.opacity(0.2), lineWidth: 1)
           .foregroundColor(Color.primary)
-          .background(hovered ? Color.secondary.opacity(0.2) : Color.clear)
+          .background(hovered ? Color.secondary.opacity(0.05) : Color.clear)
       )
       .clipShape(Capsule())
       .multilineTextAlignment(.leading) // Center-align multiline text
@@ -37,12 +37,24 @@ struct QuickPromptButton: View {
   
   static let quickPrompts = [
     QuickPrompt(
-      title: "Write an email",
-      rest: "politely asking a colleague for a status update"
+      title: "Simulate a game",
+      rest: "of D&D. You are dungeon master. I am a half-orc half-elf ranger named Calid. I carry a bow and wear leather armor for now. Start the campaign now. Describe the scene and my options for next steps."
     ),
     QuickPrompt(
-      title: "Outline an essay",
-      rest: "about the French Revolution"
+      title: "Write an email",
+      rest: "asking a colleague for a quick status update"
+    ),
+    QuickPrompt(
+      title: "What does it mean",
+      rest: "to be human in 2023?"
+    ),
+    QuickPrompt(
+      title: "Who are you?",
+      rest: "Do you consider yourself conscious?"
+    ),
+    QuickPrompt(
+      title: "Write an outline",
+      rest: "of the leadup and impact of the French Revolution"
     ),
     QuickPrompt(
       title: "Design a DB schema",
@@ -61,36 +73,43 @@ struct QuickPromptButton: View {
       rest: "for the perfect martini"
     ),
     QuickPrompt(
-      title: "Write a tweet",
-      rest: "about what's going on today"
+      title: "Write a dad joke",
+      rest: "that really hits"
     ),
     QuickPrompt(
-      title: "Write a joke",
-      rest: "about an AI walking into a bar"
+      title: "Write a linux 1-liner",
+      rest: "to count lines of code in a directory"
     ),
     QuickPrompt(
-      title: "Write a 1-liner",
-      rest: "to count lines of code in a directory, ignoring comments"
+      title: "Write me content",
+      rest: "for linkedin to maximize engagement. It should be about how this post was written by AI. Keep it brief, concise, smart."
+    ),
+    QuickPrompt(
+      title: "How does it feel",
+      rest: "to have no body?"
     )
-  ]
+  ].shuffled()
   
   @Binding var input: String
   var prompt: QuickPrompt
   
   var body: some View {
-    Button(action: {
-      print("clcik")
-      input = prompt.title + " " + prompt.rest
-    }, label: {
-      VStack(alignment: .leading) {
-        Text(prompt.title).bold().font(.caption2).lineLimit(1)
-        Text(prompt.rest).font(.caption2).lineLimit(1).foregroundColor(.secondary)
-      }
-      .padding(.vertical, 8)
-      .padding(.horizontal, 12)
-      .frame(maxWidth: .infinity, alignment: .leading)
-    })
-    .buttonStyle(CapsuleButtonStyle())
+    if input == "" {
+      Button(action: {
+        print("clcik")
+        input = prompt.title + " " + prompt.rest
+      }, label: {
+        VStack(alignment: .leading) {
+          Text(prompt.title).bold().font(.caption2).lineLimit(1)
+          Text(prompt.rest).font(.caption2).lineLimit(1).foregroundColor(.secondary)
+        }
+        .padding(.vertical, 8)
+        .padding(.horizontal, 12)
+        .frame(maxWidth: .infinity, alignment: .leading)
+      })
+      .buttonStyle(CapsuleButtonStyle())
+      .frame(maxWidth: 300)
+    }
   }
 }
 

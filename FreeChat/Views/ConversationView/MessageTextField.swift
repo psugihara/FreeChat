@@ -20,7 +20,7 @@ struct ChatStyle: TextFieldStyle {
       .focusable()
       .focused($isFocused)
       .overlay(
-        RoundedRectangle(cornerRadius: 16).stroke(Color.primary.opacity(0.2), lineWidth: 1)
+        Capsule().stroke(Color.primary.opacity(0.2), lineWidth: 1)
       )
   }
 }
@@ -40,7 +40,7 @@ struct MessageTextField: View {
         ForEach(QuickPromptButton.quickPrompts) { p in
           QuickPromptButton(input: $input, prompt: p)
         }
-      }.padding(.horizontal, 10)
+      }.padding(.horizontal, 10).padding(.top, 400)
       
     }.frame(maxWidth: .infinity)
       
@@ -75,7 +75,7 @@ struct MessageTextField: View {
             }
           }
       }
-      .background(.ultraThinMaterial)
+      .background(.thinMaterial)
     }
   }
   

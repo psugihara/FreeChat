@@ -18,9 +18,11 @@ struct ConversationView: View {
   
   @State var messages: [Message] = []
   
-  @State var pendingMessageOpacity = 0.0
+  @State var showUserMessage = true
+  @State var showResponse = true
   @State private var scrollPositions = [String: CGFloat]()
-    
+  @State var pendingMessageText = ""
+  
   var body: some View {
     ScrollViewReader { proxy in
       ScrollView {
@@ -28,32 +30,33 @@ struct ConversationView: View {
           ForEach(messages) { m in
             if m == messages.last! {
               if m == pendingMessage {
-                Group {
-                  MessageView(pendingMessage!, overrideText: agent.pendingMessage, agentStatus: agent.status)
-                    .onAppear {
-                      scrollToLastIfRecent(proxy)
-                    }
-                }.offset(x: -30 * (1 - pendingMessageOpacity))
-                  .opacity(pendingMessageOpacity)
-                  .animation(Animation.easeOut(duration: 0.6), value: pendingMessageOpacity)
+                MessageView(pendingMessage!, overrideText: pendingMessageText, agentStatus: agent.status)
+                  .onAppear {
+                    scrollToLastIfRecent(proxy)
+                  }
+                  .scaleEffect(x: showResponse ? 1 : 0.5, y: showResponse ? 1 : 0.5, anchor: .bottomLeading)
+                  .opacity(showResponse ? 1 : 0)
+                  .animation(.interpolatingSpring(stiffness: 170, damping: 20), value: showResponse)
                   .id("\(m.id)\(m.updatedAt as Date?)")
                 
               } else {
                 MessageView(m, agentStatus: nil)
                   .id("\(m.id)\(m.updatedAt as Date?)")
-                  .transition(.opacity)
                   .onAppear {
                     scrollToLastIfRecent(proxy)
                   }
+                  .scaleEffect(x: showUserMessage ? 1 : 0.5, y: showUserMessage ? 1 : 0.5, anchor: .bottomLeading)
+                  .opacity(showUserMessage ? 1 : 0)
+                  .animation(.interpolatingSpring(stiffness: 170, damping: 20), value: showUserMessage)
               }
             } else {
-              MessageView(m, agentStatus: nil).transition(.opacity).id("\(m.id)\(m.updatedAt as Date?)")
+              MessageView(m, agentStatus: nil).transition(.identity).id("\(m.id)\(m.updatedAt as Date?)")
             }
           }
         }
         .padding(.vertical, 12)
         .onReceive(
-            agent.$pendingMessage.debounce(for: .seconds(1), scheduler: RunLoop.main)
+          agent.$pendingMessage.debounce(for: .seconds(1), scheduler: RunLoop.main)
         ) { _ in
           scrollToLastIfRecent(proxy)
         }
@@ -85,7 +88,14 @@ struct ConversationView: View {
           }
         }
       }
+      .onReceive(
+        agent.$pendingMessage.throttle(for: .seconds(0.07), scheduler: RunLoop.main, latest: true)
+      ) { text in
+        pendingMessageText = text
+      }
+
     }
+    .background(Color("TextBackground"))
   }
   
   func scrollToLastIfRecent(_ proxy: ScrollViewProxy) {
@@ -106,10 +116,14 @@ struct ConversationView: View {
       return
     }
     
+    showUserMessage = false
     // Create user's message
     _ = try! Message.create(text: input, fromId: Message.USER_SPEAKER_ID, conversation: conversation, inContext: viewContext)
     messages = conversation.orderedMessages
-    pendingMessageOpacity = 0
+    showResponse = false
+    withAnimation {
+      showUserMessage = true
+    }
     
     // Pending message for bot's reply
     let m = Message(context: viewContext)
@@ -126,7 +140,7 @@ struct ConversationView: View {
       messages = conversation.orderedMessages
       
       withAnimation {
-        pendingMessageOpacity = 1
+        showResponse = true
       }
     }
     
@@ -170,10 +184,6 @@ struct ConversationView_Previews: PreviewProvider {
     let ctx = PersistenceController.preview.container.viewContext
     let c = try! Conversation.create(ctx: ctx)
     let a = Agent(id: "llama", prompt: "", systemPrompt: "", modelPath: "")
-    //    let _ = try! Message.create(text: "hello", conversation: c, inContext: ctx)
-    //    let _ = try! Message.create(text: "Hi", conversation: c, inContext: ctx)
-    
-    //    ConversationView_Previews_Container
     ConversationView(conversation: c, agent: a).environment(\.managedObjectContext, ctx)
   }
 }

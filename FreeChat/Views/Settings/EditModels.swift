@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct EditModels: View {
+  @Environment(\.colorScheme) var colorScheme
+  
   static let formatErrorText = "Model files must be in .gguf format"
   private static let defaultModelId = "default"
   
@@ -62,8 +64,8 @@ struct EditModels: View {
           .buttonStyle(.borderless)
       }
       .frame(maxWidth: .infinity, maxHeight: 27, alignment: .leading)
-      .background(Color(NSColor.controlBackgroundColor))
     }
+    .background(Material.bar)
   }
   
   var modelList: some View {
@@ -83,13 +85,13 @@ struct EditModels: View {
     }
     .listStyle(.inset(alternatesRowBackgrounds: true))
     .onDeleteCommand(perform: deleteSelected)
-    .safeAreaInset(edge: .bottom, spacing: 0) {
-      bottomToolbar
-    }
   }
   
   var body: some View {
-    modelList.frame(width: 400, height: 270)
+    VStack(spacing: 0) {
+      modelList
+      bottomToolbar
+    }.frame(width: 400, height: 270)
   }
   
   private func deleteSelected() {

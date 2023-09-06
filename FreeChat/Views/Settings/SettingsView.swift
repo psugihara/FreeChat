@@ -35,27 +35,28 @@ struct SettingsView: View {
   
   var systemPromptEditor: some View {
     LabeledContent("System prompt") {
+      HStack {
         Text(systemPrompt)
           .font(.body)
           .multilineTextAlignment(.leading)
           .lineLimit(4)
           .fixedSize(horizontal: false, vertical: true)
           .foregroundColor(Color(NSColor.secondaryLabelColor))
-        
-      HStack {
+        Spacer()
         Button(action: {
           editSystemPrompt.toggle()
         }, label: {
           Text("Customize")
         })
-      }.frame(maxWidth: .infinity, alignment: .trailing)
+        .padding(.leading, 10)
+      }.frame(maxWidth: .infinity)
     }
   }
   
   var modelPicker: some View {
     VStack(alignment: .leading) {
       Picker("Model", selection: $pickedModel) {
-        Text("Default").tag(SettingsView.defaultModelId)
+        Text("Default (zaraxls-l2-7b.q5_K_M.gguf)").tag(SettingsView.defaultModelId)
         ForEach(models) { i in
           Text(i.name ?? i.url?.lastPathComponent ?? "Untitled").tag(i.id?.uuidString ?? "")
             .help(i.url?.path ?? "Unknown path")
@@ -98,7 +99,7 @@ struct SettingsView: View {
     .onAppear {
       pickedModel = selectedModelId
     }
-    .frame(minWidth: 300, maxWidth: 600, minHeight: 220, idealHeight: 260, maxHeight: 400, alignment: .center)
+    .frame(minWidth: 300, maxWidth: 600, minHeight: 184, idealHeight: 195, maxHeight: 400, alignment: .center)
   }
   
   private func dismissEditSystemPrompt() {
