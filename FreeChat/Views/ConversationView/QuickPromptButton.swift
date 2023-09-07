@@ -16,7 +16,8 @@ struct CapsuleButtonStyle: ButtonStyle {
         Capsule()
           .strokeBorder(Color.primary.opacity(0.2), lineWidth: 1)
           .foregroundColor(Color.primary)
-          .background(hovered ? Color.secondary.opacity(0.05) : Color.clear)
+          .background(hovered ? Color.secondary.opacity(0.02) : Color.clear)
+          .shadow(radius: hovered ? 5 : 0)
       )
       .clipShape(Capsule())
       .multilineTextAlignment(.leading) // Center-align multiline text
@@ -24,7 +25,7 @@ struct CapsuleButtonStyle: ButtonStyle {
       .onHover(perform: { hovering in
         hovered = hovering
       })
-      .animation(Animation.easeInOut(duration: 0.1), value: hovered)
+      .animation(Animation.easeInOut(duration: 0.2), value: hovered)
   }
 }
 
@@ -94,22 +95,19 @@ struct QuickPromptButton: View {
   var prompt: QuickPrompt
   
   var body: some View {
-    if input == "" {
-      Button(action: {
-        print("clcik")
-        input = prompt.title + " " + prompt.rest
-      }, label: {
-        VStack(alignment: .leading) {
-          Text(prompt.title).bold().font(.caption2).lineLimit(1)
-          Text(prompt.rest).font(.caption2).lineLimit(1).foregroundColor(.secondary)
-        }
-        .padding(.vertical, 8)
-        .padding(.horizontal, 12)
-        .frame(maxWidth: .infinity, alignment: .leading)
-      })
-      .buttonStyle(CapsuleButtonStyle())
-      .frame(maxWidth: 300)
-    }
+    Button(action: {
+      input = prompt.title + " " + prompt.rest
+    }, label: {
+      VStack(alignment: .leading) {
+        Text(prompt.title).bold().font(.caption2).lineLimit(1)
+        Text(prompt.rest).font(.caption2).lineLimit(1).foregroundColor(.secondary)
+      }
+      .padding(.vertical, 8)
+      .padding(.horizontal, 20)
+      .frame(maxWidth: .infinity, alignment: .leading)
+    })
+    .buttonStyle(CapsuleButtonStyle())
+    .frame(maxWidth: 300)
   }
 }
 

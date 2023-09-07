@@ -34,9 +34,11 @@ struct EditSystemPrompt: View {
                idealHeight: 120,
                maxHeight: .infinity,
                alignment: .center)
+        .scrollContentBackground(.hidden)
+        .background(.clear)
       }
       .padding(EdgeInsets(top: 8, leading: 4, bottom: 8, trailing: 4))
-      .background(Color("TextBackground"))
+      .background(.thinMaterial)
       
       HStack {
         Button("Restore Default") {

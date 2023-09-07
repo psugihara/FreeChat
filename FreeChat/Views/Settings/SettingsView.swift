@@ -35,9 +35,9 @@ struct SettingsView: View {
   
   var systemPromptEditor: some View {
     LabeledContent("System prompt") {
-      HStack {
+      ZStack(alignment: .topTrailing) {
         Text(systemPrompt)
-          .font(.body)
+          .font(.callout)
           .multilineTextAlignment(.leading)
           .lineLimit(4)
           .fixedSize(horizontal: false, vertical: true)
@@ -49,6 +49,7 @@ struct SettingsView: View {
           Text("Customize")
         })
         .padding(.leading, 10)
+        .padding(.top, -22.0)
       }.frame(maxWidth: .infinity)
     }
   }
@@ -74,7 +75,7 @@ struct SettingsView: View {
       }
       
       Text("The default model is general purpose, small (7B), and works on most computers. Larger models are slower but smarter. Some models specialize in certain tasks like coding Python. FreeChat is compatible with most models in GGUF format. [Find new models](https://huggingface.co/models?search=GGUF)")
-        .font(.caption)
+        .font(.callout)
         .foregroundColor(Color(NSColor.secondaryLabelColor))
         .lineLimit(5)
         .fixedSize(horizontal: false, vertical: true)

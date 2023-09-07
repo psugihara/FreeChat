@@ -63,11 +63,9 @@ struct ConversationView: View {
       }
       .textSelection(.enabled)
       .safeAreaInset(edge: .bottom, spacing: 0) {
-        VStack(spacing: 0) {
-          MessageTextField(conversation: conversation, onSubmit: { s in
-            submit(s)
-          })
-        }
+        MessageTextField(conversation: conversation, onSubmit: { s in
+          submit(s)
+        })
       }
       .frame(maxWidth: .infinity)
       .onAppear {
@@ -95,7 +93,6 @@ struct ConversationView: View {
       }
 
     }
-    .background(Color("TextBackground"))
     .navigationTitle(conversation.titleWithDefault)
     .navigationSubtitle(messages.count > 1 ? "Last message \(Text(messages.last!.createdAt ?? Date(), format: .relative(presentation: .numeric)))" : "")
   }

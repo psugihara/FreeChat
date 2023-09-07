@@ -31,7 +31,8 @@ struct MessageTextField: View {
   @State var input: String = ""
   var conversation: Conversation
   var onSubmit: (String) -> Void
-
+  @State var showNullState = false
+  
   @FocusState private var focused: Bool
   
   var nullState: some View {
@@ -39,50 +40,70 @@ struct MessageTextField: View {
       HStack {
         ForEach(QuickPromptButton.quickPrompts) { p in
           QuickPromptButton(input: $input, prompt: p)
+          
         }
       }.padding(.horizontal, 10).padding(.top, 400)
       
     }.frame(maxWidth: .infinity)
-      
   }
-
   
-  var body: some View {
-    VStack {
-      if conversation.messages == nil || conversation.messages!.count == 0 {
-        nullState
-      }
-      Group {
-        TextField("Message (⌥ + ⏎ for new line)", text: $input, axis: .vertical)
-          .onSubmit {
-            if CGKeyCode.kVK_Shift.isPressed {
-              input += "\n"
-            } else {
-              onSubmit(input)
-              input = ""
-            }
+  var inputField: some View {
+    Group {
+      TextField("Message (⌥ + ⏎ for new line)", text: $input, axis: .vertical)
+        .onSubmit {
+          if CGKeyCode.kVK_Shift.isPressed {
+            input += "\n"
+          } else {
+            onSubmit(input)
+            input = ""
           }
-          .focused($focused)
-          .textFieldStyle(chatStyle)
-          .submitLabel(.send)
-          .padding(.all, 10)
-          .onAppear {
-            maybeFocus(conversation)
+        }
+        .focused($focused)
+        .textFieldStyle(chatStyle)
+        .submitLabel(.send)
+        .padding(.all, 10)
+        .onAppear {
+          maybeFocus(conversation)
+        }
+        .onChange(of: conversation) { nextConversation in
+          DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            maybeFocus(nextConversation)
           }
-          .onChange(of: conversation) { nextConversation in
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-              maybeFocus(nextConversation)
-            }
-          }
-          .onChange(of: input) { _ in
-            focused = true
-          }
-      }
-      .background(.thinMaterial)
+        }
+        .onChange(of: input) { _ in
+          focused = true
+          
+        }
+        .background(.thinMaterial)
     }
   }
   
   
+  var body: some View {
+    VStack(alignment: .trailing) {
+      if showNullState {
+        nullState.transition(.push(from: .leading))
+      }
+      inputField
+    }
+    .onAppear {
+      maybeShowNullState()
+    }
+    .onChange(of: conversation.messages) { m in
+      maybeShowNullState(newMessages: m)
+    }
+    .onChange(of: input) { newInput in
+      maybeShowNullState(newInput: newInput)
+    }
+  }
+  
+  private func maybeShowNullState(newMessages: NSSet? = nil, newInput: String? = nil) {
+    let m = newMessages ?? conversation.messages
+    let i = newInput ?? input
+    withAnimation {
+      showNullState = (m == nil || m!.count == 0) && i == ""
+    }
+  }
   
   private func maybeFocus(_ conversation: Conversation) {
     if conversation.createdAt == nil { return }
