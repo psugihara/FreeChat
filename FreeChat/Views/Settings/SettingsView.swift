@@ -39,10 +39,11 @@ struct SettingsView: View {
         Text(systemPrompt)
           .font(.callout)
           .multilineTextAlignment(.leading)
-          .lineLimit(4)
+          .lineLimit(6, reservesSpace: false)
           .fixedSize(horizontal: false, vertical: true)
           .foregroundColor(Color(NSColor.secondaryLabelColor))
-        Spacer()
+          .padding(.top, 3)
+        
         Button(action: {
           editSystemPrompt.toggle()
         }, label: {
