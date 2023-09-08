@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		A11721992A7D5274003B0358 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = A11721982A7D5274003B0358 /* README.md */; };
 		A117219C2A7D7B70003B0358 /* MarkdownUI in Frameworks */ = {isa = PBXBuildFile; productRef = A117219B2A7D7B70003B0358 /* MarkdownUI */; };
-		A11AAE6E2A9A8824000D8BCD /* server in Resources */ = {isa = PBXBuildFile; fileRef = A11AAE6D2A9A8824000D8BCD /* server */; };
 		A11AAE702A9A9215000D8BCD /* ggml-metal.metal in Sources */ = {isa = PBXBuildFile; fileRef = A11AAE6F2A9A9215000D8BCD /* ggml-metal.metal */; };
 		A11AAE712A9A9306000D8BCD /* ggml-metal.metal in Copy Metal */ = {isa = PBXBuildFile; fileRef = A11AAE6F2A9A9215000D8BCD /* ggml-metal.metal */; };
 		A12B52DC2AA10FB200658707 /* zaraxls-l2-7b.q5_K_M.gguf in Resources */ = {isa = PBXBuildFile; fileRef = A12B52DB2AA10FA100658707 /* zaraxls-l2-7b.q5_K_M.gguf */; };
@@ -28,6 +27,7 @@
 		A17A2E192A79A006006CDD90 /* LlamaServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A17A2E132A79A005006CDD90 /* LlamaServer.swift */; };
 		A17A2E1F2A79A075006CDD90 /* EventSource in Frameworks */ = {isa = PBXBuildFile; productRef = A17A2E1E2A79A075006CDD90 /* EventSource */; };
 		A19AA5222AA667BE009D9573 /* QuickPromptButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = A19AA5212AA667BE009D9573 /* QuickPromptButton.swift */; };
+		A19AA5242AAB9ED4009D9573 /* server in Resources */ = {isa = PBXBuildFile; fileRef = A19AA5232AAB9ED3009D9573 /* server */; };
 		A1A286E82A7D8A7D0004967A /* MessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1A286E72A7D8A7D0004967A /* MessageView.swift */; };
 		A1A286F52A7E17750004967A /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1A286F42A7E17750004967A /* main.swift */; };
 		A1A286FD2A7E1E460004967A /* server-watchdog in Embed helper tools */ = {isa = PBXBuildFile; fileRef = A1A286F22A7E17750004967A /* server-watchdog */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
@@ -106,7 +106,6 @@
 
 /* Begin PBXFileReference section */
 		A11721982A7D5274003B0358 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
-		A11AAE6D2A9A8824000D8BCD /* server */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = server; sourceTree = "<group>"; };
 		A11AAE6F2A9A9215000D8BCD /* ggml-metal.metal */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.metal; path = "ggml-metal.metal"; sourceTree = "<group>"; };
 		A12B52DB2AA10FA100658707 /* zaraxls-l2-7b.q5_K_M.gguf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "zaraxls-l2-7b.q5_K_M.gguf"; sourceTree = "<group>"; };
 		A12B52DD2AA5228100658707 /* EditModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditModels.swift; sourceTree = "<group>"; };
@@ -122,6 +121,7 @@
 		A17A2E122A79A005006CDD90 /* Agent.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Agent.swift; sourceTree = "<group>"; };
 		A17A2E132A79A005006CDD90 /* LlamaServer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LlamaServer.swift; sourceTree = "<group>"; };
 		A19AA5212AA667BE009D9573 /* QuickPromptButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickPromptButton.swift; sourceTree = "<group>"; };
+		A19AA5232AAB9ED3009D9573 /* server */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = server; sourceTree = "<group>"; };
 		A1A286E72A7D8A7D0004967A /* MessageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageView.swift; sourceTree = "<group>"; };
 		A1A286F22A7E17750004967A /* server-watchdog */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "server-watchdog"; sourceTree = BUILT_PRODUCTS_DIR; };
 		A1A286F42A7E17750004967A /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
@@ -208,9 +208,9 @@
 		A17A2E1B2A79A00D006CDD90 /* NPC */ = {
 			isa = PBXGroup;
 			children = (
-				A11AAE6D2A9A8824000D8BCD /* server */,
 				A11AAE6F2A9A9215000D8BCD /* ggml-metal.metal */,
 				A17A2E122A79A005006CDD90 /* Agent.swift */,
+				A19AA5232AAB9ED3009D9573 /* server */,
 				A17A2E132A79A005006CDD90 /* LlamaServer.swift */,
 				A12B52DB2AA10FA100658707 /* zaraxls-l2-7b.q5_K_M.gguf */,
 				A1A286F32A7E17750004967A /* server-watchdog */,
@@ -461,7 +461,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A11AAE6E2A9A8824000D8BCD /* server in Resources */,
+				A19AA5242AAB9ED4009D9573 /* server in Resources */,
 				A11721992A7D5274003B0358 /* README.md in Resources */,
 				A1F6172D2A782AA200F2048C /* Preview Assets.xcassets in Resources */,
 				A12B52DC2AA10FB200658707 /* zaraxls-l2-7b.q5_K_M.gguf in Resources */,

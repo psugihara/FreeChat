@@ -36,13 +36,16 @@ struct SettingsView: View {
   var systemPromptEditor: some View {
     LabeledContent("System prompt") {
       ZStack(alignment: .topTrailing) {
-        Text(systemPrompt)
-          .font(.callout)
-          .multilineTextAlignment(.leading)
-          .lineLimit(6, reservesSpace: false)
-          .fixedSize(horizontal: false, vertical: true)
-          .foregroundColor(Color(NSColor.secondaryLabelColor))
-          .padding(.top, 3)
+        HStack {
+          Text(systemPrompt)
+            .font(.callout)
+            .multilineTextAlignment(.leading)
+            .lineLimit(6, reservesSpace: false)
+            .fixedSize(horizontal: false, vertical: true)
+            .foregroundColor(Color(NSColor.secondaryLabelColor))
+            .padding(.top, 3)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
         
         Button(action: {
           editSystemPrompt.toggle()

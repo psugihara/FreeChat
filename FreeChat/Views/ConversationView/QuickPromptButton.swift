@@ -88,6 +88,26 @@ struct QuickPromptButton: View {
     QuickPrompt(
       title: "How does it feel",
       rest: "to have no body?"
+    ),
+    QuickPrompt(
+      title: "How do I practice zen",
+      rest: "while driving?"
+    ),
+    QuickPrompt(
+      title: "Can you teach me",
+      rest: "about finite fields?"
+    ),
+    QuickPrompt(
+      title: "Can you teach me",
+      rest: "about the lean startup methodology?"
+    ),
+    QuickPrompt(
+      title: "Can you list some",
+      rest: "topics that would be useful to learn about when starting a startup?"
+    ),
+    QuickPrompt(
+      title: "How has Y Combinator",
+      rest: "been so succesful? What will the next one look like?"
     )
   ].shuffled()
   

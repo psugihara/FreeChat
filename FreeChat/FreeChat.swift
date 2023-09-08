@@ -9,7 +9,7 @@ import SwiftUI
 
 @main
 struct FreeChatApp: App {
-  let persistenceController = PersistenceController.shared  
+  let persistenceController = PersistenceController.shared
   
   var body: some Scene {
     WindowGroup {
@@ -17,12 +17,6 @@ struct FreeChatApp: App {
         .environment(\.managedObjectContext, persistenceController.container.viewContext)
     }
     .commands {
-      // TODO
-//      CommandGroup(after: .toolbar) {
-//        Button("View Prompt") {
-//          print("hello")
-//        }
-//      }
       CommandGroup(replacing: .newItem) {
         Button("New Chat") {
           _ = try? Conversation.create(ctx: persistenceController.container.viewContext)

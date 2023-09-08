@@ -82,7 +82,8 @@ struct MessageTextField: View {
   var body: some View {
     VStack(alignment: .trailing) {
       if showNullState {
-        nullState.transition(.push(from: .leading))
+        nullState.transition(.slide.combined(with: .opacity))
+//        nullState.transition(.asymmetric(insertion: .push(from: .leading), removal: .opacity))
       }
       inputField
     }
