@@ -61,11 +61,11 @@ actor LlamaServer {
     
     monitor.standardInput = hearbeat
     
-#if !DEBUG
+//#if !DEBUG
     let monitorOutputPipe = Pipe()
     monitor.standardOutput = monitorOutputPipe
     monitor.standardError = monitorOutputPipe
-#endif
+//#endif
     
     try monitor.run()
     
@@ -79,7 +79,7 @@ actor LlamaServer {
     let startTime = DispatchTime.now()
     
     
-    process.executableURL = Bundle.main.url(forResource: "server", withExtension: "")
+    process.executableURL = Bundle.main.url(forAuxiliaryExecutable: "server")
     let processes = ProcessInfo.processInfo.activeProcessorCount
     process.arguments = [
       "--model", modelPath,

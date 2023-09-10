@@ -12,6 +12,7 @@ extension Conversation {
   static func create(ctx: NSManagedObjectContext) throws -> Self {
     let record = self.init(context: ctx)
     record.createdAt = Date()
+    record.lastMessageAt = record.createdAt
     
     try ctx.save()
     return record

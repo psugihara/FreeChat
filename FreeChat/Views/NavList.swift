@@ -11,7 +11,7 @@ struct NavList: View {
   @Environment(\.managedObjectContext) private var viewContext
   
   @FetchRequest(
-    sortDescriptors: [NSSortDescriptor(keyPath: \Conversation.updatedAt, ascending: false)],
+    sortDescriptors: [NSSortDescriptor(keyPath: \Conversation.lastMessageAt, ascending: false)],
     animation: .default)
   private var items: FetchedResults<Conversation>
   

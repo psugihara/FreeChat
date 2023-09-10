@@ -29,7 +29,7 @@ let chatStyle = ChatStyle()
 
 struct MessageTextField: View {
   @State var input: String = ""
-  var conversation: Conversation
+  @ObservedObject var conversation: Conversation
   var onSubmit: (String) -> Void
   @State var showNullState = false
   
@@ -82,13 +82,15 @@ struct MessageTextField: View {
   var body: some View {
     VStack(alignment: .trailing) {
       if showNullState {
-        nullState.transition(.slide.combined(with: .opacity))
-//        nullState.transition(.asymmetric(insertion: .push(from: .leading), removal: .opacity))
+        nullState.transition(.asymmetric(insertion: .push(from: .trailing), removal: .opacity))
       }
       inputField
     }
     .onAppear {
       maybeShowNullState()
+    }
+    .onChange(of: conversation) { c in
+      maybeShowNullState(newMessages: c.messages)
     }
     .onChange(of: conversation.messages) { m in
       maybeShowNullState(newMessages: m)

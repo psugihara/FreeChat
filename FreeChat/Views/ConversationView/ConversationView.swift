@@ -89,7 +89,9 @@ struct ConversationView: View {
       .onReceive(
         agent.$pendingMessage.throttle(for: .seconds(0.07), scheduler: RunLoop.main, latest: true)
       ) { text in
-        pendingMessageText = text
+        if conversation.prompt != nil, agent.prompt.hasSuffix(conversation.prompt!) {
+          pendingMessageText = text
+        }
       }
 
     }
@@ -118,7 +120,6 @@ struct ConversationView: View {
     showUserMessage = false
     // Create user's message
     _ = try! Message.create(text: input, fromId: Message.USER_SPEAKER_ID, conversation: conversation, inContext: viewContext)
-    messages = conversation.orderedMessages
     showResponse = false
     withAnimation {
       showUserMessage = true
@@ -161,10 +162,19 @@ struct ConversationView: View {
         } catch (let error) {
           print("error creating message", error.localizedDescription)
         }
+
+        pendingMessage = nil
+        agent.pendingMessage = ""
+
+        // Make sure messages are still visible before updating them.
+        // Otherwise the user may have switched conversations.
+        let ordered = conversation.orderedMessages
+        if messages.first != ordered.first {
+          return
+        }
+
         withAnimation {
           messages = conversation.orderedMessages
-          pendingMessage = nil
-          agent.pendingMessage = ""
         }
       }
     }
