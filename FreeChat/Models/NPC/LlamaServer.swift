@@ -61,11 +61,11 @@ actor LlamaServer {
     
     monitor.standardInput = hearbeat
     
-//#if !DEBUG
+#if !DEBUG
     let monitorOutputPipe = Pipe()
     monitor.standardOutput = monitorOutputPipe
     monitor.standardError = monitorOutputPipe
-//#endif
+#endif
     
     try monitor.run()
     
@@ -95,7 +95,7 @@ actor LlamaServer {
     print("starting llama.cpp server \(process.arguments!.joined(separator: " "))")
     
     outputPipe = Pipe()
-    process.standardInput = Pipe()  // fails without this being set!
+    process.standardInput = Pipe()
     
 #if !DEBUG
     process.standardOutput = outputPipe

@@ -31,13 +31,15 @@ struct ContentView: View {
   
   @State var agent: Agent?
   
+  @StateObject var conversationManager = ConversationManager()
+  
   var body: some View {
     NavigationSplitView {
       NavList(selection: $selection, showDeleteConfirmation: $showDeleteConfirmation)
         .navigationSplitViewColumnWidth(ideal: 160)
     } detail: {
-      if selection.count == 1, agent != nil {
-        ConversationView(conversation: selection.first!, agent: agent!)
+      if conversationManager.currentConversation != nil, agent != nil {
+        ConversationView(agent: agent!).environmentObject(conversationManager)
       } else if conversations.count == 0 {
         Text("Hit “+” to start a conversation")
       } else {
@@ -54,6 +56,11 @@ struct ContentView: View {
     .onChange(of: selectedModelId) { _ in rebootAgent() }
     .onAppear(perform: rebootAgent)
     .onAppear(perform: initializeFirstLaunchData)
+    .onChange(of: selection) { nextSelection in
+      if nextSelection.count == 1 {
+        conversationManager.currentConversation = nextSelection.first!
+      }
+    }
   }
   
   private func initializeFirstLaunchData() {

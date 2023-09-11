@@ -10,8 +10,11 @@ import MarkdownUI
 
 struct ConversationView: View {
   @Environment(\.managedObjectContext) private var viewContext
-  
-  @ObservedObject var conversation: Conversation
+  @EnvironmentObject private var conversationManager: ConversationManager
+
+  var conversation: Conversation {
+    conversationManager.currentConversation!
+  }
   
   @ObservedObject var agent: Agent
   @State var pendingMessage: Message?
@@ -89,14 +92,13 @@ struct ConversationView: View {
       .onReceive(
         agent.$pendingMessage.throttle(for: .seconds(0.07), scheduler: RunLoop.main, latest: true)
       ) { text in
-        if conversation.prompt != nil, agent.prompt.hasSuffix(conversation.prompt!) {
+        if conversation.prompt != nil, agent.prompt.hasPrefix(conversation.prompt!) {
           pendingMessageText = text
         }
       }
-
+      
     }
     .navigationTitle(conversation.titleWithDefault)
-    .navigationSubtitle(messages.count > 1 ? "Last message \(Text(messages.last!.createdAt ?? Date(), format: .relative(presentation: .numeric)))" : "")
   }
   
   private func scrollToLastIfRecent(_ proxy: ScrollViewProxy) {
@@ -121,6 +123,9 @@ struct ConversationView: View {
     // Create user's message
     _ = try! Message.create(text: input, fromId: Message.USER_SPEAKER_ID, conversation: conversation, inContext: viewContext)
     showResponse = false
+    
+    let agentConversation = conversation
+    messages = agentConversation.orderedMessages
     withAnimation {
       showUserMessage = true
     }
@@ -133,12 +138,15 @@ struct ConversationView: View {
     m.text = ""
     pendingMessage = m
     agent.prompt = conversation.prompt ?? agent.prompt
-    let currentConvo = conversation
     
     DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
+      if agentConversation != conversation {
+        return
+      }
+
       m.conversation = conversation
-      messages = conversation.orderedMessages
-      
+      messages = agentConversation.orderedMessages
+
       withAnimation {
         showResponse = true
       }
@@ -146,9 +154,9 @@ struct ConversationView: View {
     
     Task {
       let response = await agent.listenThinkRespond(speakerId: Message.USER_SPEAKER_ID, message: input)
-      
+
       await MainActor.run {
-        currentConvo.prompt = agent.prompt
+        agentConversation.prompt = agent.prompt
         m.text = response.text
         m.predictedPerSecond = response.predictedPerSecond ?? -1
         m.responseStartSeconds = response.responseStartSeconds
@@ -162,38 +170,32 @@ struct ConversationView: View {
         } catch (let error) {
           print("error creating message", error.localizedDescription)
         }
-
+        
         pendingMessage = nil
         agent.pendingMessage = ""
-
-        // Make sure messages are still visible before updating them.
-        // Otherwise the user may have switched conversations.
-        let ordered = conversation.orderedMessages
-        if messages.first != ordered.first {
+        
+        if conversation != agentConversation {
           return
         }
-
-        withAnimation {
-          messages = conversation.orderedMessages
-        }
+        
+        messages = agentConversation.orderedMessages
       }
     }
   }
-  
 }
 
-//struct ConversationView_Previews_Container: View {
-//  var body: some View {
-//
-//  }
-//}
 
 struct ConversationView_Previews: PreviewProvider {
   static var previews: some View {
     let ctx = PersistenceController.preview.container.viewContext
     let c = try! Conversation.create(ctx: ctx)
     let a = Agent(id: "llama", prompt: "", systemPrompt: "", modelPath: "")
-    ConversationView(conversation: c, agent: a).environment(\.managedObjectContext, ctx)
+    let cm = ConversationManager()
+    cm.currentConversation = c
+    
+    return ConversationView(agent: a)
+      .environment(\.managedObjectContext, ctx)
+      .environmentObject(cm)
   }
 }
 

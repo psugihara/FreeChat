@@ -13,13 +13,12 @@ struct CapsuleButtonStyle: ButtonStyle {
     configuration.label
       .font(hovered ? .body.bold() : .body)
       .background(
-        Capsule()
+        RoundedRectangle(cornerSize: CGSize(width: 10, height: 10), style: .continuous)
           .strokeBorder(Color.primary.opacity(0.2), lineWidth: 1)
           .foregroundColor(Color.primary)
           .background(hovered ? Color.secondary.opacity(0.02) : Color.clear)
           .shadow(radius: hovered ? 5 : 0)
       )
-      .clipShape(Capsule())
       .multilineTextAlignment(.leading) // Center-align multiline text
       .lineLimit(nil) // Allow unlimited lines
       .onHover(perform: { hovering in
@@ -123,7 +122,7 @@ struct QuickPromptButton: View {
         Text(prompt.rest).font(.caption2).lineLimit(1).foregroundColor(.secondary)
       }
       .padding(.vertical, 8)
-      .padding(.horizontal, 20)
+      .padding(.horizontal, 10)
       .frame(maxWidth: .infinity, alignment: .leading)
     })
     .buttonStyle(CapsuleButtonStyle())
