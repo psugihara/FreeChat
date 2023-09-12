@@ -13,7 +13,7 @@ struct ConversationView: View {
   @EnvironmentObject private var conversationManager: ConversationManager
 
   var conversation: Conversation {
-    conversationManager.currentConversation!
+    conversationManager.currentConversation
   }
   
   @ObservedObject var agent: Agent
@@ -66,9 +66,9 @@ struct ConversationView: View {
       }
       .textSelection(.enabled)
       .safeAreaInset(edge: .bottom, spacing: 0) {
-        MessageTextField(conversation: conversation, onSubmit: { s in
+        MessageTextField { s in
           submit(s)
-        })
+        }
       }
       .frame(maxWidth: .infinity)
       .onAppear {

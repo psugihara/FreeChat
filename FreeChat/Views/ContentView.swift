@@ -9,6 +9,7 @@ import SwiftUI
 import CoreData
 
 struct ContentView: View {
+  
   @Environment(\.managedObjectContext) private var viewContext
 
   @AppStorage("selectedModelId") private var selectedModelId: String?
@@ -38,7 +39,7 @@ struct ContentView: View {
       NavList(selection: $selection, showDeleteConfirmation: $showDeleteConfirmation)
         .navigationSplitViewColumnWidth(ideal: 160)
     } detail: {
-      if conversationManager.currentConversation != nil, agent != nil {
+      if conversationManager.hasConversation(), agent != nil {
         ConversationView(agent: agent!).environmentObject(conversationManager)
       } else if conversations.count == 0 {
         Text("Hit “+” to start a conversation")
@@ -52,14 +53,12 @@ struct ContentView: View {
       }
     })
     .onDeleteCommand { showDeleteConfirmation = true }
-    .onChange(of: systemPrompt) { _ in rebootAgent() }
-    .onChange(of: selectedModelId) { _ in rebootAgent() }
-    .onAppear(perform: rebootAgent)
+    .onChange(of: systemPrompt) { nextPrompt in rebootAgent(systemPrompt: nextPrompt) }
+    .onChange(of: selectedModelId) { nextModelId in rebootAgent(selectedModelId: nextModelId) }
+    .onAppear { rebootAgent() }
     .onAppear(perform: initializeFirstLaunchData)
     .onChange(of: selection) { nextSelection in
-      if nextSelection.count == 1 {
-        conversationManager.currentConversation = nextSelection.first!
-      }
+      conversationManager.currentConversation = nextSelection.first != nil ? nextSelection.first! : Conversation()
     }
   }
   
@@ -74,13 +73,15 @@ struct ContentView: View {
     firstLaunchComplete = true
   }
   
-  private func rebootAgent() {
-    let model = models.first { i in i.id?.uuidString == selectedModelId }
+  private func rebootAgent(systemPrompt: String? = nil, selectedModelId: String? = nil) {
+    let prompt = systemPrompt ?? self.systemPrompt
+    let modelId = selectedModelId ?? self.selectedModelId
+    let model = models.first { i in i.id?.uuidString == modelId }
     let url = model?.url == nil ? LlamaServer.DEFAULT_MODEL_URL : model!.url!
     
     Task {
       await agent?.llama.stopServer()
-      agent = Agent(id: "Llama", prompt: agent?.prompt ?? "", systemPrompt: systemPrompt, modelPath: url.path)
+      agent = Agent(id: "Llama", prompt: agent?.prompt ?? "", systemPrompt: prompt, modelPath: url.path)
       await agent?.warmup()
     }
   }

@@ -29,7 +29,10 @@ let chatStyle = ChatStyle()
 
 struct MessageTextField: View {
   @State var input: String = ""
-  @ObservedObject var conversation: Conversation
+  
+  @EnvironmentObject var conversationManager: ConversationManager
+  var conversation: Conversation {  conversationManager.currentConversation }
+
   var onSubmit: (String) -> Void
   @State var showNullState = false
   
