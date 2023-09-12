@@ -10,11 +10,11 @@ import CoreData
 
 class ConversationManager: ObservableObject {
   static var dummyConversation: Conversation = {
-    print("lazy dummyConversation")
     let tempMoc = NSManagedObjectContext(concurrencyType: .mainQueueConcurrencyType)
     return Conversation(context: tempMoc)
   }()
   
+  // in the foreground
   @Published var currentConversation: Conversation = ConversationManager.dummyConversation
   
   func hasConversation() -> Bool {
