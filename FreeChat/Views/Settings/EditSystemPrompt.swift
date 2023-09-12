@@ -38,7 +38,7 @@ struct EditSystemPrompt: View {
         .background(.clear)
       }
       .padding(EdgeInsets(top: 8, leading: 4, bottom: 8, trailing: 4))
-      .background(.thinMaterial)
+      .background(Color(NSColor.alternatingContentBackgroundColors.last ?? NSColor.controlBackgroundColor))
       
       HStack {
         Button("Restore Default") {
@@ -58,6 +58,7 @@ struct EditSystemPrompt: View {
       }
       .frame(maxWidth: .infinity, alignment: .bottomTrailing)
     }.padding(10)
+      .background(Color(NSColor.controlBackgroundColor))
   }
 }
 

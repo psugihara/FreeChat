@@ -16,7 +16,7 @@
       ],
       "color" : {
         "platform" : "osx",
-        "reference" : "textBackgroundColor"
+        "reference" : "controlColor"
       },
       "idiom" : "universal"
     }
