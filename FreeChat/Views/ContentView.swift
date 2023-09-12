@@ -58,7 +58,11 @@ struct ContentView: View {
     .onAppear { rebootAgent() }
     .onAppear(perform: initializeFirstLaunchData)
     .onChange(of: selection) { nextSelection in
-      conversationManager.currentConversation = nextSelection.first != nil ? nextSelection.first! : Conversation()
+      if nextSelection.first != nil {
+        conversationManager.currentConversation =  nextSelection.first!
+      } else {
+        conversationManager.unsetConversation()
+      }
     }
   }
   

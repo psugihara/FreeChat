@@ -9,7 +9,7 @@ import Foundation
 import CoreData
 
 class ConversationManager: ObservableObject {
-  static var dummyConversation: Conversation = {
+  private static var dummyConversation: Conversation = {
     let tempMoc = NSManagedObjectContext(concurrencyType: .mainQueueConcurrencyType)
     return Conversation(context: tempMoc)
   }()
@@ -19,5 +19,9 @@ class ConversationManager: ObservableObject {
   
   func hasConversation() -> Bool {
     return currentConversation != ConversationManager.dummyConversation
+  }
+  
+  func unsetConversation() {
+    currentConversation = ConversationManager.dummyConversation
   }
 }

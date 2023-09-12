@@ -69,9 +69,7 @@ struct MessageTextField: View {
           maybeFocus(conversation)
         }
         .onChange(of: conversation) { nextConversation in
-          DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-            maybeFocus(nextConversation)
-          }
+          maybeFocus(nextConversation)
         }
         .onChange(of: input) { _ in
           focused = true
