@@ -53,7 +53,7 @@ class Agent: ObservableObject {
         \(systemPrompt)
         <</SYS>>
         
-        \(Message.USER_SPEAKER_ID): hi [/INST] ### Assistant: hello</s>
+        \(Message.USER_SPEAKER_ID): hi [/INST] ### Assistant: Hello.</s>
         """
     }
     if !prompt.hasSuffix("</s>") {

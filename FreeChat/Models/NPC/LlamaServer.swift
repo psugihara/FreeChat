@@ -184,7 +184,7 @@ actor LlamaServer {
             if responseObj.stop {
               stopResponse = try decoder.decode(StopResponse.self, from: data)
 #if DEBUG
-              print("server.cpp stopResponse", stopResponse.debugDescription)
+              print("server.cpp stopResponse", NSString(data: data, encoding: String.Encoding.utf8.rawValue) ?? "missing")
 #endif
               break listenLoop
             }

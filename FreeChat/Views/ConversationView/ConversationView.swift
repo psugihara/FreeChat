@@ -184,7 +184,6 @@ struct ConversationView: View {
   }
 }
 
-
 struct ConversationView_Previews: PreviewProvider {
   static var previews: some View {
     let ctx = PersistenceController.preview.container.viewContext
