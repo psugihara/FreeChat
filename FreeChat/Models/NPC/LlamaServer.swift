@@ -24,7 +24,8 @@ func removeUnmatchedTrailingQuote(_ inputString: String) -> String {
 }
 
 actor LlamaServer {
-  static let DEFAULT_MODEL_URL =  Bundle.main.url(forResource: "zaraxls-l2-7b.q5_K_M", withExtension: ".gguf")!
+  static let DEFAULT_MODEL_FILENAME = "spicyboros-7b-2.2.Q3_K_S"
+  static let DEFAULT_MODEL_URL =  Bundle.main.url(forResource: DEFAULT_MODEL_FILENAME, withExtension: ".gguf")!
   var modelPath = LlamaServer.DEFAULT_MODEL_URL.path
   
   private var process = Process()

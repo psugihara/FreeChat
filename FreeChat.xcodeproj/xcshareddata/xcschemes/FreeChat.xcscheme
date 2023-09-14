@@ -96,6 +96,7 @@
    </AnalyzeAction>
    <ArchiveAction
       buildConfiguration = "Release"
+      customArchiveName = "FreeChat"
       revealArchiveInOrganizer = "YES">
    </ArchiveAction>
 </Scheme>

@@ -53,7 +53,7 @@ struct QuickPromptButton: View {
       rest: "Do you consider yourself conscious?"
     ),
     QuickPrompt(
-      title: "Write an outline",
+      title: "Write a bullet summary",
       rest: "of the leadup and impact of the French Revolution"
     ),
     QuickPrompt(

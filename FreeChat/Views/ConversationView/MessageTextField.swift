@@ -8,8 +8,8 @@
 import SwiftUI
 
 struct ChatStyle: TextFieldStyle {
-  @FocusState private var isFocused: Bool
   @Environment(\.colorScheme) var colorScheme
+  var focused: Bool
   func _body(configuration: TextField<Self._Label>) -> some View {
     configuration
       .textFieldStyle(.plain)
@@ -17,15 +17,19 @@ struct ChatStyle: TextFieldStyle {
       .padding(EdgeInsets(top: 0, leading: 6, bottom: 0, trailing: 6))
       .padding(8)
       .cornerRadius(12)
-      .focusable()
-      .focused($isFocused)
-      .overlay(
+        .overlay( // regular border
         Capsule().stroke(Color.primary.opacity(0.2), lineWidth: 1)
       )
+      .overlay( // focus ring
+        Capsule()
+          .stroke(Color.accentColor.opacity(0.5), lineWidth: 2)
+          .scaleEffect(focused ? 1 : 1.02)
+          .shadow(color: .black.opacity(0.1), radius: 2, x: 0, y: 0.5)
+          .opacity(focused ? 1 : 0)
+      )
+      .animation(focused ? .easeIn(duration: 0.2) : .easeOut(duration: 0.0), value: focused)
   }
 }
-
-let chatStyle = ChatStyle()
 
 struct MessageTextField: View {
   @State var input: String = ""
@@ -45,7 +49,7 @@ struct MessageTextField: View {
           QuickPromptButton(input: $input, prompt: p)
           
         }
-      }.padding(.horizontal, 10).padding(.top, 400)
+      }.padding(.horizontal, 10).padding(.top, 200)
       
     }.frame(maxWidth: .infinity)
   }
@@ -62,7 +66,7 @@ struct MessageTextField: View {
           }
         }
         .focused($focused)
-        .textFieldStyle(chatStyle)
+        .textFieldStyle(ChatStyle(focused: focused))
         .submitLabel(.send)
         .padding(.all, 10)
         .onAppear {
@@ -70,10 +74,6 @@ struct MessageTextField: View {
         }
         .onChange(of: conversation) { nextConversation in
           maybeFocus(nextConversation)
-        }
-        .onChange(of: input) { _ in
-          focused = true
-          
         }
         .background(.thinMaterial)
     }

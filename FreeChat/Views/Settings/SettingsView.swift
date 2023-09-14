@@ -61,7 +61,7 @@ struct SettingsView: View {
   var modelPicker: some View {
     VStack(alignment: .leading) {
       Picker("Model", selection: $pickedModel) {
-        Text("Default (zaraxls-l2-7b.q5_K_M.gguf)").tag(SettingsView.defaultModelId)
+        Text("Default (\(LlamaServer.DEFAULT_MODEL_FILENAME))").tag(SettingsView.defaultModelId)
         ForEach(models) { i in
           Text(i.name ?? i.url?.lastPathComponent ?? "Untitled").tag(i.id?.uuidString ?? "")
             .help(i.url?.path ?? "Unknown path")
@@ -78,7 +78,7 @@ struct SettingsView: View {
         }
       }
       
-      Text("The default model is general purpose, small (7B), and works on most computers. Larger models are slower but smarter. Some models specialize in certain tasks like coding Python. FreeChat is compatible with most models in GGUF format. [Find new models](https://huggingface.co/models?search=GGUF)")
+      Text("The default model is general purpose, small, and works on most computers. Larger models are slower but wiser. Some models specialize in certain tasks like coding Python. FreeChat is compatible with most models in GGUF format. [Find new models](https://huggingface.co/models?search=GGUF)")
         .font(.callout)
         .foregroundColor(Color(NSColor.secondaryLabelColor))
         .lineLimit(5)

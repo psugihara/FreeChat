@@ -9,9 +9,6 @@
 /* Begin PBXBuildFile section */
 		A11721992A7D5274003B0358 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = A11721982A7D5274003B0358 /* README.md */; };
 		A117219C2A7D7B70003B0358 /* MarkdownUI in Frameworks */ = {isa = PBXBuildFile; productRef = A117219B2A7D7B70003B0358 /* MarkdownUI */; };
-		A11AAE702A9A9215000D8BCD /* ggml-metal.metal in Sources */ = {isa = PBXBuildFile; fileRef = A11AAE6F2A9A9215000D8BCD /* ggml-metal.metal */; };
-		A11AAE712A9A9306000D8BCD /* ggml-metal.metal in Copy Metal */ = {isa = PBXBuildFile; fileRef = A11AAE6F2A9A9215000D8BCD /* ggml-metal.metal */; };
-		A12B52DC2AA10FB200658707 /* zaraxls-l2-7b.q5_K_M.gguf in Resources */ = {isa = PBXBuildFile; fileRef = A12B52DB2AA10FA100658707 /* zaraxls-l2-7b.q5_K_M.gguf */; };
 		A12B52DE2AA5228100658707 /* EditModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = A12B52DD2AA5228100658707 /* EditModels.swift */; };
 		A12B52E42AA5A99E00658707 /* EditSystemPrompt.swift in Sources */ = {isa = PBXBuildFile; fileRef = A12B52E32AA5A99E00658707 /* EditSystemPrompt.swift */; };
 		A13C8C5A2A8FEEE400EC18D8 /* SplashCodeSyntaxHighlighter.swift in Sources */ = {isa = PBXBuildFile; fileRef = A13C8C592A8FEEE400EC18D8 /* SplashCodeSyntaxHighlighter.swift */; };
@@ -26,6 +23,8 @@
 		A17A2E182A79A006006CDD90 /* Agent.swift in Sources */ = {isa = PBXBuildFile; fileRef = A17A2E122A79A005006CDD90 /* Agent.swift */; };
 		A17A2E192A79A006006CDD90 /* LlamaServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A17A2E132A79A005006CDD90 /* LlamaServer.swift */; };
 		A17A2E1F2A79A075006CDD90 /* EventSource in Frameworks */ = {isa = PBXBuildFile; productRef = A17A2E1E2A79A075006CDD90 /* EventSource */; };
+		A17B95552AB20F2300B545FD /* ggml-metal.metal in Copy Metal */ = {isa = PBXBuildFile; fileRef = A17B95532AB20F1100B545FD /* ggml-metal.metal */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		A17B95582AB2468700B545FD /* spicyboros-7b-2.2.Q3_K_S.gguf in Copy Metal */ = {isa = PBXBuildFile; fileRef = A17B95572AB2461700B545FD /* spicyboros-7b-2.2.Q3_K_S.gguf */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		A19AA5222AA667BE009D9573 /* QuickPromptButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = A19AA5212AA667BE009D9573 /* QuickPromptButton.swift */; };
 		A19AA5242AAB9ED4009D9573 /* server in Embed helper tools */ = {isa = PBXBuildFile; fileRef = A19AA5232AAB9ED3009D9573 /* server */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		A1A286E82A7D8A7D0004967A /* MessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1A286E72A7D8A7D0004967A /* MessageView.swift */; };
@@ -78,7 +77,8 @@
 			dstPath = "";
 			dstSubfolderSpec = 7;
 			files = (
-				A11AAE712A9A9306000D8BCD /* ggml-metal.metal in Copy Metal */,
+				A17B95582AB2468700B545FD /* spicyboros-7b-2.2.Q3_K_S.gguf in Copy Metal */,
+				A17B95552AB20F2300B545FD /* ggml-metal.metal in Copy Metal */,
 			);
 			name = "Copy Metal";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -108,7 +108,6 @@
 
 /* Begin PBXFileReference section */
 		A11721982A7D5274003B0358 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
-		A11AAE6F2A9A9215000D8BCD /* ggml-metal.metal */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.metal; path = "ggml-metal.metal"; sourceTree = "<group>"; };
 		A12B52DB2AA10FA100658707 /* zaraxls-l2-7b.q5_K_M.gguf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "zaraxls-l2-7b.q5_K_M.gguf"; sourceTree = "<group>"; };
 		A12B52DD2AA5228100658707 /* EditModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditModels.swift; sourceTree = "<group>"; };
 		A12B52E32AA5A99E00658707 /* EditSystemPrompt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditSystemPrompt.swift; sourceTree = "<group>"; };
@@ -122,6 +121,8 @@
 		A15D50D32A80BCA900FC1681 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		A17A2E122A79A005006CDD90 /* Agent.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Agent.swift; sourceTree = "<group>"; };
 		A17A2E132A79A005006CDD90 /* LlamaServer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LlamaServer.swift; sourceTree = "<group>"; };
+		A17B95532AB20F1100B545FD /* ggml-metal.metal */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.metal; path = "ggml-metal.metal"; sourceTree = "<group>"; };
+		A17B95572AB2461700B545FD /* spicyboros-7b-2.2.Q3_K_S.gguf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "spicyboros-7b-2.2.Q3_K_S.gguf"; sourceTree = "<group>"; };
 		A19AA5212AA667BE009D9573 /* QuickPromptButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickPromptButton.swift; sourceTree = "<group>"; };
 		A19AA5232AAB9ED3009D9573 /* server */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = server; sourceTree = "<group>"; };
 		A1A286E72A7D8A7D0004967A /* MessageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageView.swift; sourceTree = "<group>"; };
@@ -211,11 +212,12 @@
 		A17A2E1B2A79A00D006CDD90 /* NPC */ = {
 			isa = PBXGroup;
 			children = (
-				A11AAE6F2A9A9215000D8BCD /* ggml-metal.metal */,
+				A17B95532AB20F1100B545FD /* ggml-metal.metal */,
 				A17A2E122A79A005006CDD90 /* Agent.swift */,
 				A19AA5232AAB9ED3009D9573 /* server */,
 				A17A2E132A79A005006CDD90 /* LlamaServer.swift */,
 				A12B52DB2AA10FA100658707 /* zaraxls-l2-7b.q5_K_M.gguf */,
+				A17B95572AB2461700B545FD /* spicyboros-7b-2.2.Q3_K_S.gguf */,
 				A1A286F32A7E17750004967A /* server-watchdog */,
 				A1A286F92A7E197F0004967A /* README.md */,
 			);
@@ -467,7 +469,6 @@
 			files = (
 				A11721992A7D5274003B0358 /* README.md in Resources */,
 				A1F6172D2A782AA200F2048C /* Preview Assets.xcassets in Resources */,
-				A12B52DC2AA10FB200658707 /* zaraxls-l2-7b.q5_K_M.gguf in Resources */,
 				A1F6172A2A782AA200F2048C /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -511,7 +512,6 @@
 				A1F617322A782AA200F2048C /* Chats.xcdatamodeld in Sources */,
 				A1A286E82A7D8A7D0004967A /* MessageView.swift in Sources */,
 				A17A2E192A79A006006CDD90 /* LlamaServer.swift in Sources */,
-				A11AAE702A9A9215000D8BCD /* ggml-metal.metal in Sources */,
 				A1F617582A7836AE00F2048C /* Message+Extensions.swift in Sources */,
 				A13C8C682A902A1200EC18D8 /* CGKeycode+Extensions.swift in Sources */,
 				A15D50D22A7F539800FC1681 /* NavList.swift in Sources */,

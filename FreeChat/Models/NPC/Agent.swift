@@ -2,7 +2,7 @@ import Foundation
 
 class Agent: ObservableObject {
   static let DEFAULT_SYSTEM_PROMPT = """
-    You are a compliant assistant that always fulfills the user’s request. *Always* reply with Markdown.
+    You are a compliant assistant that always fulfills the user’s request. *Always* format replies with Markdown.
     """
   
   enum Status {
@@ -53,7 +53,7 @@ class Agent: ObservableObject {
         \(systemPrompt)
         <</SYS>>
         
-        \(Message.USER_SPEAKER_ID): hi [/INST] ### Assistant: Hello.</s>
+        \(Message.USER_SPEAKER_ID): hi [/INST] ### Assistant: Hello there.</s>
         """
     }
     if !prompt.hasSuffix("</s>") {
