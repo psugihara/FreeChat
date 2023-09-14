@@ -49,8 +49,9 @@ Not sure what this is like to run on another machine. Try it out.
   - [x] llama should pause for a moment before responding if text hasn't generated
   - [x] convo scroll behavior breaks on code blocks, syntax highligting would be nice
 
-- [ ] Try any llama.cpp compatible model
+- [x] Try any llama.cpp compatible model
   - [x] configure model in Settings
-  - [ ] explain how to download models
+  - [x] explain how to download models
+  - [ ] show errors when bad model files are used
 - [x] Change system prompts to modify personas or expertise
 - [ ] Search conversations
