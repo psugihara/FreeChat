@@ -35,7 +35,7 @@ struct QuickPromptButton: View {
     var rest: String
   }
   
-  static let quickPrompts = [
+  static var quickPrompts = [
     QuickPrompt(
       title: "Simulate a game",
       rest: "of D&D. You are dungeon master. I am a half-orc half-elf ranger named Calid. I carry a bow and wear leather armor for now. Start the campaign now. Describe the scene and my options for next steps."

@@ -47,7 +47,6 @@ struct MessageTextField: View {
       HStack {
         ForEach(QuickPromptButton.quickPrompts) { p in
           QuickPromptButton(input: $input, prompt: p)
-          
         }
       }.padding(.horizontal, 10).padding(.top, 200)
       
@@ -74,6 +73,7 @@ struct MessageTextField: View {
         }
         .onChange(of: conversation) { nextConversation in
           maybeFocus(nextConversation)
+          QuickPromptButton.quickPrompts.shuffle()
         }
         .background(.thinMaterial)
     }
