@@ -20,7 +20,6 @@ struct ScrollViewHeightPreferenceKey: PreferenceKey {
   static var defaultValue = CGFloat.zero
   
   static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
-    print("reduce value", value, nextValue())
     value += nextValue()
   }
 }
