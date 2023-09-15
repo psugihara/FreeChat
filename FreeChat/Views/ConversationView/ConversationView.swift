@@ -27,10 +27,12 @@ struct ConversationView: View {
   @State var pendingMessageText = ""
   
   @State var scrollOffset = CGFloat.zero
+  @State var scrollHeight = CGFloat.zero
   @State var autoScrollOffset = CGFloat.zero
+  @State var autoScrollHeight = CGFloat.zero
   
   var body: some View {
-    ObservableScrollView(scrollOffset: $scrollOffset) { proxy in
+    ObservableScrollView(scrollOffset: $scrollOffset, scrollHeight: $scrollHeight) { proxy in
       VStack(alignment: .leading) {
         ForEach(messages) { m in
           if m == messages.last! {
@@ -105,12 +107,22 @@ struct ConversationView: View {
     }
   }
   
+  // autoscroll to the bottom if the user is near the bottom
   private func autoScroll(_ proxy: ScrollViewProxy) {
     let last = messages.last
-    if last != nil, scrollOffset >= autoScrollOffset {
-      proxy.scrollTo(last!.id, anchor: .bottom)
-      autoScrollOffset = scrollOffset
+    if last != nil, autoScrollEngaged() {
+        proxy.scrollTo(last!.id, anchor: .bottom)
+        engageAutoScroll()
     }
+  }
+  
+  private func autoScrollEngaged() -> Bool {
+    scrollOffset >= autoScrollOffset - 20 && scrollHeight > autoScrollHeight
+  }
+  
+  private func engageAutoScroll() {
+    autoScrollOffset = scrollOffset
+    autoScrollHeight = scrollHeight
   }
   
   @MainActor
@@ -124,10 +136,8 @@ struct ConversationView: View {
     }
     
     showUserMessage = false
-
-    // engage autoScroll until user scrolls up
-    autoScrollOffset = scrollOffset
-
+    engageAutoScroll()
+    
     // Create user's message
     _ = try! Message.create(text: input, fromId: Message.USER_SPEAKER_ID, conversation: conversation, inContext: viewContext)
     showResponse = false
