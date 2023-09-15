@@ -25,6 +25,12 @@ struct MessageView: View {
     self.agentStatus = agentStatus
   }
   
+  var messageText: String {
+    (overrideText == "" && m.text != nil ? m.text! : overrideText)
+      // make newlines display https://github.com/gonzalezreal/swift-markdown-ui/issues/92
+      .replacingOccurrences(of: "\n", with: "  \n", options: .regularExpression)
+  }
+  
   var infoText: some View {
     (agentStatus == .coldProcessing && overrideText == ""
      ? Text("warming up...")
@@ -81,7 +87,7 @@ struct MessageView: View {
           infoText
         }
         
-        Markdown(overrideText == "" && m.text != nil ? m.text! : overrideText)
+        Markdown(messageText)
           .markdownTheme(.freeChat)
           .markdownCodeSyntaxHighlighter(.splash(theme: self.theme))
           .textSelection(.enabled)
