@@ -9,7 +9,7 @@ import SwiftUI
 import Combine
 
 struct SettingsView: View {
-  private static let defaultModelId = "default"
+  static let defaultModelId = "default"
   private static let customizeModelsId = "customizeModels"
   
   @Environment(\.managedObjectContext) private var viewContext
@@ -89,13 +89,11 @@ struct SettingsView: View {
   var body: some View {
     Form {
       systemPromptEditor
-      if pickedModel != "" {
-        modelPicker
-      }
+      modelPicker
     }
     .formStyle(.grouped)
     .sheet(isPresented: $customizeModels, onDismiss: dismissCustomizeModels) {
-      EditModels()
+      EditModels(selectedModelId: $selectedModelId)
     }
     .sheet(isPresented: $editSystemPrompt, onDismiss: dismissEditSystemPrompt) {
       EditSystemPrompt()
@@ -103,6 +101,9 @@ struct SettingsView: View {
     .navigationTitle("Settings")
     .onAppear {
       pickedModel = selectedModelId
+    }
+    .onChange(of: selectedModelId) { newModelId in
+      pickedModel = newModelId
     }
     .frame(minWidth: 300, maxWidth: 600, minHeight: 184, idealHeight: 195, maxHeight: 400, alignment: .center)
   }

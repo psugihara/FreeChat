@@ -150,6 +150,7 @@ actor LlamaServer {
     
     let url = URL(string: "http://127.0.0.1:\(port)/completion")!
     var request = URLRequest(url: url)
+    
     request.httpMethod = "POST"
     request.setValue("application/json", forHTTPHeaderField: "Content-Type")
     request.setValue("text/event-stream", forHTTPHeaderField: "Accept")
@@ -158,9 +159,8 @@ actor LlamaServer {
     
     // Use EventSource to receive server sent events
     eventSource = EventSource(request: request)
-    
     eventSource!.connect()
-    
+
     var response = ""
     var responseDiff = 0.0
     var stopResponse: StopResponse?

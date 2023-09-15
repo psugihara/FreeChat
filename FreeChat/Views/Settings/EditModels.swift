@@ -16,12 +16,13 @@ struct EditModels: View {
   @Environment(\.managedObjectContext) private var viewContext
   @Environment(\.dismiss) var dismiss
   
+  @Binding var selectedModelId: String
+
   @FetchRequest(
     sortDescriptors: [NSSortDescriptor(keyPath: \Model.updatedAt, ascending: true)],
     animation: .default)
   private var items: FetchedResults<Model>
   
-  @State private var selectedModelId: String = EditModels.defaultModelId
   @State var showFileImporter = false
   @State var errorText = ""
   
@@ -117,6 +118,16 @@ struct EditModels: View {
           errorText = EditModels.formatErrorText
           return
         }
+        
+        // if model has already been added, select it and return
+        let existingModel = items.first(where: { m in m.url == fileURL })
+        if existingModel != nil {
+          DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            selectedModelId = existingModel!.id?.uuidString ?? selectedModelId
+          }
+          return
+        }
+        
         // gain access to the directory
         let gotAccess = fileURL.startAccessingSecurityScopedResource()
         if !gotAccess { return }
@@ -142,9 +153,16 @@ struct EditModels: View {
   }
 }
 
+struct EditModels_Previews_Container: View {
+  @State var selectedModelId = SettingsView.defaultModelId
+  var body: some View {
+    EditModels(selectedModelId: $selectedModelId).environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
+    EditModels(selectedModelId: $selectedModelId, errorText: EditModels.formatErrorText).previewDisplayName("Edit Models Error")
+  }
+}
+
 struct EditModels_Previews: PreviewProvider {
   static var previews: some View {
-    EditModels().environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
-    EditModels(errorText: EditModels.formatErrorText).previewDisplayName("Edit Models Error")
+    EditModels_Previews_Container()
   }
 }
