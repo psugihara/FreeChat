@@ -14,7 +14,6 @@
 		A137A37C2AB3D26C00BE1AE0 /* ObservableScrollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A137A37B2AB3D26C00BE1AE0 /* ObservableScrollView.swift */; };
 		A137A3832AB4FD4800BE1AE0 /* freechat-server in Resources */ = {isa = PBXBuildFile; fileRef = A137A3822AB4FD4800BE1AE0 /* freechat-server */; };
 		A137A3842AB4FDAD00BE1AE0 /* freechat-server in Embed helper tools */ = {isa = PBXBuildFile; fileRef = A137A3822AB4FD4800BE1AE0 /* freechat-server */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		A137A3882AB502DB00BE1AE0 /* ggml-metal.metal in Sources */ = {isa = PBXBuildFile; fileRef = A137A3872AB502DB00BE1AE0 /* ggml-metal.metal */; };
 		A137A3892AB502E500BE1AE0 /* ggml-metal.metal in Copy Metal */ = {isa = PBXBuildFile; fileRef = A137A3872AB502DB00BE1AE0 /* ggml-metal.metal */; };
 		A13C8C5A2A8FEEE400EC18D8 /* SplashCodeSyntaxHighlighter.swift in Sources */ = {isa = PBXBuildFile; fileRef = A13C8C592A8FEEE400EC18D8 /* SplashCodeSyntaxHighlighter.swift */; };
 		A13C8C5D2A8FEF0600EC18D8 /* Splash in Frameworks */ = {isa = PBXBuildFile; productRef = A13C8C5C2A8FEF0600EC18D8 /* Splash */; };
@@ -526,7 +525,6 @@
 				A12B52DE2AA5228100658707 /* EditModels.swift in Sources */,
 				A15D50CF2A7EF73E00FC1681 /* MessageTextField.swift in Sources */,
 				A1CA32442AAF877600F9D488 /* ConversationManager.swift in Sources */,
-				A137A3882AB502DB00BE1AE0 /* ggml-metal.metal in Sources */,
 				A13C8C662A9027A200EC18D8 /* CopyButton.swift in Sources */,
 				A17A2E182A79A006006CDD90 /* Agent.swift in Sources */,
 				A137A37C2AB3D26C00BE1AE0 /* ObservableScrollView.swift in Sources */,
