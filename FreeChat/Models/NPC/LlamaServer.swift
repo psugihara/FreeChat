@@ -23,6 +23,32 @@ func removeUnmatchedTrailingQuote(_ inputString: String) -> String {
   return outputString
 }
 
+func readUntilString(pipe: Pipe, targetString: String) throws {
+  print("readUntilString \(targetString)")
+  let fileHandle = pipe.fileHandleForReading
+  var found = false
+  var remainingTime = 30_000
+  
+  while !found {
+    let data = fileHandle.availableData
+    let lines = String(decoding: data, as: UTF8.self)
+    
+    for ln in lines.split(separator: "\n") {
+      if ln.contains(targetString) {
+        found = true
+        break
+      }
+    }
+
+    remainingTime -= 100
+    if remainingTime <= 0 {
+      // todo throw propper error
+      fatalError("timed out waiting for \(targetString)")
+    }
+    usleep(100_000) // Sleep for 100ms if no new data available
+  }
+}
+
 actor LlamaServer {
   static let DEFAULT_MODEL_FILENAME = "spicyboros-7b-2.2.Q3_K_S"
   static let DEFAULT_MODEL_URL =  Bundle.main.url(forResource: DEFAULT_MODEL_FILENAME, withExtension: ".gguf")!
@@ -97,11 +123,11 @@ actor LlamaServer {
     
     outputPipe = Pipe()
     process.standardInput = Pipe()
-    
-#if !DEBUG
+
+    // To debug with server's output, comment these 2 lines to inherit stdout.
+    // N.B. this will make readUntilString hang
     process.standardOutput = outputPipe
     process.standardError = outputPipe
-#endif
     
     guard
       outputPipe.fileHandleForWriting.fileDescriptor != -1,
@@ -111,6 +137,10 @@ actor LlamaServer {
     }
     
     try process.run()
+    
+    // wait for a string like "llama server listening at http://127.0.0.1:8690"
+    try readUntilString(pipe: outputPipe, targetString: "llama server listening")
+    
     try startMonitor(serverPID: process.processIdentifier)
     
     let endTime = DispatchTime.now()
@@ -132,10 +162,10 @@ actor LlamaServer {
 #if DEBUG
     print("START PROMPT\n \(prompt) \nEND PROMPT\n\n")
 #endif
-    
+
+    let start = CFAbsoluteTimeGetCurrent()
     try startServer()
     
-    let start = CFAbsoluteTimeGetCurrent()
     // hit localhost for completion
     let params = CompleteParams(
       prompt: prompt,
