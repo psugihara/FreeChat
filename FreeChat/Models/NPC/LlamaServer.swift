@@ -25,7 +25,7 @@ func readUntilString(pipe: Pipe, targetString: String) throws {
   print("readUntilString \(targetString)")
   let fileHandle = pipe.fileHandleForReading
   var found = false
-  var remainingTime = 30_000
+  var remainingTime = 60_000
   
   while !found {
     let data = fileHandle.availableData
@@ -40,8 +40,8 @@ func readUntilString(pipe: Pipe, targetString: String) throws {
 
     remainingTime -= 100
     if remainingTime <= 0 {
-      // todo throw propper error
-      fatalError("timed out waiting for \(targetString)")
+      // todo throw proper error
+      print("timed out waiting for \(targetString)")
     }
     usleep(100_000) // Sleep for 100ms if no new data available
   }
@@ -119,19 +119,16 @@ actor LlamaServer {
     let startTime = DispatchTime.now()
     
     
-    process.executableURL = Bundle.main.url(forAuxiliaryExecutable: "server")
+    process.executableURL = Bundle.main.url(forAuxiliaryExecutable: "freechat-server")
     let processes = ProcessInfo.processInfo.activeProcessorCount
     process.arguments = [
       "--model", modelPath,
       "--threads", "\(max(1, ceil(Double(processes) / 2.0)))",
       "--ctx-size", "4096",
-      "--port", port
+      "--port", port,
+      // llama crashes on intel macs when gpu-layers != 0, not sure why
+      "--gpu-layers", getMachineHardwareName() == "arm64" ? "4" : "0"
     ]
-    
-    // llama.cpp gpu stuff crashes on intel macs, not sure why
-    if getMachineHardwareName() == "arm64" {
-      process.arguments?.append(contentsOf: ["--gpu-layers", "4"])
-    }
     
     print("starting llama.cpp server \(process.arguments!.joined(separator: " "))")
     

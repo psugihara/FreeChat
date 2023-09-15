@@ -1,3 +1,3 @@
 #! /bin/sh
 
-codesign --options runtime -f -s "Peter Sugihara" --entitlements "server.entitlements" "server"
+codesign --options runtime -f -s "Peter Sugihara" --entitlements "freechat-server.entitlements" "freechat-server"
