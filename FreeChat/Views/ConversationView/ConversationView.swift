@@ -110,13 +110,13 @@ struct ConversationView: View {
   // autoscroll to the bottom if the user is near the bottom
   private func autoScroll(_ proxy: ScrollViewProxy) {
     let last = messages.last
-    if last != nil, autoScrollEngaged() {
+    if last != nil, shouldAutoScroll() {
         proxy.scrollTo(last!.id, anchor: .bottom)
         engageAutoScroll()
     }
   }
   
-  private func autoScrollEngaged() -> Bool {
+  private func shouldAutoScroll() -> Bool {
     scrollOffset >= autoScrollOffset - 20 && scrollHeight > autoScrollHeight
   }
   
