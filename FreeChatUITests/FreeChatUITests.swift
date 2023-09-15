@@ -1,13 +1,13 @@
 //
-//  MantrasUITests.swift
-//  MantrasUITests
+//  FreeChatUITests.swift
+//  FreeChatUITests
 //
 //  Created by Peter Sugihara on 7/31/23.
 //
 
 import XCTest
 
-final class MantrasUITests: XCTestCase {
+final class FreeChatUITests: XCTestCase {
 
     override func setUpWithError() throws {
         // Put setup code here. This method is called before the invocation of each test method in the class.

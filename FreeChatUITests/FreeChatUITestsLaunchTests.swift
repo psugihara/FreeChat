@@ -1,13 +1,13 @@
 //
-//  MantrasUITestsLaunchTests.swift
-//  MantrasUITests
+//  FreeChatUITestsLaunchTests.swift
+//  FreeChatUITests
 //
 //  Created by Peter Sugihara on 7/31/23.
 //
 
 import XCTest
 
-final class MantrasUITestsLaunchTests: XCTestCase {
+final class FreeChatUITestsLaunchTests: XCTestCase {
 
     override class var runsForEachTargetApplicationUIConfiguration: Bool {
         true
