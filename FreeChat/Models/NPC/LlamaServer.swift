@@ -1,8 +1,6 @@
 import EventSource
 import Foundation
 import os.lock
-import MetalPerformanceShaders
-import Metal
 
 func removeUnmatchedTrailingQuote(_ inputString: String) -> String {
   var outputString = inputString
@@ -47,6 +45,21 @@ func readUntilString(pipe: Pipe, targetString: String) throws {
     }
     usleep(100_000) // Sleep for 100ms if no new data available
   }
+}
+
+func getMachineHardwareName() -> String? {
+  var sysInfo = utsname()
+  let retVal = uname(&sysInfo)
+  var finalString: String? = nil
+  
+  if retVal == EXIT_SUCCESS
+  {
+    let bytes = Data(bytes: &sysInfo.machine, count: Int(_SYS_NAMELEN))
+    finalString = String(data: bytes, encoding: .utf8)
+  }
+  
+  // _SYS_NAMELEN will include a billion null-terminators. Clear those out so string comparisons work as you expect.
+  return finalString?.trimmingCharacters(in: CharacterSet(charactersIn: "\0"))
 }
 
 actor LlamaServer {
@@ -115,7 +128,8 @@ actor LlamaServer {
       "--port", port
     ]
     
-    if MPSSupportsMTLDevice(MTLCreateSystemDefaultDevice()) {
+    // llama.cpp gpu stuff crashes on intel macs, not sure why
+    if getMachineHardwareName() == "arm64" {
       process.arguments?.append(contentsOf: ["--gpu-layers", "4"])
     }
     
