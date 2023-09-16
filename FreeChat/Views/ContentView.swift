@@ -37,7 +37,7 @@ struct ContentView: View {
   var body: some View {
     NavigationSplitView {
       NavList(selection: $selection, showDeleteConfirmation: $showDeleteConfirmation)
-        .navigationSplitViewColumnWidth(ideal: 160)
+        .navigationSplitViewColumnWidth(min: 160, ideal: 160)
     } detail: {
       if conversationManager.hasConversation(), agent != nil {
         ConversationView(agent: agent!).environmentObject(conversationManager)
