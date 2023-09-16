@@ -31,17 +31,16 @@ func readUntilString(pipe: Pipe, targetString: String) throws {
     let data = fileHandle.availableData
     let lines = String(decoding: data, as: UTF8.self)
     
-    for ln in lines.split(separator: "\n") {
-      if ln.contains(targetString) {
-        found = true
-        break
-      }
+    if lines.contains(targetString) {
+      found = true
+      break
     }
 
     remainingTime -= 100
     if remainingTime <= 0 {
       // todo throw proper error
       print("timed out waiting for \(targetString)")
+      print(lines)
     }
     usleep(100_000) // Sleep for 100ms if no new data available
   }

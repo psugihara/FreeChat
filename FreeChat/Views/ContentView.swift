@@ -42,7 +42,7 @@ struct ContentView: View {
       if conversationManager.hasConversation(), agent != nil {
         ConversationView(agent: agent!).environmentObject(conversationManager)
       } else if conversations.count == 0 {
-        Text("Hit “+” to start a conversation")
+        Text("Hit ⌘N to start a conversation")
       } else {
         Text("Select a conversation")
       }
