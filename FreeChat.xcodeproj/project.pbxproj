@@ -15,6 +15,8 @@
 		A137A3832AB4FD4800BE1AE0 /* freechat-server in Resources */ = {isa = PBXBuildFile; fileRef = A137A3822AB4FD4800BE1AE0 /* freechat-server */; };
 		A137A3842AB4FDAD00BE1AE0 /* freechat-server in Embed helper tools */ = {isa = PBXBuildFile; fileRef = A137A3822AB4FD4800BE1AE0 /* freechat-server */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		A137A3892AB502E500BE1AE0 /* ggml-metal.metal in Copy Metal */ = {isa = PBXBuildFile; fileRef = A137A3872AB502DB00BE1AE0 /* ggml-metal.metal */; };
+		A137A38C2AB6B2F800BE1AE0 /* KeyboardShortcuts in Frameworks */ = {isa = PBXBuildFile; productRef = A137A38B2AB6B2F800BE1AE0 /* KeyboardShortcuts */; };
+		A137A38E2AB6B52400BE1AE0 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = A137A38D2AB6B52400BE1AE0 /* Constants.swift */; };
 		A13C8C5A2A8FEEE400EC18D8 /* SplashCodeSyntaxHighlighter.swift in Sources */ = {isa = PBXBuildFile; fileRef = A13C8C592A8FEEE400EC18D8 /* SplashCodeSyntaxHighlighter.swift */; };
 		A13C8C5D2A8FEF0600EC18D8 /* Splash in Frameworks */ = {isa = PBXBuildFile; productRef = A13C8C5C2A8FEF0600EC18D8 /* Splash */; };
 		A13C8C602A8FF03800EC18D8 /* TextOutputFormat.swift in Sources */ = {isa = PBXBuildFile; fileRef = A13C8C5F2A8FF03800EC18D8 /* TextOutputFormat.swift */; };
@@ -116,6 +118,7 @@
 		A137A37B2AB3D26C00BE1AE0 /* ObservableScrollView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObservableScrollView.swift; sourceTree = "<group>"; };
 		A137A3822AB4FD4800BE1AE0 /* freechat-server */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = "freechat-server"; sourceTree = "<group>"; };
 		A137A3872AB502DB00BE1AE0 /* ggml-metal.metal */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.metal; path = "ggml-metal.metal"; sourceTree = "<group>"; };
+		A137A38D2AB6B52400BE1AE0 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		A13C8C592A8FEEE400EC18D8 /* SplashCodeSyntaxHighlighter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashCodeSyntaxHighlighter.swift; sourceTree = "<group>"; };
 		A13C8C5F2A8FF03800EC18D8 /* TextOutputFormat.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextOutputFormat.swift; sourceTree = "<group>"; };
 		A13C8C612A8FF27000EC18D8 /* Theme+FreeChat.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Theme+FreeChat.swift"; sourceTree = "<group>"; };
@@ -166,6 +169,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				A17A2E1F2A79A075006CDD90 /* EventSource in Frameworks */,
+				A137A38C2AB6B2F800BE1AE0 /* KeyboardShortcuts in Frameworks */,
 				A117219C2A7D7B70003B0358 /* MarkdownUI in Frameworks */,
 				A13C8C5D2A8FEF0600EC18D8 /* Splash in Frameworks */,
 			);
@@ -291,6 +295,7 @@
 				A1F617302A782AA200F2048C /* Chats.xcdatamodeld */,
 				A1F6172B2A782AA200F2048C /* Preview Content */,
 				A1F617592A7838DB00F2048C /* Models */,
+				A137A38D2AB6B52400BE1AE0 /* Constants.swift */,
 			);
 			path = FreeChat;
 			sourceTree = "<group>";
@@ -373,6 +378,7 @@
 				A17A2E1E2A79A075006CDD90 /* EventSource */,
 				A117219B2A7D7B70003B0358 /* MarkdownUI */,
 				A13C8C5C2A8FEF0600EC18D8 /* Splash */,
+				A137A38B2AB6B2F800BE1AE0 /* KeyboardShortcuts */,
 			);
 			productName = Mantras;
 			productReference = A1F617222A782AA100F2048C /* FreeChat.app */;
@@ -453,6 +459,7 @@
 				A17A2E1D2A79A075006CDD90 /* XCRemoteSwiftPackageReference "EventSource" */,
 				A117219A2A7D7B70003B0358 /* XCRemoteSwiftPackageReference "swift-markdown-ui" */,
 				A13C8C5B2A8FEF0600EC18D8 /* XCRemoteSwiftPackageReference "Splash" */,
+				A137A38A2AB6B2F800BE1AE0 /* XCRemoteSwiftPackageReference "KeyboardShortcuts" */,
 			);
 			productRefGroup = A1F617232A782AA100F2048C /* Products */;
 			projectDirPath = "";
@@ -507,6 +514,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A137A38E2AB6B52400BE1AE0 /* Constants.swift in Sources */,
 				A13C8C602A8FF03800EC18D8 /* TextOutputFormat.swift in Sources */,
 				A1F6175B2A7838F700F2048C /* Conversation+Extensions.swift in Sources */,
 				A13C8C622A8FF27000EC18D8 /* Theme+FreeChat.swift in Sources */,
@@ -924,6 +932,14 @@
 				minimumVersion = 2.0.0;
 			};
 		};
+		A137A38A2AB6B2F800BE1AE0 /* XCRemoteSwiftPackageReference "KeyboardShortcuts" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/sindresorhus/KeyboardShortcuts";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.0;
+			};
+		};
 		A13C8C5B2A8FEF0600EC18D8 /* XCRemoteSwiftPackageReference "Splash" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/JohnSundell/Splash";
@@ -947,6 +963,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = A117219A2A7D7B70003B0358 /* XCRemoteSwiftPackageReference "swift-markdown-ui" */;
 			productName = MarkdownUI;
+		};
+		A137A38B2AB6B2F800BE1AE0 /* KeyboardShortcuts */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A137A38A2AB6B2F800BE1AE0 /* XCRemoteSwiftPackageReference "KeyboardShortcuts" */;
+			productName = KeyboardShortcuts;
 		};
 		A13C8C5C2A8FEF0600EC18D8 /* Splash */ = {
 			isa = XCSwiftPackageProductDependency;

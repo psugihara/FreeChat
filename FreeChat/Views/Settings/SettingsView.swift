@@ -7,8 +7,10 @@
 
 import SwiftUI
 import Combine
+import KeyboardShortcuts
 
 struct SettingsView: View {
+  static let title = "Settings"
   static let defaultModelId = "default"
   private static let customizeModelsId = "customizeModels"
   
@@ -32,6 +34,10 @@ struct SettingsView: View {
   @State var pickedModel: String = ""
   @State var customizeModels = false
   @State var editSystemPrompt = false
+  
+  var globalHotkey: some View {
+    KeyboardShortcuts.Recorder("Summon FreeChat:", name: .summonFreeChat)
+  }
   
   var systemPromptEditor: some View {
     LabeledContent("System prompt") {
@@ -88,6 +94,7 @@ struct SettingsView: View {
   
   var body: some View {
     Form {
+      globalHotkey
       systemPromptEditor
       modelPicker
     }
@@ -98,7 +105,7 @@ struct SettingsView: View {
     .sheet(isPresented: $editSystemPrompt, onDismiss: dismissEditSystemPrompt) {
       EditSystemPrompt()
     }
-    .navigationTitle("Settings")
+    .navigationTitle(SettingsView.title)
     .onAppear {
       pickedModel = selectedModelId
     }

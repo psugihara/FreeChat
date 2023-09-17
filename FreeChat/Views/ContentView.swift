@@ -7,6 +7,8 @@
 
 import SwiftUI
 import CoreData
+import KeyboardShortcuts
+import AppKit
 
 struct ContentView: View {
   
@@ -67,6 +69,15 @@ struct ContentView: View {
   }
   
   private func initializeFirstLaunchData() {
+    KeyboardShortcuts.onKeyUp(for: .summonFreeChat) {
+      NSApp.activate(ignoringOtherApps: true)
+      let _ = try? Conversation.create(ctx: viewContext)
+
+      // Bring conversation window to front.
+      let conversationWindow = NSApp.windows.first(where: { $0.title != SettingsView.title })
+      conversationWindow?.makeKeyAndOrderFront(self)
+    }
+
     if firstLaunchComplete { return }
     do {
       let c = try Conversation.create(ctx: viewContext)
