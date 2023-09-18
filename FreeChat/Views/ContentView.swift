@@ -11,8 +11,8 @@ import KeyboardShortcuts
 import AppKit
 
 struct ContentView: View {
-  
   @Environment(\.managedObjectContext) private var viewContext
+  @Environment(\.openWindow) private var openWindow
 
   @AppStorage("selectedModelId") private var selectedModelId: String?
   @AppStorage("systemPrompt") private var systemPrompt: String = Agent.DEFAULT_SYSTEM_PROMPT
@@ -34,7 +34,7 @@ struct ContentView: View {
   
   @State var agent: Agent?
   
-  @StateObject var conversationManager = ConversationManager()
+  @EnvironmentObject var conversationManager: ConversationManager
   
   var body: some View {
     NavigationSplitView {
@@ -42,7 +42,7 @@ struct ContentView: View {
         .navigationSplitViewColumnWidth(min: 160, ideal: 160)
     } detail: {
       if conversationManager.hasConversation(), agent != nil {
-        ConversationView(agent: agent!).environmentObject(conversationManager)
+        ConversationView(agent: agent!)
       } else if conversations.count == 0 {
         Text("Hit ⌘N to start a conversation")
       } else {
@@ -69,22 +69,16 @@ struct ContentView: View {
   }
   
   private func initializeFirstLaunchData() {
-    KeyboardShortcuts.onKeyUp(for: .summonFreeChat) {
-      NSApp.activate(ignoringOtherApps: true)
-      let _ = try? Conversation.create(ctx: viewContext)
-
-      // Bring conversation window to front.
-      let conversationWindow = NSApp.windows.first(where: { $0.title != SettingsView.title })
-      conversationWindow?.makeKeyAndOrderFront(self)
+    if !conversationManager.summonRegistered {
+      KeyboardShortcuts.onKeyUp(for: .summonFreeChat) {
+        NSApp.activate(ignoringOtherApps: true)
+        conversationManager.newConversation(viewContext: viewContext, openWindow: openWindow)
+      }
+      conversationManager.summonRegistered = true
     }
 
     if firstLaunchComplete { return }
-    do {
-      let c = try Conversation.create(ctx: viewContext)
-      selection.insert(c)
-    } catch (let error) {
-      print("error creating initial conversation", error.localizedDescription)
-    }
+    conversationManager.newConversation(viewContext: viewContext, openWindow: openWindow)
     firstLaunchComplete = true
   }
   

@@ -9,7 +9,9 @@ import SwiftUI
 
 struct NavList: View {
   @Environment(\.managedObjectContext) private var viewContext
-  
+  @Environment(\.openWindow) private var openWindow
+  @EnvironmentObject var conversationManager: ConversationManager
+
   @FetchRequest(
     sortDescriptors: [NSSortDescriptor(keyPath: \Conversation.lastMessageAt, ascending: false)],
     animation: .default)
@@ -50,7 +52,7 @@ struct NavList: View {
         Spacer()
       }
       ToolbarItem {
-        Button(action: addConversation) {
+        Button(action: newConversation) {
           Label("Add conversation", systemImage: "plus")
         }
       }
@@ -108,12 +110,6 @@ struct NavList: View {
     }
   }
   
-  private func addConversation() {
-    withAnimation {
-      _ = try? Conversation.create(ctx: viewContext)
-    }
-  }
-  
   private func deleteConversation(conversation: Conversation) {
     withAnimation {
       viewContext.delete(conversation)
@@ -128,6 +124,10 @@ struct NavList: View {
   
   private func sortedItems() -> [Conversation] {
     items.sorted(by: { $0.updatedAt!.compare($1.updatedAt!) == .orderedDescending })
+  }
+  
+  private func newConversation() {
+    conversationManager.newConversation(viewContext: viewContext, openWindow: openWindow)
   }
 }
 

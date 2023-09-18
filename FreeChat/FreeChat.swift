@@ -6,24 +6,30 @@
 //
 
 import SwiftUI
+import KeyboardShortcuts
 
 @main
 struct FreeChatApp: App {
+  @Environment(\.openWindow) var openWindow
+  @StateObject var conversationManager = ConversationManager()
+
   let persistenceController = PersistenceController.shared
-  
+
   var body: some Scene {
-    WindowGroup {
+    WindowGroup(id: "main") {
       ContentView()
         .environment(\.managedObjectContext, persistenceController.container.viewContext)
+        .environmentObject(conversationManager)
     }
     .commands {
       CommandGroup(replacing: .newItem) {
         Button("New Chat") {
-          _ = try? Conversation.create(ctx: persistenceController.container.viewContext)
+          conversationManager.newConversation(viewContext: persistenceController.container.viewContext, openWindow: openWindow)
         }.keyboardShortcut(KeyboardShortcut("N"))
       }
       SidebarCommands()
     }
+    
 #if os(macOS)
     Settings {
       SettingsView()

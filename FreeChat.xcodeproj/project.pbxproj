@@ -112,7 +112,6 @@
 
 /* Begin PBXFileReference section */
 		A11721982A7D5274003B0358 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
-		A12B52DB2AA10FA100658707 /* zaraxls-l2-7b.q5_K_M.gguf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "zaraxls-l2-7b.q5_K_M.gguf"; sourceTree = "<group>"; };
 		A12B52DD2AA5228100658707 /* EditModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditModels.swift; sourceTree = "<group>"; };
 		A12B52E32AA5A99E00658707 /* EditSystemPrompt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditSystemPrompt.swift; sourceTree = "<group>"; };
 		A137A37B2AB3D26C00BE1AE0 /* ObservableScrollView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObservableScrollView.swift; sourceTree = "<group>"; };
@@ -129,6 +128,7 @@
 		A15D50D32A80BCA900FC1681 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		A17A2E122A79A005006CDD90 /* Agent.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Agent.swift; sourceTree = "<group>"; };
 		A17A2E132A79A005006CDD90 /* LlamaServer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LlamaServer.swift; sourceTree = "<group>"; };
+		A17AB1BE2AB8FC4300CD3100 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		A17B95572AB2461700B545FD /* spicyboros-7b-2.2.Q3_K_S.gguf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "spicyboros-7b-2.2.Q3_K_S.gguf"; sourceTree = "<group>"; };
 		A19AA5212AA667BE009D9573 /* QuickPromptButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickPromptButton.swift; sourceTree = "<group>"; };
 		A1A286E72A7D8A7D0004967A /* MessageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageView.swift; sourceTree = "<group>"; };
@@ -223,7 +223,6 @@
 				A17A2E122A79A005006CDD90 /* Agent.swift */,
 				A17A2E132A79A005006CDD90 /* LlamaServer.swift */,
 				A137A3822AB4FD4800BE1AE0 /* freechat-server */,
-				A12B52DB2AA10FA100658707 /* zaraxls-l2-7b.q5_K_M.gguf */,
 				A17B95572AB2461700B545FD /* spicyboros-7b-2.2.Q3_K_S.gguf */,
 				A1A286F32A7E17750004967A /* server-watchdog */,
 				A1A286F92A7E197F0004967A /* README.md */,
@@ -287,6 +286,7 @@
 		A1F617242A782AA100F2048C /* FreeChat */ = {
 			isa = PBXGroup;
 			children = (
+				A17AB1BE2AB8FC4300CD3100 /* Info.plist */,
 				A15D50D02A7F49CD00FC1681 /* Views */,
 				A1F617252A782AA100F2048C /* FreeChat.swift */,
 				A1F617292A782AA200F2048C /* Assets.xcassets */,
@@ -750,7 +750,9 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = FreeChat/Info.plist;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
+				INFOPLIST_KEY_LSUIElement = NO;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -782,7 +784,9 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = FreeChat/Info.plist;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
+				INFOPLIST_KEY_LSUIElement = NO;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
