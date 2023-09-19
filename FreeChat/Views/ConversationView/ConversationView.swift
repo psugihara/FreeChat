@@ -16,7 +16,10 @@ struct ConversationView: View {
     conversationManager.currentConversation
   }
   
-  @ObservedObject var agent: Agent
+  var agent: Agent {
+    conversationManager.agent
+  }
+
   @State var pendingMessage: Message?
   
   @State var messages: [Message] = []
@@ -49,9 +52,6 @@ struct ConversationView: View {
             } else {
               MessageView(m, agentStatus: nil)
                 .id("\(m.id)\(m.updatedAt as Date?)")
-                .onAppear {
-                  scrollToLastIfRecent(proxy)
-                }
                 .scaleEffect(x: showUserMessage ? 1 : 0.5, y: showUserMessage ? 1 : 0.5, anchor: .bottomLeading)
                 .opacity(showUserMessage ? 1 : 0)
                 .animation(.interpolatingSpring(stiffness: 170, damping: 20), value: showUserMessage)
@@ -63,7 +63,7 @@ struct ConversationView: View {
       }
       .padding(.vertical, 12)
       .onReceive(
-        agent.$pendingMessage.throttle(for: .seconds(0.07), scheduler: RunLoop.main, latest: true)
+        agent.$pendingMessage.throttle(for: .seconds(0.1), scheduler: RunLoop.main, latest: true)
       ) { text in
         if conversation.prompt != nil, agent.prompt.hasPrefix(conversation.prompt!) {
           pendingMessageText = text
@@ -206,11 +206,11 @@ struct ConversationView_Previews: PreviewProvider {
   static var previews: some View {
     let ctx = PersistenceController.preview.container.viewContext
     let c = try! Conversation.create(ctx: ctx)
-    let a = Agent(id: "llama", prompt: "", systemPrompt: "", modelPath: "")
     let cm = ConversationManager()
     cm.currentConversation = c
+    cm.agent = Agent(id: "llama", prompt: "", systemPrompt: "", modelPath: "")
     
-    return ConversationView(agent: a)
+    return ConversationView()
       .environment(\.managedObjectContext, ctx)
       .environmentObject(cm)
   }

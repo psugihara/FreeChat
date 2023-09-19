@@ -12,6 +12,9 @@ import SwiftUI
 class ConversationManager: ObservableObject {
   var summonRegistered = false
   
+  @AppStorage("systemPrompt") private var systemPrompt: String = Agent.DEFAULT_SYSTEM_PROMPT
+  @Published var agent: Agent = Agent(id: "Llama", prompt: "", systemPrompt: "", modelPath: "")
+  
   private static var dummyConversation: Conversation = {
     let tempMoc = NSManagedObjectContext(concurrencyType: .mainQueueConcurrencyType)
     return Conversation(context: tempMoc)
@@ -20,7 +23,7 @@ class ConversationManager: ObservableObject {
   // in the foreground
   @Published var currentConversation: Conversation = ConversationManager.dummyConversation
   
-  func hasConversation() -> Bool {
+  func showConversation() -> Bool {
     return currentConversation != ConversationManager.dummyConversation
   }
   
@@ -57,5 +60,17 @@ class ConversationManager: ObservableObject {
       print("error creating new conversation", error.localizedDescription)
     }
   }
-
+  
+  func rebootAgent(systemPrompt: String? = nil, model: Model? = nil) {
+    let prompt = systemPrompt ?? self.systemPrompt
+    let url = model?.url == nil ? LlamaServer.DEFAULT_MODEL_URL : model!.url!
+        
+    Task {
+      await agent.llama.stopServer()
+      await MainActor.run {
+        agent = Agent(id: "Llama", prompt: agent.prompt, systemPrompt: prompt, modelPath: url.path)
+      }
+      await agent.warmup()
+    }
+  }
 }

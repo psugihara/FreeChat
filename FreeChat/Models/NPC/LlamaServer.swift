@@ -21,31 +21,6 @@ func removeUnmatchedTrailingQuote(_ inputString: String) -> String {
   return outputString
 }
 
-func readUntilString(pipe: Pipe, targetString: String) throws {
-  print("readUntilString \(targetString)")
-  let fileHandle = pipe.fileHandleForReading
-  var found = false
-  var remainingTime = 60_000
-  
-  while !found {
-    let data = fileHandle.availableData
-    let lines = String(decoding: data, as: UTF8.self)
-    
-    if lines.contains(targetString) {
-      found = true
-      break
-    }
-
-    remainingTime -= 100
-    if remainingTime <= 0 {
-      // todo throw proper error
-      print("timed out waiting for \(targetString)")
-      print(lines)
-    }
-    usleep(100_000) // Sleep for 100ms if no new data available
-  }
-}
-
 func getMachineHardwareName() -> String? {
   var sysInfo = utsname()
   let retVal = uname(&sysInfo)
@@ -68,8 +43,11 @@ actor LlamaServer {
   
   private var process = Process()
   private var outputPipe = Pipe()
+  private var serverUp = false
+  private var serverErrorMessage = ""
   private var eventSource: EventSource?
   private let port = "8690"
+  private var interrupted = false
   
   private var monitor = Process()
   
@@ -78,7 +56,7 @@ actor LlamaServer {
   }
   
   // Start a monitor process that will terminate the server when our app dies.
-  private func startMonitor(serverPID: pid_t) throws {
+  private func startAppMonitor(serverPID: pid_t) throws {
     monitor = Process()
     monitor.executableURL = Bundle.main.url(forAuxiliaryExecutable: "server-watchdog")
     monitor.arguments = [String(serverPID)]
@@ -111,7 +89,7 @@ actor LlamaServer {
     print("started monitor for \(serverPID)")
   }
   
-  private func startServer() throws {
+  private func startServer() async throws {
     if process.isRunning { return }
     process = Process()
     
@@ -133,7 +111,7 @@ actor LlamaServer {
     
     outputPipe = Pipe()
     process.standardInput = Pipe()
-
+    
     // To debug with server's output, comment these 2 lines to inherit stdout.
     // N.B. this will make readUntilString hang
     process.standardOutput = outputPipe
@@ -146,12 +124,12 @@ actor LlamaServer {
       throw LlamaServerError.pipeFail
     }
     
+    
     try process.run()
     
-    // wait for a string like "llama server listening at http://127.0.0.1:8690"
-    try readUntilString(pipe: outputPipe, targetString: "llama server listening")
-    
-    try startMonitor(serverPID: process.processIdentifier)
+    try await waitForServer()
+
+    try startAppMonitor(serverPID: process.processIdentifier)
     
     let endTime = DispatchTime.now()
     let elapsedTime = Double(endTime.uptimeNanoseconds - startTime.uptimeNanoseconds) / 1_000_000
@@ -172,9 +150,9 @@ actor LlamaServer {
 #if DEBUG
     print("START PROMPT\n \(prompt) \nEND PROMPT\n\n")
 #endif
-
+    
     let start = CFAbsoluteTimeGetCurrent()
-    try startServer()
+    try await startServer()
     
     // hit localhost for completion
     let params = CompleteParams(
@@ -200,40 +178,40 @@ actor LlamaServer {
     // Use EventSource to receive server sent events
     eventSource = EventSource(request: request)
     eventSource!.connect()
-
+    
     var response = ""
     var responseDiff = 0.0
     var stopResponse: StopResponse?
-    listenLoop: for await event in eventSource!.events {
-      switch event {
-        case .open:
-          continue
-        case .error(let error):
-          print("llama.cpp server error:", error.localizedDescription)
-        case .message(let message):
-          // parse json in message.data string then print the data.content value and append it to response
-          if let data = message.data?.data(using: .utf8) {
-            let decoder = JSONDecoder()
-            let responseObj = try decoder.decode(Response.self, from: data)
-            let fragment = responseObj.content
-            response.append(fragment)
-            progressHandler?(fragment)
-            if responseDiff == 0 {
-              responseDiff = CFAbsoluteTimeGetCurrent() - start
-            }
-            
-            if responseObj.stop {
-              stopResponse = try decoder.decode(StopResponse.self, from: data)
-#if DEBUG
-              print("server.cpp stopResponse", NSString(data: data, encoding: String.Encoding.utf8.rawValue) ?? "missing")
-#endif
-              break listenLoop
-            }
+  listenLoop: for await event in eventSource!.events {
+    switch event {
+      case .open:
+        continue
+      case .error(let error):
+        print("llama.cpp server error:", error.localizedDescription)
+      case .message(let message):
+        // parse json in message.data string then print the data.content value and append it to response
+        if let data = message.data?.data(using: .utf8) {
+          let decoder = JSONDecoder()
+          let responseObj = try decoder.decode(Response.self, from: data)
+          let fragment = responseObj.content
+          response.append(fragment)
+          progressHandler?(fragment)
+          if responseDiff == 0 {
+            responseDiff = CFAbsoluteTimeGetCurrent() - start
           }
-        case .closed:
-          break listenLoop
-      }
+          
+          if responseObj.stop {
+            stopResponse = try decoder.decode(StopResponse.self, from: data)
+#if DEBUG
+            print("server.cpp stopResponse", NSString(data: data, encoding: String.Encoding.utf8.rawValue) ?? "missing")
+#endif
+            break listenLoop
+          }
+        }
+      case .closed:
+        break listenLoop
     }
+  }
     
     if responseDiff > 0 {
       print("response: \(response)")
@@ -242,7 +220,7 @@ actor LlamaServer {
     
     // adding a trailing quote or space is a common mistake with the smaller model output
     let cleanText = removeUnmatchedTrailingQuote(response).trimmingCharacters(in: .whitespacesAndNewlines)
-
+    
     let modelName = stopResponse?.model.split(separator: "/").last?.map { String($0) }.joined()
     return CompleteResponse(
       text: cleanText,
@@ -256,6 +234,60 @@ actor LlamaServer {
     if eventSource != nil {
       await eventSource!.close()
     }
+    interrupted = true
+  }
+  
+  private func waitForServer() async throws {
+    if !process.isRunning { return }
+    interrupted = false
+    serverErrorMessage = ""
+    
+    outputPipe.fileHandleForReading.readabilityHandler = { handle in
+      let data = handle.availableData
+      let lines = String(decoding: data, as: UTF8.self)
+      
+#if DEBUG
+      print(lines)
+#endif
+
+      Task {
+        await self.handleServerOutput(lines)
+      }
+    }
+    
+    var timeout = 60
+    let tick = 1
+    while true {
+      if serverUp || interrupted { break }
+      if !process.isRunning {
+        throw LlamaServerError.modelError
+      }
+      try await Task.sleep(for: .seconds(tick))
+      timeout -= tick
+      if timeout <= 0 {
+        break
+      }
+    }
+  }
+  
+  private func handleServerOutput(_ lines: String) {
+    let successMessage = "llama server listening at"
+    let errorRegex = /error/
+
+    if !process.isRunning {
+      serverUp = false
+    } else if interrupted {
+      serverUp = false
+    } else if lines.contains(successMessage) {
+      serverUp = true
+    } else if lines.contains(errorRegex) {
+      serverErrorMessage = lines
+    } else {
+      // wait for the next lines
+      return
+    }
+
+    outputPipe.fileHandleForReading.readabilityHandler = nil
   }
   
   struct CompleteResponse {
@@ -322,4 +354,5 @@ actor LlamaServer {
 enum LlamaServerError: Error {
   case pipeFail
   case jsonEncodingError
+  case modelError
 }

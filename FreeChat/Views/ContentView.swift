@@ -32,7 +32,9 @@ struct ContentView: View {
   @State private var selection: Set<Conversation> = Set()
   @State private var showDeleteConfirmation = false
   
-  @State var agent: Agent?
+  var agent: Agent? {
+    conversationManager.agent
+  }
   
   @EnvironmentObject var conversationManager: ConversationManager
   
@@ -41,8 +43,8 @@ struct ContentView: View {
       NavList(selection: $selection, showDeleteConfirmation: $showDeleteConfirmation)
         .navigationSplitViewColumnWidth(min: 160, ideal: 160)
     } detail: {
-      if conversationManager.hasConversation(), agent != nil {
-        ConversationView(agent: agent!)
+      if conversationManager.showConversation() {
+        ConversationView()
       } else if conversations.count == 0 {
         Text("Hit ⌘N to start a conversation")
       } else {
@@ -86,13 +88,8 @@ struct ContentView: View {
     let prompt = systemPrompt ?? self.systemPrompt
     let modelId = selectedModelId ?? self.selectedModelId
     let model = models.first { i in i.id?.uuidString == modelId }
-    let url = model?.url == nil ? LlamaServer.DEFAULT_MODEL_URL : model!.url!
     
-    Task {
-      await agent?.llama.stopServer()
-      agent = Agent(id: "Llama", prompt: agent?.prompt ?? "", systemPrompt: prompt, modelPath: url.path)
-      await agent?.warmup()
-    }
+    conversationManager.rebootAgent(systemPrompt: systemPrompt, model: model)
   }
 }
 

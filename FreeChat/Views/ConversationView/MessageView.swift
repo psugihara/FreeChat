@@ -18,6 +18,7 @@ struct MessageView: View {
   let agentStatus: Agent.Status?
   
   @State var showInfoPopover = false
+  @State var isHover = false
   
   init(_ m: Message, overrideText: String = "", agentStatus: Agent.Status?) {
     self.m = m
@@ -26,17 +27,16 @@ struct MessageView: View {
   }
   
   var messageText: String {
-    (overrideText == "" && m.text != nil ? m.text! : overrideText)
+    (overrideText.isEmpty && m.text != nil ? m.text! : overrideText)
       // make newlines display https://github.com/gonzalezreal/swift-markdown-ui/issues/92
       .replacingOccurrences(of: "\n", with: "  \n", options: .regularExpression)
   }
   
   var infoText: some View {
-    (agentStatus == .coldProcessing && overrideText == ""
+    (agentStatus == .coldProcessing && overrideText.isEmpty
      ? Text("warming up...")
      : Text(m.createdAt ?? Date(), formatter: messageTimestampFormatter))
     .font(.caption)
-    .foregroundColor(.gray)
   }
   
   var info: String {
@@ -51,6 +51,19 @@ struct MessageView: View {
       parts.append("Model: \(m.modelName!)")
     }
     return parts.joined(separator: "\n")
+  }
+  
+  var menuContent: some View {
+    Group {
+      if m.responseStartSeconds > 0 {
+        Button("Show info") {
+          self.showInfoPopover.toggle()
+        }
+      }
+      if overrideText == "", m.text != nil, !m.text!.isEmpty {
+        CopyButton(text: m.text!, buttonText: "Copy to clipboard")
+      }
+    }
   }
   
   var body: some View {
@@ -71,21 +84,24 @@ struct MessageView: View {
       .padding(2)
       .padding(.top, 1)
       
-      VStack(alignment: .leading, spacing: 4) {
-        if m.responseStartSeconds > 0 {
-          Button(action: {
-            self.showInfoPopover.toggle()
-          }) {
-            infoText
-          }
-          .textSelection(.enabled)
-          .buttonStyle(.plain)
-          .popover(isPresented: $showInfoPopover) {
-            Text(info).padding(12).font(.caption).textSelection(.enabled)
-          }
-        } else {
+      VStack(alignment: .leading, spacing: 1) {
+        HStack(alignment: .center, spacing: 0) {
           infoText
-        }
+          Spacer()
+          Menu(content: {
+            menuContent
+          }, label: {
+            Group {
+              Image(systemName: "ellipsis.circle").imageScale(.medium)
+            }.foregroundColor(.gray)
+          }).menuStyle(.button)
+            .buttonStyle(.plain)
+            .popover(isPresented: $showInfoPopover) {
+              Text(info).padding(12).font(.caption).textSelection(.enabled)
+            }
+            .opacity(isHover && overrideText.isEmpty ? 1 : 0)
+            .disabled(!overrideText.isEmpty)
+        }.foregroundColor(.gray)
         
         Markdown(messageText)
           .markdownTheme(.freeChat)
@@ -102,9 +118,10 @@ struct MessageView: View {
     .padding(.horizontal, 8)
     .background(Color(white: 1, opacity: 0.000001)) // makes contextMenu work
     .contextMenu {
-      if m.text != nil, !m.text!.isEmpty {
-        CopyButton(text: m.text!, buttonText: "Copy to clipboard")
-      }
+      menuContent
+    }
+    .onHover { hovered in
+      isHover = hovered
     }
   }
   

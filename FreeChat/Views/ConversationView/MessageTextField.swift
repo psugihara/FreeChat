@@ -10,18 +10,22 @@ import SwiftUI
 struct ChatStyle: TextFieldStyle {
   @Environment(\.colorScheme) var colorScheme
   var focused: Bool
+  let cornerRadius = 16.0
+  var rect: RoundedRectangle {
+    RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+  }
   func _body(configuration: TextField<Self._Label>) -> some View {
     configuration
       .textFieldStyle(.plain)
       .frame(maxWidth: .infinity)
       .padding(EdgeInsets(top: 0, leading: 6, bottom: 0, trailing: 6))
       .padding(8)
-      .cornerRadius(12)
-        .overlay( // regular border
-        Capsule().stroke(Color.primary.opacity(0.2), lineWidth: 1)
+      .cornerRadius(cornerRadius)
+      .overlay( // regular border
+        rect.stroke(Color.primary.opacity(0.2), lineWidth: 1)
       )
       .overlay( // focus ring
-        Capsule()
+        rect
           .stroke(Color.accentColor.opacity(0.5), lineWidth: 2)
           .scaleEffect(focused ? 1 : 1.02)
           .shadow(color: .black.opacity(0.1), radius: 2, x: 0, y: 0.5)
@@ -59,7 +63,7 @@ struct MessageTextField: View {
         .onSubmit {
           if CGKeyCode.kVK_Shift.isPressed {
             input += "\n"
-          } else {
+          } else if input.trimmingCharacters(in: .whitespacesAndNewlines) != "" {
             onSubmit(input)
             input = ""
           }
