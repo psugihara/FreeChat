@@ -5,7 +5,7 @@
 
 <h1 align="center">FreeChat</h1>
 
-Chat with Meta’s Llama 2 on your MacBook without installing any other software or connecting to the internet. Every conversation is saved locally.
+Chat with Meta’s Llama 2 on your MacBook without installing any other software. Every conversation is saved locally, all conversations happen offline.
 
 - Customize persona and expertise by changing the system prompt
 - Try any llama.cpp compatible model
