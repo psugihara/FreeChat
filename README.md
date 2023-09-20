@@ -9,18 +9,18 @@ Chat with Meta’s Llama 2 on your MacBook without installing any other software
 
 https://github.com/non-playable/FreeChat/assets/282016/c87c868f-d2ea-4546-b738-d12f9ec95a08
 
-## Technical goals
+## Design goals
 
-FreeChat is a native LLM appliance for macOS that runs completely locally. Download it and ask your LLM a question without doing any configuration. Like OpenAI's chat without login or tracking. You should be able to install from the Mac App Store and use it immediatly.
+I want FreeChat to be a native LLM appliance for macOS that runs completely locally. Download it and ask your LLM a question without doing any configuration. Like OpenAI's chat without login or tracking. You should be able to install from the Mac App Store and use it immediatly.
 
 - No config. Usable by people who haven't heard of models, prompts, or LLMs.
 - Performance and simplicity over dev experience or features. Notes not Word, Swift not Elektron.
 - Local first. Core functionality should not require an internet connection. There are lots of great clients for GPT-4, claude, etc. This is not one of them.
-- No conversation tracking. Feel free to do whatever you want with your LLM, just like Notes.
+- No conversation tracking. Talk about whatever you want with FreeChat, just like Notes.
 
 ## Install
 
-Download the app here: <link to .zip>
+Download the TestFlight here: https://6032904148827.gumroad.com/l/freechat-beta
 
 Or build from source via "Archive" in Xcode after completing dev setup below.
 
