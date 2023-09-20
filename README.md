@@ -7,8 +7,7 @@ Chat with Meta’s Llama 2 on your MacBook without installing any other software
 - No internet connection required, all local
 - Conversations sync natively via iCloud
 
-<img width="1308" alt="Screenshot 2023-08-18 at 4 06 42 PM" src="https://github.com/npc-pet/FreeChat/assets/282016/32ad0988-a391-40f4-b94a-479a06f9366d">
-
+https://github.com/non-playable/FreeChat/assets/282016/c87c868f-d2ea-4546-b738-d12f9ec95a08
 
 ## Technical goals
 
