@@ -66,6 +66,29 @@ struct MessageView: View {
     }
   }
   
+  var infoLine: some View {
+    HStack(alignment: .center, spacing: 4) {
+      infoText.padding(.trailing, 3)
+      Menu(content: {
+        menuContent
+      }, label: {
+        Group {
+          Image(systemName: "ellipsis").imageScale(.medium)
+        }.foregroundColor(.gray)
+          .imageScale(.small)
+          .frame(minHeight: 16, maxHeight: .infinity)
+          .background(.secondary.opacity(0.0001))
+          .padding(.horizontal, 3)
+      })
+        .menuStyle(.circle)
+        .popover(isPresented: $showInfoPopover) {
+          Text(info).padding(12).font(.caption).textSelection(.enabled)
+        }
+        .opacity(isHover && overrideText.isEmpty ? 1 : 0)
+        .disabled(!overrideText.isEmpty)
+    }.foregroundColor(.gray)
+  }
+  
   var body: some View {
     HStack(alignment: .top) {
       ZStack(alignment: .bottomTrailing) {
@@ -85,24 +108,7 @@ struct MessageView: View {
       .padding(.top, 1)
       
       VStack(alignment: .leading, spacing: 1) {
-        HStack(alignment: .center, spacing: 0) {
-          infoText
-          Spacer()
-          Menu(content: {
-            menuContent
-          }, label: {
-            Group {
-              Image(systemName: "ellipsis.circle").imageScale(.medium)
-            }.foregroundColor(.gray)
-          }).menuStyle(.button)
-            .buttonStyle(.plain)
-            .popover(isPresented: $showInfoPopover) {
-              Text(info).padding(12).font(.caption).textSelection(.enabled)
-            }
-            .opacity(isHover && overrideText.isEmpty ? 1 : 0)
-            .disabled(!overrideText.isEmpty)
-        }.foregroundColor(.gray)
-        
+        infoLine
         Markdown(messageText)
           .markdownTheme(.freeChat)
           .markdownCodeSyntaxHighlighter(.splash(theme: self.theme))
@@ -117,6 +123,7 @@ struct MessageView: View {
     .padding(.vertical, 3)
     .padding(.horizontal, 8)
     .background(Color(white: 1, opacity: 0.000001)) // makes contextMenu work
+    .animation(Animation.easeOut, value: isHover)
     .contextMenu {
       menuContent
     }
