@@ -59,3 +59,15 @@ Not sure what this is like to run on another machine. Try it out.
 - [x] Change system prompts to modify personas or expertise
 - [ ] Search conversations
 - [ ] Personas - save system prompt / model settings for later and change personas when you create a new conversation
+
+### Credits
+
+This project would not be possible without the hard work of:
+
+- Georgi Gerganov for [llama.cpp](https://github.com/ggerganov/llama.cpp)
+- Meta for training Llama 2
+- Jon Durbin for training Spicyboros, the default model
+- TheBloke (Tom Jobbins) for model quantization
+- Monica Kogler for the FreeChat logo and uncountable UX consults
+
+Also many thanks to Billy Rennekamp, Elliot Hursh, Judd Schoenholtz, Alex Farrill for invaluable spitballing sessions.
