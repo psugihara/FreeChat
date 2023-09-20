@@ -43,7 +43,6 @@ Not sure what this is like to run on another machine. Try it out.
   - [x] Conversation null state
   - [x] user can copy conversation
   - [x] new conversation should focus textarea
-  - [ ] toast notif for errors https://github.com/sanzaru/SimpleToast
   - [x] interrupt llama
   - [x] llama should pause for a moment before responding if text hasn't generated
   - [x] convo scroll behavior breaks on code blocks, syntax highligting would be nice
@@ -54,3 +53,4 @@ Not sure what this is like to run on another machine. Try it out.
   - [ ] show errors when bad model files are used
 - [x] Change system prompts to modify personas or expertise
 - [ ] Search conversations
+- [ ] Personas - save system prompt / model settings for later and change personas when you create a new conversation
