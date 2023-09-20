@@ -1,4 +1,9 @@
-# FreeChat
+<p align="center" width="100%">
+<img width="120" alt="FreeChat app icon" src="https://github.com/psugihara/FreeChat/assets/282016/b5abfa45-9200-4821-8c78-53892be22794">
+</p>
+
+
+<h1 align="center">FreeChat</h1>
 
 Chat with Meta’s Llama 2 on your MacBook without installing any other software or connecting to the internet. Every conversation is saved locally.
 
