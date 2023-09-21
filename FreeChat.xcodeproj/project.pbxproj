@@ -12,7 +12,6 @@
 		A12B52DE2AA5228100658707 /* EditModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = A12B52DD2AA5228100658707 /* EditModels.swift */; };
 		A12B52E42AA5A99E00658707 /* EditSystemPrompt.swift in Sources */ = {isa = PBXBuildFile; fileRef = A12B52E32AA5A99E00658707 /* EditSystemPrompt.swift */; };
 		A137A37C2AB3D26C00BE1AE0 /* ObservableScrollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A137A37B2AB3D26C00BE1AE0 /* ObservableScrollView.swift */; };
-		A137A3832AB4FD4800BE1AE0 /* freechat-server in Resources */ = {isa = PBXBuildFile; fileRef = A137A3822AB4FD4800BE1AE0 /* freechat-server */; };
 		A137A3842AB4FDAD00BE1AE0 /* freechat-server in Embed helper tools */ = {isa = PBXBuildFile; fileRef = A137A3822AB4FD4800BE1AE0 /* freechat-server */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		A137A3892AB502E500BE1AE0 /* ggml-metal.metal in Copy Metal */ = {isa = PBXBuildFile; fileRef = A137A3872AB502DB00BE1AE0 /* ggml-metal.metal */; };
 		A137A38C2AB6B2F800BE1AE0 /* KeyboardShortcuts in Frameworks */ = {isa = PBXBuildFile; productRef = A137A38B2AB6B2F800BE1AE0 /* KeyboardShortcuts */; };
@@ -482,7 +481,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				A11721992A7D5274003B0358 /* README.md in Resources */,
-				A137A3832AB4FD4800BE1AE0 /* freechat-server in Resources */,
 				A1F6172D2A782AA200F2048C /* Preview Assets.xcassets in Resources */,
 				A1F6172A2A782AA200F2048C /* Assets.xcassets in Resources */,
 			);
