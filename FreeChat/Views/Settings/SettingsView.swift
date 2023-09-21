@@ -35,7 +35,7 @@ struct SettingsView: View {
   @State var editSystemPrompt = false
   
   var globalHotkey: some View {
-    KeyboardShortcuts.Recorder("Summon Chat", name: .summonFreeChat)
+    KeyboardShortcuts.Recorder("Summon chat", name: .summonFreeChat)
   }
   
   var systemPromptEditor: some View {
