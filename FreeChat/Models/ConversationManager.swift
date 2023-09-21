@@ -35,15 +35,18 @@ class ConversationManager: ObservableObject {
     currentConversation = ConversationManager.dummyConversation
   }
   
-  func newConversation(viewContext: NSManagedObjectContext, openWindow: OpenWindowAction) {
-    // bring conversation window to front
-    let conversationWindow = NSApp.windows.first(where: { $0.title != "Settings" })
+  func bringConversationToFront(openWindow: OpenWindowAction) {
+    let conversationWindow = NSApp.mainWindow
     if conversationWindow != nil {
       conversationWindow?.makeKeyAndOrderFront(self)
     } else {
       // conversation window is not open, so open it
       openWindow(id: "main")
     }
+  }
+  
+  func newConversation(viewContext: NSManagedObjectContext, openWindow: OpenWindowAction) {
+    bringConversationToFront(openWindow: openWindow)
     
     do {
       // delete old conversations with no messages

@@ -28,7 +28,13 @@ struct FreeChatApp: App {
         }.keyboardShortcut(KeyboardShortcut("N"))
       }
       SidebarCommands()
+      CommandGroup(after: .windowList, addition: {
+        Button("Conversations") {
+          conversationManager.bringConversationToFront(openWindow: openWindow)
+        }.keyboardShortcut(KeyboardShortcut("0"))
+      })
     }
+
     
 #if os(macOS)
     Settings {
