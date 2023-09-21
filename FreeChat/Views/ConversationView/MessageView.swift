@@ -80,6 +80,7 @@ struct MessageView: View {
           .background(.secondary.opacity(0.0001))
           .padding(.horizontal, 3)
       })
+        .offset(y: -1)
         .menuStyle(.circle)
         .popover(isPresented: $showInfoPopover) {
           Text(info).padding(12).font(.caption).textSelection(.enabled)
@@ -87,13 +88,14 @@ struct MessageView: View {
         .opacity(isHover && overrideText.isEmpty ? 1 : 0)
         .disabled(!overrideText.isEmpty)
     }.foregroundColor(.gray)
+      .fixedSize(horizontal: false, vertical: true)
   }
   
   var body: some View {
     HStack(alignment: .top) {
       ZStack(alignment: .bottomTrailing) {
         Image(m.fromId == Message.USER_SPEAKER_ID ? "UserAvatar" : "LlamaAvatar")
-          .shadow(color: .gray, radius: 1, x: 0, y: 1)
+          .shadow(color: .secondary.opacity(0.3), radius: 2, x: 0, y: 0.5)
         if agentStatus == .coldProcessing || agentStatus == .processing {
           ZStack {
             Circle()
@@ -113,7 +115,7 @@ struct MessageView: View {
           .markdownTheme(.freeChat)
           .markdownCodeSyntaxHighlighter(.splash(theme: self.theme))
           .textSelection(.enabled)
-          .frame(maxWidth: .infinity, alignment: .leading)
+          .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
           .transition(.identity)
       }
       .padding(.top, 3)
@@ -155,8 +157,25 @@ struct MessageView_Previews: PreviewProvider {
     let ctx = PersistenceController.preview.container.viewContext
     let c = try! Conversation.create(ctx: ctx)
     let m = try! Message.create(text: "hello there, I'm well! How are **you**?", fromId: "User", conversation: c, inContext: ctx)
-    let m2 = try! Message.create(text: "Doing pretty well, can you write me some code?", fromId: "Llama", conversation: c, inContext: ctx)
-    return [m, m2]
+    let m2 = try! Message.create(text: "Doing pretty well, can you write me some code?", fromId: Message.USER_SPEAKER_ID, conversation: c, inContext: ctx)
+    let m3 = Message(context: ctx)
+    m3.conversation = c
+    m3.fromId = "llama"
+    m3.text = """
+      Hi! You can use `FileManager` to get information about files, including their sizes. Here's an example of getting the size of a text file:
+      ```swift
+      let path = "path/to/file"
+      do {
+          let attributes = try FileManager.default.attributesOfItem(atPath: path)
+          if let fileSize = attributes[FileAttributeKey.size] as? UInt64 {
+              print("The file is \\(ByteCountFormatter().string(fromByteCount: Int64(fileSize)))")
+          }
+      } catch {
+          // Handle any errors
+      }
+      ```
+      """
+    return [m, m2, m3]
   }
   
   static var previews: some View {

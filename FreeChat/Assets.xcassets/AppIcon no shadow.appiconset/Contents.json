@@ -1,61 +1,61 @@
 {
   "images" : [
     {
-      "filename" : "FreeChat logo-16.png",
+      "filename" : "tidles-16.png",
       "idiom" : "mac",
       "scale" : "1x",
       "size" : "16x16"
     },
     {
-      "filename" : "FreeChat logo-32.png",
+      "filename" : "tidles-32.png",
       "idiom" : "mac",
       "scale" : "2x",
       "size" : "16x16"
     },
     {
-      "filename" : "FreeChat logo-32.png",
+      "filename" : "tidles-32.png",
       "idiom" : "mac",
       "scale" : "1x",
       "size" : "32x32"
     },
     {
-      "filename" : "FreeChat logo-64.png",
+      "filename" : "tidles-64.png",
       "idiom" : "mac",
       "scale" : "2x",
       "size" : "32x32"
     },
     {
-      "filename" : "FreeChat logo-128.png",
+      "filename" : "tidles-128.png",
       "idiom" : "mac",
       "scale" : "1x",
       "size" : "128x128"
     },
     {
-      "filename" : "FreeChat logo-256.png",
+      "filename" : "tidles-256.png",
       "idiom" : "mac",
       "scale" : "2x",
       "size" : "128x128"
     },
     {
-      "filename" : "FreeChat logo-256.png",
+      "filename" : "tidles-256.png",
       "idiom" : "mac",
       "scale" : "1x",
       "size" : "256x256"
     },
     {
-      "filename" : "FreeChat logo-512.png",
+      "filename" : "tidles-512.png",
       "idiom" : "mac",
       "scale" : "2x",
       "size" : "256x256"
     },
     {
-      "filename" : "FreeChat logo-512.png",
+      "filename" : "tidles-512.png",
       "idiom" : "mac",
       "scale" : "1x",
       "size" : "512x512"
     },
     {
-      "filename" : "FreeChat logo-1024.png",
+      "filename" : "tidles-1024.png",
       "idiom" : "mac",
       "scale" : "2x",
       "size" : "512x512"
