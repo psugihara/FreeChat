@@ -156,7 +156,11 @@ struct ConversationView: View {
     m.updatedAt = m.createdAt
     m.text = ""
     pendingMessage = m
-    agent.prompt = conversation.prompt ?? agent.prompt
+    
+    // Replace the agent's prompt if they don't know the conversation.
+    if conversation.prompt != nil && !agent.prompt.hasPrefix(conversation.prompt!) {
+      agent.prompt = conversation.prompt!
+    }
     
     DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
       if agentConversation != conversation {
@@ -190,7 +194,9 @@ struct ConversationView: View {
           print("error creating message", error.localizedDescription)
         }
         
-        if pendingMessage?.text != nil, response.text.hasPrefix(pendingMessage!.text!)  {
+        if pendingMessage?.text != nil,
+           !pendingMessage!.text!.isEmpty,
+           response.text.hasPrefix(agent.pendingMessage)  {
           pendingMessage = nil
           agent.pendingMessage = ""
         }
