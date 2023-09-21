@@ -19,7 +19,7 @@ struct ContentView: View {
   @AppStorage("firstLaunchComplete") private var firstLaunchComplete = false
   
   @FetchRequest(
-    sortDescriptors: [NSSortDescriptor(keyPath: \Model.updatedAt, ascending: true)]
+    sortDescriptors: [NSSortDescriptor(keyPath: \Model.size, ascending: false)]
   )
   private var models: FetchedResults<Model>
 
@@ -57,9 +57,7 @@ struct ContentView: View {
       }
     })
     .onDeleteCommand { showDeleteConfirmation = true }
-    .onChange(of: systemPrompt) { nextPrompt in rebootAgent(systemPrompt: nextPrompt) }
-    .onChange(of: selectedModelId) { nextModelId in rebootAgent(selectedModelId: nextModelId) }
-    .onAppear { rebootAgent() }
+    .onAppear(perform: rebootAgent)
     .onAppear(perform: initializeFirstLaunchData)
     .onChange(of: selection) { nextSelection in
       if nextSelection.first != nil {
@@ -84,12 +82,11 @@ struct ContentView: View {
     firstLaunchComplete = true
   }
   
-  private func rebootAgent(systemPrompt: String? = nil, selectedModelId: String? = nil) {
-    let prompt = systemPrompt ?? self.systemPrompt
-    let modelId = selectedModelId ?? self.selectedModelId
+  private func rebootAgent() {
+    let modelId = self.selectedModelId
     let model = models.first { i in i.id?.uuidString == modelId }
     
-    conversationManager.rebootAgent(systemPrompt: systemPrompt, model: model)
+    conversationManager.rebootAgent(systemPrompt: self.systemPrompt, model: model, viewContext: viewContext)
   }
 }
 

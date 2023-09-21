@@ -13,7 +13,11 @@ class ConversationManager: ObservableObject {
   var summonRegistered = false
   
   @AppStorage("systemPrompt") private var systemPrompt: String = Agent.DEFAULT_SYSTEM_PROMPT
+  @AppStorage("selectedModelId") private var selectedModelId: String = Model.defaultModelId
+
   @Published var agent: Agent = Agent(id: "Llama", prompt: "", systemPrompt: "", modelPath: "")
+  @Published var loadingModelId: String?
+  
   
   private static var dummyConversation: Conversation = {
     let tempMoc = NSManagedObjectContext(concurrencyType: .mainQueueConcurrencyType)
@@ -61,16 +65,36 @@ class ConversationManager: ObservableObject {
     }
   }
   
-  func rebootAgent(systemPrompt: String? = nil, model: Model? = nil) {
+  func rebootAgent(systemPrompt: String? = nil, model: Model? = nil, viewContext: NSManagedObjectContext) {
     let prompt = systemPrompt ?? self.systemPrompt
-    let url = model?.url == nil ? LlamaServer.DEFAULT_MODEL_URL : model!.url!
-        
+    let url = model?.url != nil ? model!.url! : LlamaServer.DEFAULT_MODEL_URL
+    
     Task {
       await agent.llama.stopServer()
       await MainActor.run {
         agent = Agent(id: "Llama", prompt: agent.prompt, systemPrompt: prompt, modelPath: url.path)
+        loadingModelId = model?.id?.uuidString ?? Model.defaultModelId
       }
-      await agent.warmup()
+      print("agent.warmup()")
+      print("prompt", prompt)
+      do {
+        model?.error = nil
+        print("agent.warmup calling llama.complete")
+        try await agent.warmup()
+      } catch LlamaServerError.modelError {
+        print("caught modelError on warmup")
+        await MainActor.run {
+          selectedModelId = Model.defaultModelId
+        }
+        model?.error = "Error loading model"
+      } catch (let error) {
+        print("agent warmup threw unexpected error", error.localizedDescription)
+      }
+
+      await MainActor.run {
+        loadingModelId = nil
+        try? viewContext.save()
+      }
     }
   }
 }

@@ -9,17 +9,21 @@ import SwiftUI
 
 struct EditModels: View {
   @Environment(\.colorScheme) var colorScheme
-  
-  static let formatErrorText = "Model files must be in .gguf format"
-  private static let defaultModelId = "default"
-  
   @Environment(\.managedObjectContext) private var viewContext
   @Environment(\.dismiss) var dismiss
-  
-  @Binding var selectedModelId: String
+  @EnvironmentObject var conversationManager: ConversationManager
 
+  static let formatErrorText = "Model files must be in .gguf format"
+  private static let defaultModelId = "default"
+
+  @Binding var selectedModelId: String
+  
+  // list state
+  @State var editingModelId: String?
+  @State var hoveredModelId: String?
+  
   @FetchRequest(
-    sortDescriptors: [NSSortDescriptor(keyPath: \Model.updatedAt, ascending: true)],
+    sortDescriptors: [NSSortDescriptor(keyPath: \Model.size, ascending: false)],
     animation: .default)
   private var items: FetchedResults<Model>
   
@@ -36,29 +40,38 @@ struct EditModels: View {
           showFileImporter = true
         }) {
           Image(systemName: "plus").padding(.horizontal, 6)
+            .frame(maxHeight: .infinity)
         }
         .frame(maxHeight: .infinity)
         .padding(.leading, 10)
         .buttonStyle(.borderless)
         .help("Add custom model (.gguf file)")
+        .background(Color.white.opacity(0.0001))
         .fileImporter(
           isPresented: $showFileImporter,
           allowedContentTypes: [.data],
           onCompletion: importModel
         )
         
-        Button(action: deleteSelected) {
+        Button(action: deleteEditing) {
           Image(systemName: "minus").padding(.horizontal, 6)
+            .frame(maxHeight: .infinity)
         }
         .frame(maxHeight: .infinity)
         .buttonStyle(.borderless)
-        .disabled(selectedModelId == EditModels.defaultModelId)
+        .disabled(editingModelId == Model.defaultModelId)
         
         Spacer()
         if !errorText.isEmpty {
           Text(errorText).foregroundColor(.red)
         }
         Spacer()
+        Button("Select") {
+          selectEditing()
+        }
+        .keyboardShortcut(.return, modifiers: [])
+        .frame(width: 0)
+        .hidden()
         Button("Done") {
           dismiss()
         }.padding(.horizontal, 10).keyboardShortcut(.escape)
@@ -68,44 +81,117 @@ struct EditModels: View {
     .background(Material.bar)
   }
   
-  var modelList: some View {
-    List(selection: $selectedModelId) {
-      Section("Models") {
-        Text("Default").tag(EditModels.defaultModelId)
-        ForEach(items) { i in
-          Text(i.name ?? i.url?.lastPathComponent ?? "Untitled").tag(i.id?.uuidString ?? "")
-            .help(i.url?.path ?? "Unknown path")
-            .contextMenu { Button(action: {
-              deleteModel(i)
-            }) {
-              Label("Delete Model", systemImage: "trash")
-            } }.tag(i.id?.uuidString ?? "")
+  func modelListItem(_ i: Model) -> some View {
+    let loading = conversationManager.loadingModelId != nil && conversationManager.loadingModelId == i.id?.uuidString
+    return HStack {
+      Group {
+        if loading {
+          ProgressView().controlSize(.small)
+        } else {
+          Text("✓").bold().opacity(selectedModelId == i.id?.uuidString ? 1 : 0)
+        }
+      }.frame(width: 20)
+      Text(i.name ?? i.url?.lastPathComponent ?? "Untitled").tag(i.id?.uuidString ?? "")
+        .help(i.url?.path ?? "Unknown path")
+        .contextMenu {
+          Button(action: {
+            deleteModel(i)
+          }) {
+            Label("Delete Model", systemImage: "trash")
+          }
+        }
+      if i.size != 0 {
+        Text("\(String(format: "%.2f", Double(i.size) / 1000.0)) GB")
+          .foregroundColor(.secondary)
+      }
+      Spacer()
+      if !loading {
+        if i.error != nil, !i.error!.isEmpty {
+          Label(i.error!, systemImage: "exclamationmark.triangle.fill")
+            .font(.caption)
+            .accentColor(.red)
         }
       }
+      hoverSelect(i.id?.uuidString ?? "", loading: loading)
+    }.tag(i.id?.uuidString ?? "")
+      .padding(4)
+      .onHover { hovered in
+        if hovered {
+          hoveredModelId = i.id?.uuidString
+        } else if hoveredModelId == i.id?.uuidString {
+          hoveredModelId = nil
+        }
+      }
+      .submitScope(true)
+  }
+  
+  func hoverSelect(_ modelId: String, loading: Bool = false) -> some View {
+    return Button("Select") {
+      selectedModelId = modelId
+    }.opacity(hoveredModelId == modelId && selectedModelId != modelId  ? 1 : 0)
+      .disabled(hoveredModelId != modelId || loading || selectedModelId == modelId)
+  }
+  
+  var modelList: some View {
+    List(selection: $editingModelId) {
+        HStack {
+          Group {
+            if conversationManager.loadingModelId == Model.defaultModelId {
+              ProgressView().controlSize(.small)
+            } else {
+              Text("✓").bold().opacity(selectedModelId == Model.defaultModelId ? 1 : 0)
+            }
+          }.frame(width: 20)
+          Text("Default (\(LlamaServer.DEFAULT_MODEL_FILENAME))").tag(Model.defaultModelId)
+            .padding(4)
+          Spacer()
+          hoverSelect(Model.defaultModelId, loading: conversationManager.loadingModelId == Model.defaultModelId)
+        }.tag(Model.defaultModelId)
+          .onHover { hovered in
+            if hovered {
+              hoveredModelId = Model.defaultModelId
+            } else if hoveredModelId == Model.defaultModelId {
+              hoveredModelId = nil
+            }
+          }
+
+        ForEach(items) { i in
+          modelListItem(i)
+        }
     }
     .listStyle(.inset(alternatesRowBackgrounds: true))
-    .onDeleteCommand(perform: deleteSelected)
+    .onDeleteCommand(perform: deleteEditing)
   }
   
   var body: some View {
     VStack(spacing: 0) {
       modelList
       bottomToolbar
-    }.frame(width: 400, height: 270)
+    }.frame(width: 500, height: 290)
   }
   
-  private func deleteSelected() {
+  private func deleteEditing() {
     errorText = ""
-    let model = items.first(where: { m in m.id?.uuidString == selectedModelId })
-    if model != nil {
-      deleteModel(model!)
+    if let model = items.first(where: { m in m.id?.uuidString == editingModelId }) {
+      deleteModel(model)
+    }
+  }
+  
+  private func selectEditing() {
+    print("hi")
+    if editingModelId != nil {
+      selectedModelId = editingModelId!
     }
   }
   
   private func deleteModel(_ model: Model) {
     errorText = ""
     viewContext.delete(model)
-    selectedModelId = EditModels.defaultModelId
+    try? viewContext.save()
+    if editingModelId == selectedModelId {
+      selectedModelId = Model.defaultModelId
+    }
+    editingModelId = nil
   }
   
   private func importModel(result: Result<URL, Error>) {
@@ -137,6 +223,11 @@ struct EditModels: View {
           model.id = UUID()
           model.name = fileURL.lastPathComponent
           model.bookmark = try fileURL.bookmarkData(options: [.withSecurityScope, .securityScopeAllowOnlyReadAccess])
+          if let attributes = try? FileManager.default.attributesOfItem(atPath: fileURL.path()),
+             let fileSize = attributes[.size] as? Int {
+            print("The file size is \(fileSize)")
+            model.size = Int32(fileSize / 1000000)
+          }
           try viewContext.save()
           DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
             selectedModelId = model.id!.uuidString
@@ -154,15 +245,48 @@ struct EditModels: View {
 }
 
 struct EditModels_Previews_Container: View {
-  @State var selectedModelId = SettingsView.defaultModelId
+  @State var selectedModelId = Model.defaultModelId
   var body: some View {
-    EditModels(selectedModelId: $selectedModelId).environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
-    EditModels(selectedModelId: $selectedModelId, errorText: EditModels.formatErrorText).previewDisplayName("Edit Models Error")
+    EditModels(selectedModelId: $selectedModelId)
+    EditModels(selectedModelId: $selectedModelId, errorText: EditModels.formatErrorText)
+      .previewDisplayName("Edit Models Error")
+
   }
 }
 
 struct EditModels_Previews: PreviewProvider {
   static var previews: some View {
-    EditModels_Previews_Container()
+    
+    let ctx = PersistenceController.preview.container.viewContext
+    let c = try! Conversation.create(ctx: ctx)
+    let cm = ConversationManager()
+    cm.currentConversation = c
+    cm.agent = Agent(id: "llama", prompt: "", systemPrompt: "", modelPath: "")
+    
+    let question = Message(context: ctx)
+    question.conversation = c
+    question.text = "how can i check file size in swift?"
+    
+    let response = Message(context: ctx)
+    response.conversation = c
+    response.fromId = "llama"
+    response.text = """
+      Hi! You can use `FileManager` to get information about files, including their sizes. Here's an example of getting the size of a text file:
+      ```swift
+      let path = "path/to/file"
+      do {
+          let attributes = try FileManager.default.attributesOfItem(atPath: path)
+          if let fileSize = attributes[FileAttributeKey.size] as? UInt64 {
+              print("The file is \\(ByteCountFormatter().string(fromByteCount: Int64(fileSize)))")
+          }
+      } catch {
+          // Handle any errors
+      }
+      ```
+      """
+    
+    return EditModels_Previews_Container()
+      .environment(\.managedObjectContext, ctx)
+      .environmentObject(cm)
   }
 }

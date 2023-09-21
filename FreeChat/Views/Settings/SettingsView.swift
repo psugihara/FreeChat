@@ -11,10 +11,10 @@ import KeyboardShortcuts
 
 struct SettingsView: View {
   static let title = "Settings"
-  static let defaultModelId = "default"
   private static let customizeModelsId = "customizeModels"
   
   @Environment(\.managedObjectContext) private var viewContext
+  @EnvironmentObject var conversationManager: ConversationManager
   
   // TODO: add dropdown like models for storing multiple system prompts?
   //  @FetchRequest(
@@ -23,20 +23,19 @@ struct SettingsView: View {
   //  private var systemPrompts: FetchedResults<SystemPrompt>
   
   @FetchRequest(
-    sortDescriptors: [NSSortDescriptor(keyPath: \Model.updatedAt, ascending: true)],
+    sortDescriptors: [NSSortDescriptor(keyPath: \Model.size, ascending: true)],
     animation: .default)
   private var models: FetchedResults<Model>
   
-  @AppStorage("selectedModelId") private var selectedModelId: String = SettingsView.defaultModelId
+  @AppStorage("selectedModelId") private var selectedModelId: String = Model.defaultModelId
   @AppStorage("systemPrompt") private var systemPrompt = Agent.DEFAULT_SYSTEM_PROMPT
-  
   
   @State var pickedModel: String = ""
   @State var customizeModels = false
   @State var editSystemPrompt = false
   
   var globalHotkey: some View {
-    KeyboardShortcuts.Recorder("Summon FreeChat:", name: .summonFreeChat)
+    KeyboardShortcuts.Recorder("Summon Chat", name: .summonFreeChat)
   }
   
   var systemPromptEditor: some View {
@@ -67,7 +66,7 @@ struct SettingsView: View {
   var modelPicker: some View {
     VStack(alignment: .leading) {
       Picker("Model", selection: $pickedModel) {
-        Text("Default (\(LlamaServer.DEFAULT_MODEL_FILENAME))").tag(SettingsView.defaultModelId)
+        Text("Default (\(LlamaServer.DEFAULT_MODEL_FILENAME))").tag(Model.defaultModelId)
         ForEach(models) { i in
           Text(i.name ?? i.url?.lastPathComponent ?? "Untitled").tag(i.id?.uuidString ?? "")
             .help(i.url?.path ?? "Unknown path")
@@ -111,6 +110,13 @@ struct SettingsView: View {
     }
     .onChange(of: selectedModelId) { newModelId in
       pickedModel = newModelId
+      let model = models.first { i in i.id?.uuidString == newModelId }
+
+      conversationManager.rebootAgent(systemPrompt: self.systemPrompt, model: model, viewContext: viewContext)
+    }
+    .onChange(of: systemPrompt) { nextPrompt in
+      let model = models.first { i in i.id?.uuidString == selectedModelId }
+      conversationManager.rebootAgent(systemPrompt: self.systemPrompt, model: model, viewContext: viewContext)
     }
     .frame(minWidth: 300, maxWidth: 600, minHeight: 184, idealHeight: 195, maxHeight: 400, alignment: .center)
   }

@@ -8,6 +8,8 @@
 import Foundation
 
 extension Model {
+  static let defaultModelId = "default"
+
   var url: URL? {
     if bookmark == nil { return nil }
     var stale = false

@@ -141,8 +141,10 @@ actor LlamaServer {
   
   func stopServer() {
     if process.isRunning {
-      monitor.terminate()
       process.terminate()
+    }
+    if monitor.isRunning {
+      monitor.terminate()
     }
   }
   

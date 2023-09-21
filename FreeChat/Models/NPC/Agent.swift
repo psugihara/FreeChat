@@ -24,6 +24,7 @@ class Agent: ObservableObject {
   
   // each agent runs their own server
   var llama: LlamaServer
+  var warmupError: LlamaServerError?
   
   init(id: String, prompt: String, systemPrompt: String, modelPath: String) {
     self.id = id
@@ -94,14 +95,13 @@ class Agent: ObservableObject {
   func interrupt() async  {
     if status != .processing, status != .coldProcessing { return }
     await llama.interrupt()
+    
   }
   
-  func warmup() async {
+  func warmup() async throws {
+    if prompt == "" { prompt = systemPrompt }
     if prompt == "" { return }
-    do {
-      _ = try await llama.complete(prompt: prompt)
-    } catch {
-      print("failed to warmup llama: \(error.localizedDescription)")
-    }
+    warmupError = nil
+    _ = try await llama.complete(prompt: prompt)
   }
 }

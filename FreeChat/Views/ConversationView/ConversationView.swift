@@ -48,7 +48,6 @@ struct ConversationView: View {
                 .opacity(showResponse ? 1 : 0)
                 .animation(.interpolatingSpring(stiffness: 170, damping: 20), value: showResponse)
                 .id("\(m.id)\(m.updatedAt as Date?)")
-              
             } else {
               MessageView(m, agentStatus: nil)
                 .id("\(m.id)\(m.updatedAt as Date?)")
@@ -80,10 +79,10 @@ struct ConversationView: View {
     .frame(maxWidth: .infinity)
     .onAppear {
       messages = conversation.orderedMessages
-      Task {
-        if agent.status == .cold, agent.prompt != conversation.prompt {
-          agent.prompt = conversation.prompt ?? ""
-          await agent.warmup()
+      if agent.status == .cold, agent.prompt != conversation.prompt {
+        agent.prompt = conversation.prompt ?? ""
+        Task {
+          try? await agent.warmup()
         }
       }
     }
@@ -92,7 +91,7 @@ struct ConversationView: View {
       if agent.status == .cold, agent.prompt != conversation.prompt {
         agent.prompt = nextConvo.prompt ?? ""
         Task {
-          await agent.warmup()
+          try? await agent.warmup()
         }
       }
     }
@@ -127,6 +126,8 @@ struct ConversationView: View {
   
   @MainActor
   func submit(_ input: String) {
+    dispatchPrecondition(condition: .onQueue(.main))
+
     if (agent.status == .processing || agent.status == .coldProcessing) {
       Task {
         await agent.interrupt()
@@ -189,8 +190,10 @@ struct ConversationView: View {
           print("error creating message", error.localizedDescription)
         }
         
-        pendingMessage = nil
-        agent.pendingMessage = ""
+        if pendingMessage?.text != nil, response.text.hasPrefix(pendingMessage!.text!)  {
+          pendingMessage = nil
+          agent.pendingMessage = ""
+        }
         
         if conversation != agentConversation {
           return
@@ -209,6 +212,29 @@ struct ConversationView_Previews: PreviewProvider {
     let cm = ConversationManager()
     cm.currentConversation = c
     cm.agent = Agent(id: "llama", prompt: "", systemPrompt: "", modelPath: "")
+    
+    let question = Message(context: ctx)
+    question.conversation = c
+    question.text = "how can i check file size in swift?"
+    
+    let response = Message(context: ctx)
+    response.conversation = c
+    response.fromId = "llama"
+    response.text = """
+      Hi! You can use `FileManager` to get information about files, including their sizes. Here's an example of getting the size of a text file:
+      ```swift
+      let path = "path/to/file"
+      do {
+          let attributes = try FileManager.default.attributesOfItem(atPath: path)
+          if let fileSize = attributes[FileAttributeKey.size] as? UInt64 {
+              print("The file is \\(ByteCountFormatter().string(fromByteCount: Int64(fileSize)))")
+          }
+      } catch {
+          // Handle any errors
+      }
+      ```
+      """
+
     
     return ConversationView()
       .environment(\.managedObjectContext, ctx)

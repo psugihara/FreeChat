@@ -34,6 +34,7 @@ struct FreeChatApp: App {
     Settings {
       SettingsView()
         .environment(\.managedObjectContext, persistenceController.container.viewContext)
+        .environmentObject(conversationManager)
     }
     .windowResizability(.contentSize)
 #endif

@@ -29,6 +29,7 @@
 		A17A2E182A79A006006CDD90 /* Agent.swift in Sources */ = {isa = PBXBuildFile; fileRef = A17A2E122A79A005006CDD90 /* Agent.swift */; };
 		A17A2E192A79A006006CDD90 /* LlamaServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A17A2E132A79A005006CDD90 /* LlamaServer.swift */; };
 		A17A2E1F2A79A075006CDD90 /* EventSource in Frameworks */ = {isa = PBXBuildFile; productRef = A17A2E1E2A79A075006CDD90 /* EventSource */; };
+		A17AB1C22ABB4B5E00CD3100 /* CircleMenuStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = A17AB1C12ABB4B5E00CD3100 /* CircleMenuStyle.swift */; };
 		A17B95582AB2468700B545FD /* spicyboros-7b-2.2.Q3_K_S.gguf in Copy Metal */ = {isa = PBXBuildFile; fileRef = A17B95572AB2461700B545FD /* spicyboros-7b-2.2.Q3_K_S.gguf */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		A19AA5222AA667BE009D9573 /* QuickPromptButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = A19AA5212AA667BE009D9573 /* QuickPromptButton.swift */; };
 		A1A286E82A7D8A7D0004967A /* MessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1A286E72A7D8A7D0004967A /* MessageView.swift */; };
@@ -129,6 +130,7 @@
 		A17A2E122A79A005006CDD90 /* Agent.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Agent.swift; sourceTree = "<group>"; };
 		A17A2E132A79A005006CDD90 /* LlamaServer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LlamaServer.swift; sourceTree = "<group>"; };
 		A17AB1BE2AB8FC4300CD3100 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		A17AB1C12ABB4B5E00CD3100 /* CircleMenuStyle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CircleMenuStyle.swift; sourceTree = "<group>"; };
 		A17B95572AB2461700B545FD /* spicyboros-7b-2.2.Q3_K_S.gguf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "spicyboros-7b-2.2.Q3_K_S.gguf"; sourceTree = "<group>"; };
 		A19AA5212AA667BE009D9573 /* QuickPromptButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickPromptButton.swift; sourceTree = "<group>"; };
 		A1A286E72A7D8A7D0004967A /* MessageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageView.swift; sourceTree = "<group>"; };
@@ -212,6 +214,7 @@
 				A19AA5202AA66784009D9573 /* Settings */,
 				A13C8C652A9027A200EC18D8 /* CopyButton.swift */,
 				A13C8C672A902A1200EC18D8 /* CGKeycode+Extensions.swift */,
+				A17AB1C12ABB4B5E00CD3100 /* CircleMenuStyle.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -531,6 +534,7 @@
 				A1F617262A782AA100F2048C /* FreeChat.swift in Sources */,
 				A1E4A6942A82B41F00BF9D34 /* Model+Extensions.swift in Sources */,
 				A12B52DE2AA5228100658707 /* EditModels.swift in Sources */,
+				A17AB1C22ABB4B5E00CD3100 /* CircleMenuStyle.swift in Sources */,
 				A15D50CF2A7EF73E00FC1681 /* MessageTextField.swift in Sources */,
 				A1CA32442AAF877600F9D488 /* ConversationManager.swift in Sources */,
 				A13C8C662A9027A200EC18D8 /* CopyButton.swift in Sources */,
