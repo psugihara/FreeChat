@@ -55,7 +55,8 @@ Not sure what this is like to run on another machine. Try it out.
 - [x] Try any llama.cpp compatible model
   - [x] configure model in Settings
   - [x] explain how to download models
-  - [ ] show errors when bad model files are used
+  - [x] show errors when bad model files are used
+  - [ ] download models from within the app
 - [x] Change system prompts to modify personas or expertise
 - [ ] Search conversations
 - [ ] Personas - save system prompt / model settings for later and change personas when you create a new conversation
