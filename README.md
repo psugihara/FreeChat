@@ -34,7 +34,14 @@ Once you're up and running, it's fun to try different models in FreeChat. The AI
 
 Models are usually named with their parameter count (e.g. 7B) and are formatted with different levels of lossy compression applied (quantization). The general rule of thumb is that models with more parameters tend to be slower and wiser and more quantization makes it dumber.
 
-Here are a few we've tried and reccomend:
+Here are a few we've tried and recommend:
+
+#### Spicyboros
+This is a fun Llama 2 based model for uncensored chat.
+
+- [Spicyboros-7B-2.2-GGUF](https://huggingface.co/TheBloke/Spicyboros-7B-2.2-GGUF?not-for-all-audiences=true)
+- [Spicyboros-13B-2.2-GGUF](https://huggingface.co/TheBloke/Spicyboros-13B-2.2-GGUF?not-for-all-audiences=true)
+- [Spicyboros-70B-2.2-GGUF](https://huggingface.co/TheBloke/Spicyboros-70B-2.2-GGUF?not-for-all-audiences=true)
 
 #### Code Llama
 This is the latest set of Llama models from Meta. It is a version of their last foundation model, Llama 2, with additional training on coding tasks. It's good at programming but also has wider knowledge. Read the release note [here](https://about.fb.com/news/2023/08/code-llama-ai-for-coding/).
@@ -49,13 +56,6 @@ This is an interesting model that's inspired by the AI in the 2013 movie "Her", 
 
 - [Samantha-1.11-13B-GGUF](https://huggingface.co/TheBloke/Samantha-1.11-13B-GGUF)
 - [Samantha-1.11-CodeLlama-34B-GGUF](https://huggingface.co/TheBloke/Samantha-1.11-CodeLlama-34B-GGUF)
-
-#### Spicyboros
-This is a fun Llama 2 based model for uncensored chat.
-
-- [Spicyboros-7B-2.2-GGUF](https://huggingface.co/TheBloke/Spicyboros-7B-2.2-GGUF?not-for-all-audiences=true)
-- [Spicyboros-13B-2.2-GGUF](https://huggingface.co/TheBloke/Spicyboros-13B-2.2-GGUF?not-for-all-audiences=true)
-- [Spicyboros-70B-2.2-GGUF](https://huggingface.co/TheBloke/Spicyboros-70B-2.2-GGUF?not-for-all-audiences=true)
 
 ## Dev Setup
 
