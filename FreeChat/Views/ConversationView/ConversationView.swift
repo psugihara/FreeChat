@@ -140,7 +140,11 @@ struct ConversationView: View {
     engageAutoScroll()
     
     // Create user's message
-    _ = try! Message.create(text: input, fromId: Message.USER_SPEAKER_ID, conversation: conversation, inContext: viewContext)
+    do {
+      _ = try Message.create(text: input, fromId: Message.USER_SPEAKER_ID, conversation: conversation, inContext: viewContext)
+    } catch (let error) {
+      print("Error creating message", error.localizedDescription)
+    }
     showResponse = false
     
     let agentConversation = conversation

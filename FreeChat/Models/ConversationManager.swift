@@ -36,15 +36,15 @@ class ConversationManager: ObservableObject {
   }
   
   func bringConversationToFront(openWindow: OpenWindowAction) {
-    let conversationWindow = NSApp.mainWindow
-    if conversationWindow != nil {
-      conversationWindow?.makeKeyAndOrderFront(self)
+    // bring conversation window to front
+    if let conversationWindow = NSApp.windows.first(where: { $0.title == currentConversation.titleWithDefault || $0.title == "FreeChat" }) {
+      conversationWindow.makeKeyAndOrderFront(self)
     } else {
       // conversation window is not open, so open it
       openWindow(id: "main")
     }
   }
-  
+
   func newConversation(viewContext: NSManagedObjectContext, openWindow: OpenWindowAction) {
     bringConversationToFront(openWindow: openWindow)
     

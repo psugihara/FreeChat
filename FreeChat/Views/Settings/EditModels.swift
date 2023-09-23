@@ -134,6 +134,7 @@ struct EditModels: View {
   
   var modelList: some View {
     List(selection: $editingModelId) {
+      Section("Models") {
         HStack {
           Group {
             if conversationManager.loadingModelId == Model.defaultModelId {
@@ -154,10 +155,11 @@ struct EditModels: View {
               hoveredModelId = nil
             }
           }
-
+        
         ForEach(items) { i in
           modelListItem(i)
         }
+      }
     }
     .listStyle(.inset(alternatesRowBackgrounds: true))
     .onDeleteCommand(perform: deleteEditing)

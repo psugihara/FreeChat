@@ -61,9 +61,14 @@ struct ContentView: View {
     .onAppear(perform: initializeFirstLaunchData)
     .onChange(of: selection) { nextSelection in
       if nextSelection.first != nil {
-        conversationManager.currentConversation =  nextSelection.first!
+        conversationManager.currentConversation = nextSelection.first!
       } else {
         conversationManager.unsetConversation()
+      }
+    }
+    .onChange(of: conversationManager.currentConversation) { nextCurrent in
+      if !selection.contains(nextCurrent) {
+        selection = Set([nextCurrent])
       }
     }
   }
