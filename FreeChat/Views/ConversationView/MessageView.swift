@@ -33,10 +33,11 @@ struct MessageView: View {
   }
   
   var infoText: some View {
+
     (agentStatus == .coldProcessing && overrideText.isEmpty
-     ? Text("warming up...")
-     : Text(m.createdAt ?? Date(), formatter: messageTimestampFormatter))
-    .font(.caption)
+       ? Text("warming up...")
+       : Text(m.createdAt ?? Date(), formatter: messageTimestampFormatter))
+      .font(.caption)
   }
   
   var info: String {
@@ -87,6 +88,10 @@ struct MessageView: View {
         }
         .opacity(isHover && overrideText.isEmpty ? 1 : 0)
         .disabled(!overrideText.isEmpty)
+      
+      if isHover, let model = m.modelName {
+        Text(model)
+      }
     }.foregroundColor(.gray)
       .fixedSize(horizontal: false, vertical: true)
   }

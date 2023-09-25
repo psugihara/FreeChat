@@ -57,7 +57,6 @@ struct ContentView: View {
       }
     })
     .onDeleteCommand { showDeleteConfirmation = true }
-    .onAppear(perform: rebootAgent)
     .onAppear(perform: initializeFirstLaunchData)
     .onChange(of: selection) { nextSelection in
       if nextSelection.first != nil {
@@ -85,13 +84,6 @@ struct ContentView: View {
     if firstLaunchComplete { return }
     conversationManager.newConversation(viewContext: viewContext, openWindow: openWindow)
     firstLaunchComplete = true
-  }
-  
-  private func rebootAgent() {
-    let modelId = self.selectedModelId
-    let model = models.first { i in i.id?.uuidString == modelId }
-    
-    conversationManager.rebootAgent(systemPrompt: self.systemPrompt, model: model, viewContext: viewContext)
   }
 }
 
