@@ -258,19 +258,20 @@ actor LlamaServer {
         await self.handleServerOutput(lines)
       }
     }
-    
+
+    let modelName = modelPath.split(separator: "/").last?.map { String($0) }.joined() ?? LlamaServer.DEFAULT_MODEL_FILENAME
+
     var timeout = 60
     let tick = 1
     while true {
       if serverUp || interrupted { break }
       if !process.isRunning {
-        let modelName = modelPath.split(separator: "/").last?.map { String($0) }.joined() ?? LlamaServer.DEFAULT_MODEL_FILENAME
         throw LlamaServerError.modelError(modelName: modelName)
       }
       try await Task.sleep(for: .seconds(tick))
       timeout -= tick
       if timeout <= 0 {
-        break
+        throw LlamaServerError.modelError(modelName: modelName)
       }
     }
   }
