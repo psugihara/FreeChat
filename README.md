@@ -61,8 +61,6 @@ This is an interesting model that's inspired by the AI in the 2013 movie "Her", 
 
 ## Dev Setup
 
-Not sure what this is like to run on another machine. Try it out.
-
 1. Download [spicyboros-7b-2.2.Q3_K_S.gguf](https://huggingface.co/TheBloke/Spicyboros-7B-2.2-GGUF/resolve/main/spicyboros-7b-2.2.Q3_K_S.gguf) to FreeChat/Models/NPC
 2. Open FreeChat.xcodeproj
 3. Run and fix errors?
@@ -90,6 +88,10 @@ Not sure what this is like to run on another machine. Try it out.
 - [x] Change system prompts to modify personas or expertise
 - [ ] Search conversations
 - [ ] Personas - save system prompt / model settings for later and change personas when you create a new conversation
+
+### Contributing
+
+Contributions are very welcome. Let's make FreeChat really cool and powerful together while keeping it simple.
 
 ### Credits
 
