@@ -74,9 +74,11 @@ struct ConversationView: View {
         }
       }
       .onReceive(
-        agent.$pendingMessage.debounce(for: .seconds(0.2), scheduler: RunLoop.main)
+        agent.$pendingMessage.throttle(for: .seconds(0.4), scheduler: RunLoop.main, latest: true)
       ) { _ in
-        autoScroll(proxy)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+          autoScroll(proxy)
+        }
       }
     }
     .textSelection(.enabled)
