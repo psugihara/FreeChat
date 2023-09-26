@@ -34,6 +34,9 @@ struct ConversationView: View {
   @State var autoScrollOffset = CGFloat.zero
   @State var autoScrollHeight = CGFloat.zero
   
+  @State var llamaError: LlamaServerError? = nil
+  @State var showErrorAlert = false
+  
   var body: some View {
     ObservableScrollView(scrollOffset: $scrollOffset, scrollHeight: $scrollHeight) { proxy in
       VStack(alignment: .leading) {
@@ -77,25 +80,26 @@ struct ConversationView: View {
       }
     }
     .frame(maxWidth: .infinity)
-    .onAppear {
-      messages = conversation.orderedMessages
-      if agent.status == .cold, agent.prompt != conversation.prompt {
-        agent.prompt = conversation.prompt ?? ""
-        Task {
-          try? await agent.warmup()
-        }
-      }
-    }
-    .onChange(of: conversation) { nextConvo in
-      messages = nextConvo.orderedMessages
-      if agent.status == .cold, agent.prompt != conversation.prompt {
-        agent.prompt = nextConvo.prompt ?? ""
-        Task {
-          try? await agent.warmup()
-        }
-      }
-    }
+    .onAppear { showConversation(conversation) }
+    .onChange(of: conversation) { nextConvo in showConversation(nextConvo) }
     .navigationTitle(conversation.titleWithDefault)
+    .alert(isPresented: $showErrorAlert, error: llamaError) { _ in
+      Button("OK") {
+        llamaError = nil
+      }
+    } message: { error in
+      Text(error.recoverySuggestion ?? "Try again later.")
+    }
+  }
+  
+  private func showConversation(_ c: Conversation) {
+    messages = c.orderedMessages
+    if agent.status == .cold, agent.prompt != c.prompt {
+      agent.prompt = c.prompt ?? ""
+      Task {
+        try? await agent.warmup()
+      }
+    }
   }
   
   private func scrollToLastIfRecent(_ proxy: ScrollViewProxy) {
@@ -122,6 +126,17 @@ struct ConversationView: View {
   private func engageAutoScroll() {
     autoScrollOffset = scrollOffset
     autoScrollHeight = scrollHeight
+  }
+  
+  @MainActor
+  func handleResponseError(_ e: LlamaServerError) {
+    print("handle response error", e.localizedDescription)
+    if let m = pendingMessage {
+      viewContext.delete(m)
+    }
+    llamaError = e
+    showResponse = false
+    showErrorAlert = true
   }
   
   @MainActor
@@ -180,8 +195,17 @@ struct ConversationView: View {
     }
     
     Task {
-      let response = await agent.listenThinkRespond(speakerId: Message.USER_SPEAKER_ID, message: input)
-      
+      var response: LlamaServer.CompleteResponse
+      do {
+        response = try await agent.listenThinkRespond(speakerId: Message.USER_SPEAKER_ID, message: input)
+      } catch let error as LlamaServerError {
+        handleResponseError(error)
+        return
+      } catch {
+        print("agent listen threw unexpected error", error.localizedDescription)
+        return
+      }
+        
       await MainActor.run {
         agentConversation.prompt = agent.prompt
         m.text = response.text
@@ -221,7 +245,7 @@ struct ConversationView_Previews: PreviewProvider {
     let c = try! Conversation.create(ctx: ctx)
     let cm = ConversationManager()
     cm.currentConversation = c
-    cm.agent = Agent(id: "llama", prompt: "", systemPrompt: "", modelPath: "")
+    cm.agent = Agent(id: "llama", prompt: "", systemPrompt: "")
     
     let question = Message(context: ctx)
     question.conversation = c

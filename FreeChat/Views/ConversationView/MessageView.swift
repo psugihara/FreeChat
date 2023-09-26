@@ -90,7 +90,7 @@ struct MessageView: View {
         .disabled(!overrideText.isEmpty)
       
       if isHover, let model = m.modelName {
-        Text(model)
+        Text(model).font(.caption)
       }
     }.foregroundColor(.gray)
       .fixedSize(horizontal: false, vertical: true)

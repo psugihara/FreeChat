@@ -51,8 +51,10 @@ actor LlamaServer {
   
   private var monitor = Process()
   
-  init(modelPath: String) {
-    self.modelPath = modelPath
+  init(modelPath: String? = nil) {
+    if modelPath != nil, !modelPath!.isEmpty {
+      self.modelPath = modelPath!
+    }
   }
   
   // Start a monitor process that will terminate the server when our app dies.
@@ -262,7 +264,8 @@ actor LlamaServer {
     while true {
       if serverUp || interrupted { break }
       if !process.isRunning {
-        throw LlamaServerError.modelError
+        let modelName = modelPath.split(separator: "/").last?.map { String($0) }.joined() ?? LlamaServer.DEFAULT_MODEL_FILENAME
+        throw LlamaServerError.modelError(modelName: modelName)
       }
       try await Task.sleep(for: .seconds(tick))
       timeout -= tick
@@ -353,8 +356,26 @@ actor LlamaServer {
   }
 }
 
-enum LlamaServerError: Error {
+enum LlamaServerError: LocalizedError {
+  var errorDescription: String? {
+    switch self {
+      case .modelError(let modelName):
+        return "Error Loading (\(modelName))"
+      default:
+        return "Llama Server Error"
+    }
+  }
+  
+  var recoverySuggestion: String {
+    switch self {
+      case .modelError:
+        return "Try selecting another model in Settings"
+      default:
+        return "Try again later"
+    }
+  }
+  
   case pipeFail
   case jsonEncodingError
-  case modelError
+  case modelError(modelName: String)
 }

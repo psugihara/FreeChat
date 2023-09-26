@@ -180,7 +180,6 @@ struct EditModels: View {
   }
   
   private func selectEditing() {
-    print("hi")
     if editingModelId != nil {
       selectedModelId = editingModelId!
     }
@@ -263,7 +262,7 @@ struct EditModels_Previews: PreviewProvider {
     let c = try! Conversation.create(ctx: ctx)
     let cm = ConversationManager()
     cm.currentConversation = c
-    cm.agent = Agent(id: "llama", prompt: "", systemPrompt: "", modelPath: "")
+    cm.agent = Agent(id: "llama", prompt: "", systemPrompt: "")
     
     let question = Message(context: ctx)
     question.conversation = c

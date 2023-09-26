@@ -74,18 +74,16 @@ class ConversationManager: ObservableObject {
     
     Task {
       await agent.llama.stopServer()
+
       await MainActor.run {
         agent = Agent(id: "Llama", prompt: agent.prompt, systemPrompt: prompt, modelPath: url.path)
         loadingModelId = model?.id?.uuidString ?? Model.defaultModelId
       }
-      print("agent.warmup()")
-      print("prompt", prompt)
+
       do {
         model?.error = nil
-        print("agent.warmup calling llama.complete")
         try await agent.warmup()
       } catch LlamaServerError.modelError {
-        print("caught modelError on warmup")
         await MainActor.run {
           selectedModelId = Model.defaultModelId
         }

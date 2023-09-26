@@ -26,7 +26,7 @@ class Agent: ObservableObject {
   var llama: LlamaServer
   var warmupError: LlamaServerError?
   
-  init(id: String, prompt: String, systemPrompt: String, modelPath: String) {
+  init(id: String, prompt: String, systemPrompt: String, modelPath: String? = nil) {
     self.id = id
     self.prompt = prompt
     self.systemPrompt = systemPrompt
@@ -36,7 +36,7 @@ class Agent: ObservableObject {
   // this is the main loop of the agent
   // listen -> respond -> update mental model and save checkpoint
   // we respond before updating to avoid a long delay after user input
-  func listenThinkRespond(speakerId: String, message: String) async -> LlamaServer.CompleteResponse {
+  func listenThinkRespond(speakerId: String, message: String) async throws -> LlamaServer.CompleteResponse {
     dispatchPrecondition(condition: .notOnQueue(.main))
 
     await MainActor.run {
@@ -77,7 +77,7 @@ class Agent: ObservableObject {
     await MainActor.run {
       self.pendingMessage = ""
     }
-    let response = try! await llama.complete(prompt: prompt) { partialResponse in
+    let response = try await llama.complete(prompt: prompt) { partialResponse in
       self.prompt += partialResponse
       DispatchQueue.main.sync {
         self.pendingMessage += partialResponse
@@ -95,13 +95,17 @@ class Agent: ObservableObject {
   func interrupt() async  {
     if status != .processing, status != .coldProcessing { return }
     await llama.interrupt()
-    
   }
   
   func warmup() async throws {
     if prompt == "" { prompt = systemPrompt }
     if prompt == "" { return }
     warmupError = nil
-    _ = try await llama.complete(prompt: prompt)
+    do {
+      _ = try await llama.complete(prompt: prompt)
+      status = .ready
+    } catch {
+      status = .cold
+    }
   }
 }
