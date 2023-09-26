@@ -27,6 +27,8 @@ I want FreeChat to be a native LLM appliance for macOS that runs completely loca
 
 Download the TestFlight here: https://6032904148827.gumroad.com/l/freechat-beta
 
+Mac App Store soon!
+
 Or build from source via "Archive" in Xcode after completing dev setup below.
 
 ### Upgrade your models
@@ -66,7 +68,7 @@ Not sure what this is like to run on another machine. Try it out.
 3. Run and fix errors?
 
 ### Roadmap / TODO (roughly in order):
-- [ ] Chat with Llama 2 7B without installing anything else
+- [x] Chat with Llama 2 7B without installing anything else
   - [x] hook agent up, save convos to coredata
   - [x] server shuts down reliably even on force quit
   - [x] user can edit convo titles
