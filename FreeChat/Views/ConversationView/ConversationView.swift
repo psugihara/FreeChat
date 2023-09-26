@@ -67,10 +67,16 @@ struct ConversationView: View {
       .onReceive(
         agent.$pendingMessage.throttle(for: .seconds(0.1), scheduler: RunLoop.main, latest: true)
       ) { text in
-        if conversation.prompt != nil, agent.prompt.hasPrefix(conversation.prompt!) {
+        if conversation.prompt != nil,
+           text != pendingMessageText,
+            agent.prompt.hasPrefix(conversation.prompt!) {
           pendingMessageText = text
-          autoScroll(proxy)
         }
+      }
+      .onReceive(
+        agent.$pendingMessage.debounce(for: .seconds(0.2), scheduler: RunLoop.main)
+      ) { _ in
+        autoScroll(proxy)
       }
     }
     .textSelection(.enabled)
@@ -94,7 +100,7 @@ struct ConversationView: View {
   
   private func showConversation(_ c: Conversation) {
     messages = c.orderedMessages
-    if agent.status == .cold, agent.prompt != c.prompt {
+    if agent.status == .cold || agent.prompt != c.prompt {
       agent.prompt = c.prompt ?? ""
       Task {
         try? await agent.warmup()
@@ -120,7 +126,7 @@ struct ConversationView: View {
   }
   
   private func shouldAutoScroll() -> Bool {
-    scrollOffset >= autoScrollOffset - 20 && scrollHeight > autoScrollHeight
+    scrollOffset >= autoScrollOffset - 40 && scrollHeight > autoScrollHeight
   }
   
   private func engageAutoScroll() {
