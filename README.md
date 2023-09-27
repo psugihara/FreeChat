@@ -1,5 +1,5 @@
 <p align="center" width="100%">
-<img width="120" alt="FreeChat app icon" src="https://github.com/psugihara/FreeChat/assets/282016/b5abfa45-9200-4821-8c78-53892be22794">
+<img width="120" alt="FreeChat app icon" src="https://github.com/psugihara/FreeChat/assets/282016/26be9d7a-fc18-476d-b0eb-13c4a37cfc54">
 </p>
 
 
