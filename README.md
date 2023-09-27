@@ -104,4 +104,4 @@ This project would not be possible without the hard work of:
 - TheBloke (Tom Jobbins) for model quantization
 - Monica Kogler for the FreeChat logo and uncountable UX consults
 
-Also many thanks to Billy Rennekamp, Elliot Hursh, Judd Schoenholtz, Alex Farrill for invaluable spitballing sessions.
+Also many thanks to Billy Rennekamp, Elliot Hursh, Tomás Savigliano, Judd Schoenholtz, Alex Farrill for invaluable spitballing sessions.
