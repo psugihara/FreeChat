@@ -68,25 +68,9 @@ This is an interesting model that's inspired by the AI in the 2013 movie "Her", 
 
 ### Roadmap / TODO (roughly in order):
 - [x] Chat with Llama 2 7B without installing anything else
-  - [x] hook agent up, save convos to coredata
-  - [x] server shuts down reliably even on force quit
-  - [x] user can edit convo titles
-  - [x] make intel chips work by [making a universal `server` binary](https://developer.apple.com/documentation/apple-silicon/building-a-universal-macos-binary#Update-the-Architecture-List-of-Custom-Makefiles)
-  - [x] App icon
-  - [x] New name
-  - [x] Conversation null state
-  - [x] user can copy conversation
-  - [x] new conversation should focus textarea
-  - [x] interrupt llama
-  - [x] llama should pause for a moment before responding if text hasn't generated
-  - [x] convo scroll behavior breaks on code blocks, syntax highligting would be nice
-
 - [x] Try any llama.cpp compatible model
-  - [x] configure model in Settings
-  - [x] explain how to download models
-  - [x] show errors when bad model files are used
-  - [ ] download models from within the app
 - [x] Change system prompts to modify personas or expertise
+- [ ] Download models from within the app
 - [ ] Search conversations
 - [ ] Personas - save system prompt / model settings for later and change personas when you create a new conversation
 
