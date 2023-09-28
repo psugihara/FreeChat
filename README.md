@@ -14,16 +14,6 @@ Chat with Meta’s Llama 2 on your MacBook without installing any other software
 
 https://github.com/psugihara/FreeChat/assets/282016/fd546e39-7657-4ccd-a44f-0b872547a629
 
-
-## Design goals
-
-I want FreeChat to be a native LLM appliance for macOS that runs completely locally. Download it and ask your LLM a question without doing any configuration. Like OpenAI's chat without login or tracking. You should be able to install from the Mac App Store and use it immediatly.
-
-- No config. Usable by people who haven't heard of models, prompts, or LLMs.
-- Performance and simplicity over dev experience or features. Notes not Word, Swift not Elektron.
-- Local first. Core functionality should not require an internet connection. There are lots of great clients for GPT-4, claude, etc. This is not one of them.
-- No conversation tracking. Talk about whatever you want with FreeChat, just like Notes.
-
 ## Install
 
 Download the TestFlight here: https://6032904148827.gumroad.com/l/freechat-beta
@@ -31,6 +21,16 @@ Download the TestFlight here: https://6032904148827.gumroad.com/l/freechat-beta
 Mac App Store soon!
 
 Or build from source via "Archive" in Xcode after completing dev setup below.
+
+
+## Goals
+
+FreeChat is a native LLM appliance for macOS that runs completely locally. Download it and ask your LLM a question without doing any configuration. A local/llama version of OpenAI's chat without login or tracking. You should be able to install from the Mac App Store and use it immediatly.
+
+- No config. Usable by people who haven't heard of models, prompts, or LLMs.
+- Performance and simplicity over dev experience or features. Notes not Word, Swift not Elektron.
+- Local first. Core functionality should not require an internet connection. There are lots of great clients for GPT-4, claude, etc. This is not one of them.
+- No conversation tracking. Talk about whatever you want with FreeChat, just like Notes.
 
 ### Upgrade your models
 Once you're up and running, it's fun to try different models in FreeChat. The AI training community is releasing new models basically every day. FreeChat is compatible with any gguf formatted model that [llama.cpp](https://github.com/ggerganov/llama.cpp) works with. Models can be found on [HuggingFace](https://huggingface.co/models?sort=trending&search=gguf). Most models have a "model card" by the author that discusses its training and abilities.
