@@ -77,7 +77,7 @@ This is an interesting model that's inspired by the AI in the 2013 movie "Her", 
 
 ### Contributing
 
-Contributions are very welcome. Let's make FreeChat really cool and powerful together while keeping it simple.
+Contributions are very welcome. Let's make FreeChat simple and powerful.
 
 ### Credits
 
