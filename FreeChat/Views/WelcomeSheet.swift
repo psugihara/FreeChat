@@ -28,7 +28,7 @@ struct WelcomeSheet: View {
       Text("Welcome to FreeChat").font(.largeTitle)
       Text("Download a model to get started")
         .font(.title3)
-      Text("Models are trained on different datasets, so each one has a unique personality and expertise. You can change models based on what you want to chat about.\n\nThe default model is general purpose, small, and works on most computers. Larger models are slower but wiser. Some models specialize in certain tasks like coding Python. FreeChat is compatible with most models in GGUF format. [Find new models](https://huggingface.co/models?search=GGUF)")
+      Text("FreeChat runs AI locally on your Mac for maximum privacy and security. You can chat with different AI models, which vary in terms of training data and knowledge base.\n\nThe default model is general purpose, small, and works on most computers. Larger models are slower but wiser. Some models specialize in certain tasks like coding Python. FreeChat is compatible with most models in GGUF format. [Find new models](https://huggingface.co/models?search=GGUF)")
         .font(.callout)
         .lineLimit(10)
         .fixedSize(horizontal: false, vertical: true)
@@ -68,7 +68,7 @@ struct WelcomeSheet: View {
     .interactiveDismissDisabled()
     .frame(maxWidth: 480)
     .padding(.vertical, 40)
-    .padding(.horizontal, 50)
+    .padding(.horizontal, 60)
     .sheet(isPresented: $showModels) {
       EditModels(selectedModelId: $selectedModelId)
     }
