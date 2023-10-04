@@ -78,7 +78,7 @@ struct ContentView: View {
   }
   
   private func handleModelCountChange(_ nextCount: Int) {
-    showWelcome = nextCount == 0
+    showWelcome = showWelcome || nextCount == 0
   }
   
   private func initializeFirstLaunchData() {

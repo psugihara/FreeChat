@@ -91,6 +91,7 @@ struct ConversationView: View {
     .frame(maxWidth: .infinity)
     .onAppear { showConversation(conversation) }
     .onChange(of: conversation) { nextConvo in showConversation(nextConvo) }
+    .onChange(of: selectedModelId) { showConversation(conversation, modelId: $0) }
     .navigationTitle(conversation.titleWithDefault)
     .alert(isPresented: $showErrorAlert, error: llamaError) { _ in
       Button("OK") {
@@ -101,7 +102,8 @@ struct ConversationView: View {
     }
   }
   
-  private func showConversation(_ c: Conversation) {
+  private func showConversation(_ c: Conversation, modelId: String? = nil) {
+    let selectedModelId = modelId ?? self.selectedModelId
     guard !selectedModelId.isEmpty, selectedModelId != Model.unsetModelId else {
       return
     }

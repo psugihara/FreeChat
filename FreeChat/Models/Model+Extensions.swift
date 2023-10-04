@@ -26,7 +26,7 @@ enum ModelCreateError: LocalizedError {
 extension Model {
   static let unsetModelId = "unset"
   static let defaultModelUrl = URL(string: "https://huggingface.co/TheBloke/Spicyboros-7B-2.2-GGUF/resolve/main/spicyboros-7b-2.2.Q3_K_S.gguf")!
-//    static let defaultModelUrl = URL(string: "http://localhost:8080/spicyboros-7b-2.2.Q3_K_S.gguf")!
+//  static let defaultModelUrl = URL(string: "http://localhost:8080/spicyboros-7b-2.2.Q3_K_S.gguf")!
 
   var url: URL? {
     if bookmark == nil { return nil }

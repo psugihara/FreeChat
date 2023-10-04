@@ -24,21 +24,44 @@ struct WelcomeSheet: View {
   
   var body: some View {
     VStack {
-      Image(nsImage: NSImage(named: "AppIcon") ?? NSImage())
-      Text("Welcome to FreeChat").font(.largeTitle)
-      Text("Download a model to get started")
-        .font(.title3)
-      Text("FreeChat runs AI locally on your Mac for maximum privacy and security. You can chat with different AI models, which vary in terms of training data and knowledge base.\n\nThe default model is general purpose, small, and works on most computers. Larger models are slower but wiser. Some models specialize in certain tasks like coding Python. FreeChat is compatible with most models in GGUF format. [Find new models](https://huggingface.co/models?search=GGUF)")
-        .font(.callout)
-        .lineLimit(10)
-        .fixedSize(horizontal: false, vertical: true)
-        .padding(.vertical, 16)
+      if models.count == 0 {
+        Image(nsImage: NSImage(named: "AppIcon") ?? NSImage())
+        Text("Welcome to FreeChat").font(.largeTitle)
 
-      ForEach(downloadManager.tasks, id: \.self) { t in
-        ProgressView(t.progress).padding(5)
+        Text("Download a model to get started")
+          .font(.title3)
+        Text("FreeChat runs AI locally on your Mac for maximum privacy and security. You can chat with different AI models, which vary in terms of training data and knowledge base.\n\nThe default model is general purpose, small, and works on most computers. Larger models are slower but wiser. Some models specialize in certain tasks like coding Python. FreeChat is compatible with most models in GGUF format. [Find new models](https://huggingface.co/models?search=GGUF)")
+          .font(.callout)
+          .lineLimit(10)
+          .fixedSize(horizontal: false, vertical: true)
+          .padding(.vertical, 16)
+        
+        ForEach(downloadManager.tasks, id: \.self) { t in
+          ProgressView(t.progress).padding(5)
+        }
+      } else {
+        Image(systemName: "checkmark.circle.fill")
+          .resizable()
+          .frame(width: 60, height: 60)
+          .foregroundColor(.green)
+          .imageScale(.large)
+        
+        Text("Success!").font(.largeTitle)
+
+        Text("The model was installed.")
+          .font(.title3)
+        
+        Button("Continue") {
+          isPresented = false
+        }
+        .buttonStyle(.borderedProminent)
+        .controlSize(.large)
+        .padding(.top, 16)
+        .padding(.horizontal, 40)
+        .keyboardShortcut(.defaultAction)
       }
 
-      if downloadManager.tasks.count == 0 {
+      if models.count == 0, downloadManager.tasks.count == 0 {
         Button(action: downloadDefault) {
           HStack {
             Text("Download default model")
@@ -56,13 +79,7 @@ struct WelcomeSheet: View {
           .padding(.top, 4)
           .font(.callout)
       } else {
-        Button("Continue") {
-          isPresented = false
-        }
-        .controlSize(.large)
-        .padding(.top, 6)
-        .padding(.horizontal)
-        .disabled(models.count == 0)
+
       }
     }
     .interactiveDismissDisabled()
@@ -76,8 +93,6 @@ struct WelcomeSheet: View {
   
   private func downloadDefault() {
     downloadManager.viewContext = viewContext
-//    if let url = URL(string: "https://huggingface.co/TheBloke/Spicyboros-7B-2.2-GGUF/resolve/main/README.md") {
-//    if let url = URL(string: "https://huggingface.co/TheBloke/Spicyboros-7B-2.2-GGUF/resolve/main/spicyboros-7b-2.2.Q3_K_S.gguf") {
     downloadManager.startDownload(url: Model.defaultModelUrl)
   }
 }
@@ -89,5 +104,17 @@ struct WelcomeSheet: View {
   return WelcomeSheet(isPresented: $isPresented)
     .environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
     .environmentObject(conversationManager)
+}
+
+#Preview("Success") {
+  @State var isPresented: Bool = true
+  @StateObject var conversationManager = ConversationManager.shared
   
+  let ctx = PersistenceController.preview.container.viewContext
+  let m = Model(context: ctx)
+  m.name = "spicyboros_7b.gguff"
+  
+  return WelcomeSheet(isPresented: $isPresented)
+    .environment(\.managedObjectContext, ctx)
+    .environmentObject(conversationManager)
 }

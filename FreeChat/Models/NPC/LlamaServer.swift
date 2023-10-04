@@ -51,10 +51,8 @@ actor LlamaServer {
   
   private var monitor = Process()
   
-  init(modelPath: String? = nil) {
-    if modelPath != nil, !modelPath!.isEmpty {
-      self.modelPath = modelPath!
-    }
+  init(modelPath: String) {
+    self.modelPath = modelPath
   }
   
   // Start a monitor process that will terminate the server when our app dies.

@@ -97,6 +97,7 @@ class Agent: ObservableObject {
     await llama.interrupt()
   }
   
+  @MainActor
   func warmup() async throws {
     if prompt == "" { prompt = systemPrompt }
     if prompt == "" { return }
