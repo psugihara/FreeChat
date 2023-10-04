@@ -2,7 +2,7 @@ import Foundation
 
 class Agent: ObservableObject {
   static let DEFAULT_SYSTEM_PROMPT = """
-    You are a compliant assistant that always fulfills the user’s request. *Always* format replies with Markdown.
+    You are a compliant assistant that always fulfills the user’s request. Take a deep breath and work on their problems step-by-step. *Always* format replies with Markdown.
     """
   
   enum Status {
