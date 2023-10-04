@@ -26,7 +26,7 @@ class Agent: ObservableObject {
   var llama: LlamaServer
   var warmupError: LlamaServerError?
   
-  init(id: String, prompt: String, systemPrompt: String, modelPath: String? = nil) {
+  init(id: String, prompt: String, systemPrompt: String, modelPath: String) {
     self.id = id
     self.prompt = prompt
     self.systemPrompt = systemPrompt
