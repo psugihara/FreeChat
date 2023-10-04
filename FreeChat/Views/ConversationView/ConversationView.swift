@@ -113,15 +113,21 @@ struct ConversationView: View {
       let req = Model.fetchRequest()
       req.predicate = NSPredicate(format: "id = %@", selectedModelId)
 
-      if let models = try? viewContext.fetch(req),
-         let model = models.first,
-         let path =  model.url?.path(percentEncoded: false) {
-        agent.llama = LlamaServer(modelPath: path)
-      }
+
 
       agent.prompt = c.prompt ?? ""
 
       Task {
+        let llamaPath = await agent.llama.modelPath
+        await MainActor.run {
+          if let models = try? viewContext.fetch(req),
+             let model = models.first,
+             let path = model.url?.path(percentEncoded: false),
+             path != llamaPath {
+            agent.llama = LlamaServer(modelPath: path)
+          }
+        }
+        
         try? await agent.warmup()
       }
     }

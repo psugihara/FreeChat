@@ -46,7 +46,7 @@ class Agent: ObservableObject {
         status = .processing
       }
     }
-    
+
     // The llama 2 prompt format seems to work across many models.
     if prompt == "" {
       prompt = """
@@ -99,8 +99,7 @@ class Agent: ObservableObject {
   
   @MainActor
   func warmup() async throws {
-    if prompt == "" { prompt = systemPrompt }
-    if prompt == "" { return }
+    if prompt.isEmpty, systemPrompt.isEmpty { return }
     warmupError = nil
     do {
       _ = try await llama.complete(prompt: prompt)
