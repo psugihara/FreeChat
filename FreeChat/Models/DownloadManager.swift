@@ -24,8 +24,7 @@ class DownloadManager: NSObject, ObservableObject {
   
   override private init() {
     super.init()
-    
-    print( "\(Bundle.main.bundleIdentifier!).background")
+
     let config = URLSessionConfiguration.background(withIdentifier: "\(Bundle.main.bundleIdentifier!).background")
     config.isDiscretionary = false
     
@@ -112,8 +111,9 @@ extension DownloadManager: URLSessionDelegate, URLSessionDownloadDelegate {
       os_log("Task finished: %@", type: .info, task)
     }
     
+    let taskId = task.taskIdentifier
     DispatchQueue.main.async {
-      self.tasks.removeAll { $0 == task }
+      self.tasks.removeAll { $0.taskIdentifier == taskId }
     }
   }
 }

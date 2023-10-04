@@ -102,7 +102,7 @@ struct ConversationView: View {
   }
   
   private func showConversation(_ c: Conversation) {
-    guard !selectedModelId.isEmpty else {
+    guard !selectedModelId.isEmpty, selectedModelId != Model.unsetModelId else {
       return
     }
 
