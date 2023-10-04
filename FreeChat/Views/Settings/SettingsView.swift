@@ -16,21 +16,15 @@ struct SettingsView: View {
   @Environment(\.managedObjectContext) private var viewContext
   @EnvironmentObject var conversationManager: ConversationManager
   
-  // TODO: add dropdown like models for storing multiple system prompts?
-  //  @FetchRequest(
-  //    sortDescriptors: [NSSortDescriptor(keyPath: \SystemPrompt.updatedAt, ascending: true)],
-  //    animation: .default)
-  //  private var systemPrompts: FetchedResults<SystemPrompt>
-  
   @FetchRequest(
     sortDescriptors: [NSSortDescriptor(keyPath: \Model.size, ascending: true)],
     animation: .default)
   private var models: FetchedResults<Model>
   
-  @AppStorage("selectedModelId") private var selectedModelId: String = Model.defaultModelId
+  @AppStorage("selectedModelId") private var selectedModelId: String = Model.unsetModelId
   @AppStorage("systemPrompt") private var systemPrompt = Agent.DEFAULT_SYSTEM_PROMPT
   
-  @State var pickedModel: String = ""
+  @State var pickedModel: String = Model.unsetModelId
   @State var customizeModels = false
   @State var editSystemPrompt = false
   
@@ -66,13 +60,12 @@ struct SettingsView: View {
   var modelPicker: some View {
     VStack(alignment: .leading) {
       Picker("Model", selection: $pickedModel) {
-        Text("Default (\(LlamaServer.DEFAULT_MODEL_FILENAME))").tag(Model.defaultModelId)
         ForEach(models) { i in
           Text(i.name ?? i.url?.lastPathComponent ?? "Untitled").tag(i.id?.uuidString ?? "")
             .help(i.url?.path ?? "Unknown path")
         }
         
-        Divider()
+        Divider().tag(Model.unsetModelId)
         Text("Add or remove models...").tag(SettingsView.customizeModelsId)
       }.onReceive(Just(pickedModel)) { _ in
         if pickedModel == SettingsView.customizeModelsId {
@@ -98,10 +91,10 @@ struct SettingsView: View {
       modelPicker
     }
     .formStyle(.grouped)
-    .sheet(isPresented: $customizeModels, onDismiss: dismissCustomizeModels) {
+    .sheet(isPresented: $customizeModels) {
       EditModels(selectedModelId: $selectedModelId)
     }
-    .sheet(isPresented: $editSystemPrompt, onDismiss: dismissEditSystemPrompt) {
+    .sheet(isPresented: $editSystemPrompt) {
       EditSystemPrompt()
     }
     .navigationTitle(SettingsView.title)
@@ -110,7 +103,12 @@ struct SettingsView: View {
     }
     .onChange(of: selectedModelId) { newModelId in
       pickedModel = newModelId
-      let model = models.first { i in i.id?.uuidString == newModelId }
+      var model: Model?
+      if newModelId == Model.unsetModelId {
+        model = models.first
+      } else {
+        model = models.first { i in i.id?.uuidString == newModelId }
+      }
 
       conversationManager.rebootAgent(systemPrompt: self.systemPrompt, model: model, viewContext: viewContext)
     }
@@ -119,14 +117,6 @@ struct SettingsView: View {
       conversationManager.rebootAgent(systemPrompt: self.systemPrompt, model: model, viewContext: viewContext)
     }
     .frame(minWidth: 300, maxWidth: 600, minHeight: 184, idealHeight: 195, maxHeight: 400, alignment: .center)
-  }
-  
-  private func dismissEditSystemPrompt() {
-    editSystemPrompt = false
-  }
-  
-  private func dismissCustomizeModels() {
-    customizeModels = false
   }
 }
 

@@ -12,6 +12,9 @@ struct ConversationView: View {
   @Environment(\.managedObjectContext) private var viewContext
   @EnvironmentObject private var conversationManager: ConversationManager
   
+  @AppStorage("selectedModelId") private var selectedModelId: String = Model.unsetModelId
+  @AppStorage("systemPrompt") private var systemPrompt: String = Agent.DEFAULT_SYSTEM_PROMPT
+
   var conversation: Conversation {
     conversationManager.currentConversation
   }
@@ -47,14 +50,12 @@ struct ConversationView: View {
                 .onAppear {
                   scrollToLastIfRecent(proxy)
                 }
-                .scaleEffect(x: showResponse ? 1 : 0.5, y: showResponse ? 1 : 0.5, anchor: .bottomLeading)
                 .opacity(showResponse ? 1 : 0)
                 .animation(.interpolatingSpring(stiffness: 170, damping: 20), value: showResponse)
                 .id("\(m.id)\(m.updatedAt as Date?)")
             } else {
               MessageView(m, agentStatus: nil)
                 .id("\(m.id)\(m.updatedAt as Date?)")
-                .scaleEffect(x: showUserMessage ? 1 : 0.5, y: showUserMessage ? 1 : 0.5, anchor: .bottomLeading)
                 .opacity(showUserMessage ? 1 : 0)
                 .animation(.interpolatingSpring(stiffness: 170, damping: 20), value: showUserMessage)
             }
@@ -90,6 +91,7 @@ struct ConversationView: View {
     .frame(maxWidth: .infinity)
     .onAppear { showConversation(conversation) }
     .onChange(of: conversation) { nextConvo in showConversation(nextConvo) }
+    .onChange(of: selectedModelId) { showConversation(conversation, modelId: $0) }
     .navigationTitle(conversation.titleWithDefault)
     .alert(isPresented: $showErrorAlert, error: llamaError) { _ in
       Button("OK") {
@@ -100,11 +102,32 @@ struct ConversationView: View {
     }
   }
   
-  private func showConversation(_ c: Conversation) {
+  private func showConversation(_ c: Conversation, modelId: String? = nil) {
+    let selectedModelId = modelId ?? self.selectedModelId
+    guard !selectedModelId.isEmpty, selectedModelId != Model.unsetModelId else {
+      return
+    }
+
     messages = c.orderedMessages
     if agent.status == .cold || agent.prompt != c.prompt {
+      let req = Model.fetchRequest()
+      req.predicate = NSPredicate(format: "id = %@", selectedModelId)
+
+
+
       agent.prompt = c.prompt ?? ""
+
       Task {
+        let llamaPath = await agent.llama.modelPath
+        await MainActor.run {
+          if let models = try? viewContext.fetch(req),
+             let model = models.first,
+             let path = model.url?.path(percentEncoded: false),
+             path != llamaPath {
+            agent.llama = LlamaServer(modelPath: path)
+          }
+        }
+        
         try? await agent.warmup()
       }
     }
@@ -184,11 +207,14 @@ struct ConversationView: View {
     m.text = ""
     pendingMessage = m
     
-    // Replace the agent's prompt if they don't know the conversation.
-    if conversation.prompt != nil && !agent.prompt.hasPrefix(conversation.prompt!) {
-      agent.prompt = conversation.prompt!
-    }
+//    // Replace the agent's prompt if they don't know the conversation.
+//    if conversation.prompt != nil && !agent.prompt.hasPrefix(conversation.prompt!) {
+//      agent.prompt = conversation.prompt!
+//    }
+//
     
+    agent.systemPrompt = systemPrompt
+
     DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
       if agentConversation != conversation {
         return
@@ -247,22 +273,21 @@ struct ConversationView: View {
   }
 }
 
-struct ConversationView_Previews: PreviewProvider {
-  static var previews: some View {
-    let ctx = PersistenceController.preview.container.viewContext
-    let c = try! Conversation.create(ctx: ctx)
-    let cm = ConversationManager()
-    cm.currentConversation = c
-    cm.agent = Agent(id: "llama", prompt: "", systemPrompt: "")
-    
-    let question = Message(context: ctx)
-    question.conversation = c
-    question.text = "how can i check file size in swift?"
-    
-    let response = Message(context: ctx)
-    response.conversation = c
-    response.fromId = "llama"
-    response.text = """
+#Preview {
+  let ctx = PersistenceController.preview.container.viewContext
+  let c = try! Conversation.create(ctx: ctx)
+  let cm = ConversationManager()
+  cm.currentConversation = c
+  cm.agent = Agent(id: "llama", prompt: "", systemPrompt: "", modelPath: "")
+  
+  let question = Message(context: ctx)
+  question.conversation = c
+  question.text = "how can i check file size in swift?"
+  
+  let response = Message(context: ctx)
+  response.conversation = c
+  response.fromId = "llama"
+  response.text = """
       Hi! You can use `FileManager` to get information about files, including their sizes. Here's an example of getting the size of a text file:
       ```swift
       let path = "path/to/file"
@@ -276,11 +301,10 @@ struct ConversationView_Previews: PreviewProvider {
       }
       ```
       """
-
-    
-    return ConversationView()
-      .environment(\.managedObjectContext, ctx)
-      .environmentObject(cm)
-  }
+  
+  
+  return ConversationView()
+    .environment(\.managedObjectContext, ctx)
+    .environmentObject(cm)
 }
 

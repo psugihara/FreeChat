@@ -62,9 +62,8 @@ This is an interesting model that's inspired by the AI in the 2013 movie "Her", 
 
 ## Dev Setup
 
-1. Download [spicyboros-7b-2.2.Q3_K_S.gguf](https://huggingface.co/TheBloke/Spicyboros-7B-2.2-GGUF/resolve/main/spicyboros-7b-2.2.Q3_K_S.gguf) to FreeChat/Models/NPC
-2. Open FreeChat.xcodeproj
-3. Run and fix errors?
+1. Open FreeChat.xcodeproj
+2. Run and fix errors
 
 ### Roadmap / TODO (roughly in order):
 - [x] Chat with Llama 2 7B without installing anything else

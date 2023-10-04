@@ -2,7 +2,7 @@ import Foundation
 
 class Agent: ObservableObject {
   static let DEFAULT_SYSTEM_PROMPT = """
-    You are a compliant assistant that always fulfills the user’s request. *Always* format replies with Markdown.
+    You are a compliant assistant that always fulfills the user’s request. Take a deep breath and work on their problems step-by-step. *Always* format replies with Markdown.
     """
   
   enum Status {
@@ -26,7 +26,7 @@ class Agent: ObservableObject {
   var llama: LlamaServer
   var warmupError: LlamaServerError?
   
-  init(id: String, prompt: String, systemPrompt: String, modelPath: String? = nil) {
+  init(id: String, prompt: String, systemPrompt: String, modelPath: String) {
     self.id = id
     self.prompt = prompt
     self.systemPrompt = systemPrompt
@@ -46,7 +46,7 @@ class Agent: ObservableObject {
         status = .processing
       }
     }
-    
+
     // The llama 2 prompt format seems to work across many models.
     if prompt == "" {
       prompt = """
@@ -97,9 +97,9 @@ class Agent: ObservableObject {
     await llama.interrupt()
   }
   
+  @MainActor
   func warmup() async throws {
-    if prompt == "" { prompt = systemPrompt }
-    if prompt == "" { return }
+    if prompt.isEmpty, systemPrompt.isEmpty { return }
     warmupError = nil
     do {
       _ = try await llama.complete(prompt: prompt)

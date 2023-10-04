@@ -31,6 +31,7 @@ struct ContentView: View {
 
   @State private var selection: Set<Conversation> = Set()
   @State private var showDeleteConfirmation = false
+  @State private var showWelcome = false
   
   var agent: Agent? {
     conversationManager.agent
@@ -70,6 +71,14 @@ struct ContentView: View {
         selection = Set([nextCurrent])
       }
     }
+    .onChange(of: models.count, perform: handleModelCountChange)
+    .sheet(isPresented: $showWelcome) {
+      WelcomeSheet(isPresented: $showWelcome)
+    }
+  }
+  
+  private func handleModelCountChange(_ nextCount: Int) {
+    showWelcome = showWelcome || nextCount == 0
   }
   
   private func initializeFirstLaunchData() {
@@ -81,6 +90,8 @@ struct ContentView: View {
       conversationManager.summonRegistered = true
     }
 
+    handleModelCountChange(models.count)
+    
     if firstLaunchComplete { return }
     conversationManager.newConversation(viewContext: viewContext, openWindow: openWindow)
     firstLaunchComplete = true

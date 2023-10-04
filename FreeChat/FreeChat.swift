@@ -11,10 +11,10 @@ import KeyboardShortcuts
 @main
 struct FreeChatApp: App {
   @Environment(\.openWindow) var openWindow
-  @StateObject var conversationManager = ConversationManager()
+  @StateObject var conversationManager = ConversationManager.shared
 
   let persistenceController = PersistenceController.shared
-
+  
   var body: some Scene {
     WindowGroup(id: "main") {
       ContentView()

@@ -13,9 +13,6 @@ struct EditModels: View {
   @Environment(\.dismiss) var dismiss
   @EnvironmentObject var conversationManager: ConversationManager
 
-  static let formatErrorText = "Model files must be in .gguf format"
-  private static let defaultModelId = "default"
-
   @Binding var selectedModelId: String
   
   // list state
@@ -59,7 +56,7 @@ struct EditModels: View {
         }
         .frame(maxHeight: .infinity)
         .buttonStyle(.borderless)
-        .disabled(editingModelId == Model.defaultModelId)
+        .disabled(editingModelId == Model.unsetModelId)
         
         Spacer()
         if !errorText.isEmpty {
@@ -92,25 +89,15 @@ struct EditModels: View {
         }
       }.frame(width: 20)
       Text(i.name ?? i.url?.lastPathComponent ?? "Untitled").tag(i.id?.uuidString ?? "")
-        .help(i.url?.path ?? "Unknown path")
-        .contextMenu {
-          Button(action: {
-            deleteModel(i)
-          }) {
-            Label("Delete Model", systemImage: "trash")
-          }
-        }
       if i.size != 0 {
         Text("\(String(format: "%.2f", Double(i.size) / 1000.0)) GB")
           .foregroundColor(.secondary)
       }
       Spacer()
-      if !loading {
-        if i.error != nil, !i.error!.isEmpty {
-          Label(i.error!, systemImage: "exclamationmark.triangle.fill")
-            .font(.caption)
-            .accentColor(.red)
-        }
+      if !loading, i.error != nil, !i.error!.isEmpty {
+        Label(i.error!, systemImage: "exclamationmark.triangle.fill")
+          .font(.caption)
+          .accentColor(.red)
       }
       hoverSelect(i.id?.uuidString ?? "", loading: loading)
     }.tag(i.id?.uuidString ?? "")
@@ -122,7 +109,6 @@ struct EditModels: View {
           hoveredModelId = nil
         }
       }
-      .submitScope(true)
   }
   
   func hoverSelect(_ modelId: String, loading: Bool = false) -> some View {
@@ -135,29 +121,15 @@ struct EditModels: View {
   var modelList: some View {
     List(selection: $editingModelId) {
       Section("Models") {
-        HStack {
-          Group {
-            if conversationManager.loadingModelId == Model.defaultModelId {
-              ProgressView().controlSize(.small)
-            } else {
-              Text("✓").bold().opacity(selectedModelId == Model.defaultModelId ? 1 : 0)
-            }
-          }.frame(width: 20)
-          Text("Default (\(LlamaServer.DEFAULT_MODEL_FILENAME))").tag(Model.defaultModelId)
-            .padding(4)
-          Spacer()
-          hoverSelect(Model.defaultModelId, loading: conversationManager.loadingModelId == Model.defaultModelId)
-        }.tag(Model.defaultModelId)
-          .onHover { hovered in
-            if hovered {
-              hoveredModelId = Model.defaultModelId
-            } else if hoveredModelId == Model.defaultModelId {
-              hoveredModelId = nil
-            }
-          }
-        
         ForEach(items) { i in
           modelListItem(i)
+            .help(i.url?.path ?? "Unknown path")
+            .contextMenu {
+              Button("Delete Model") { deleteModel(i) }
+              if let url = i.url {
+                Button("Show in Finder") { showInFinder(url) }
+              }
+            }
         }
       }
     }
@@ -179,6 +151,10 @@ struct EditModels: View {
     }
   }
   
+  private func showInFinder(_ url: URL) {
+    NSWorkspace.shared.activateFileViewerSelecting([url])
+  }
+  
   private func selectEditing() {
     if editingModelId != nil {
       selectedModelId = editingModelId!
@@ -190,7 +166,7 @@ struct EditModels: View {
     viewContext.delete(model)
     try? viewContext.save()
     if editingModelId == selectedModelId {
-      selectedModelId = Model.defaultModelId
+      selectedModelId = items.first?.id?.uuidString ?? Model.unsetModelId
     }
     editingModelId = nil
   }
@@ -200,12 +176,6 @@ struct EditModels: View {
 
     switch result {
       case .success(let fileURL):
-        if fileURL.pathExtension != "gguf" {
-          print("ext", fileURL.pathExtension)
-          errorText = EditModels.formatErrorText
-          return
-        }
-        
         // if model has already been added, select it and return
         let existingModel = items.first(where: { m in m.url == fileURL })
         if existingModel != nil {
@@ -215,29 +185,16 @@ struct EditModels: View {
           return
         }
         
-        // gain access to the directory
-        let gotAccess = fileURL.startAccessingSecurityScopedResource()
-        if !gotAccess { return }
-        
         do {
-          let model = Model(context: viewContext)
-          model.id = UUID()
-          model.name = fileURL.lastPathComponent
-          model.bookmark = try fileURL.bookmarkData(options: [.withSecurityScope, .securityScopeAllowOnlyReadAccess])
-          if let attributes = try? FileManager.default.attributesOfItem(atPath: fileURL.path()),
-             let fileSize = attributes[.size] as? Int {
-            print("The file size is \(fileSize)")
-            model.size = Int32(fileSize / 1000000)
-          }
-          try viewContext.save()
+          let model = try Model.create(context: viewContext, fileURL: fileURL)
           DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
             selectedModelId = model.id!.uuidString
           }
-        } catch (let error) {
-          print("error creating Model", error.localizedDescription)
+        } catch let error as ModelCreateError {
+          errorText = error.localizedDescription
+        } catch (let err) {
+          print("Error creating model", err.localizedDescription)
         }
-        // release access
-        fileURL.stopAccessingSecurityScopedResource()
       case .failure(let error):
         // handle error
         print(error)
@@ -246,10 +203,10 @@ struct EditModels: View {
 }
 
 struct EditModels_Previews_Container: View {
-  @State var selectedModelId = Model.defaultModelId
+  @State var selectedModelId = Model.unsetModelId
   var body: some View {
     EditModels(selectedModelId: $selectedModelId)
-    EditModels(selectedModelId: $selectedModelId, errorText: EditModels.formatErrorText)
+    EditModels(selectedModelId: $selectedModelId, errorText: ModelCreateError.unknownFormat.localizedDescription)
       .previewDisplayName("Edit Models Error")
 
   }
@@ -262,7 +219,7 @@ struct EditModels_Previews: PreviewProvider {
     let c = try! Conversation.create(ctx: ctx)
     let cm = ConversationManager()
     cm.currentConversation = c
-    cm.agent = Agent(id: "llama", prompt: "", systemPrompt: "")
+    cm.agent = Agent(id: "llama", prompt: "", systemPrompt: "", modelPath: "")
     
     let question = Message(context: ctx)
     question.conversation = c

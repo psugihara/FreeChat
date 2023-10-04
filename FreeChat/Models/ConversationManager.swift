@@ -10,14 +10,15 @@ import CoreData
 import SwiftUI
 
 class ConversationManager: ObservableObject {
+  static let shared = ConversationManager()
+
   var summonRegistered = false
   
   @AppStorage("systemPrompt") private var systemPrompt: String = Agent.DEFAULT_SYSTEM_PROMPT
-  @AppStorage("selectedModelId") private var selectedModelId: String = Model.defaultModelId
+  @AppStorage("selectedModelId") private var selectedModelId: String = Model.unsetModelId
 
   @Published var agent: Agent = Agent(id: "Llama", prompt: "", systemPrompt: "", modelPath: "")
   @Published var loadingModelId: String?
-  
   
   private static var dummyConversation: Conversation = {
     let tempMoc = NSManagedObjectContext(concurrencyType: .mainQueueConcurrencyType)
@@ -70,14 +71,16 @@ class ConversationManager: ObservableObject {
   
   func rebootAgent(systemPrompt: String? = nil, model: Model? = nil, viewContext: NSManagedObjectContext) {
     let prompt = systemPrompt ?? self.systemPrompt
-    let url = model?.url != nil ? model!.url! : LlamaServer.DEFAULT_MODEL_URL
+    guard let url = model?.url else {
+      return
+    }
     
     Task {
       await agent.llama.stopServer()
 
       await MainActor.run {
         agent = Agent(id: "Llama", prompt: agent.prompt, systemPrompt: prompt, modelPath: url.path)
-        loadingModelId = model?.id?.uuidString ?? Model.defaultModelId
+        loadingModelId = model?.id?.uuidString ?? Model.unsetModelId
       }
 
       do {
@@ -85,7 +88,7 @@ class ConversationManager: ObservableObject {
         try await agent.warmup()
       } catch LlamaServerError.modelError {
         await MainActor.run {
-          selectedModelId = Model.defaultModelId
+          selectedModelId = Model.unsetModelId
         }
         model?.error = "Error loading model"
       } catch (let error) {

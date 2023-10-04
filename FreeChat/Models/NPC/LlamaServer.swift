@@ -37,9 +37,9 @@ func getMachineHardwareName() -> String? {
 }
 
 actor LlamaServer {
-  static let DEFAULT_MODEL_FILENAME = "spicyboros-7b-2.2.Q3_K_S"
-  static let DEFAULT_MODEL_URL =  Bundle.main.url(forResource: DEFAULT_MODEL_FILENAME, withExtension: ".gguf")!
-  var modelPath = LlamaServer.DEFAULT_MODEL_URL.path
+//  static let DEFAULT_MODEL_FILENAME = "spicyboros-7b-2.2.Q3_K_S"
+//  static let DEFAULT_MODEL_URL =  Bundle.main.url(forResource: DEFAULT_MODEL_FILENAME, withExtension: ".gguf")!
+  var modelPath = ""
   
   private var process = Process()
   private var outputPipe = Pipe()
@@ -51,10 +51,8 @@ actor LlamaServer {
   
   private var monitor = Process()
   
-  init(modelPath: String? = nil) {
-    if modelPath != nil, !modelPath!.isEmpty {
-      self.modelPath = modelPath!
-    }
+  init(modelPath: String) {
+    self.modelPath = modelPath
   }
   
   // Start a monitor process that will terminate the server when our app dies.
@@ -259,7 +257,7 @@ actor LlamaServer {
       }
     }
 
-    let modelName = modelPath.split(separator: "/").last?.map { String($0) }.joined() ?? LlamaServer.DEFAULT_MODEL_FILENAME
+    let modelName = modelPath.split(separator: "/").last?.map { String($0) }.joined() ?? "Unknown model name"
 
     var timeout = 60
     let tick = 1
@@ -369,7 +367,7 @@ enum LlamaServerError: LocalizedError {
   
   var recoverySuggestion: String {
     switch self {
-      case .modelError:
+      case .modelError :
         return "Try selecting another model in Settings"
       default:
         return "Try again later"
