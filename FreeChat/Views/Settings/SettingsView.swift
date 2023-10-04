@@ -16,12 +16,6 @@ struct SettingsView: View {
   @Environment(\.managedObjectContext) private var viewContext
   @EnvironmentObject var conversationManager: ConversationManager
   
-  // TODO: add dropdown like models for storing multiple system prompts?
-  //  @FetchRequest(
-  //    sortDescriptors: [NSSortDescriptor(keyPath: \SystemPrompt.updatedAt, ascending: true)],
-  //    animation: .default)
-  //  private var systemPrompts: FetchedResults<SystemPrompt>
-  
   @FetchRequest(
     sortDescriptors: [NSSortDescriptor(keyPath: \Model.size, ascending: true)],
     animation: .default)

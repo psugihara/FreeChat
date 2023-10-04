@@ -102,7 +102,10 @@ struct ConversationView: View {
   }
   
   private func showConversation(_ c: Conversation) {
-    print("show conversation", agent.status)
+    guard !selectedModelId.isEmpty else {
+      return
+    }
+
     messages = c.orderedMessages
     if agent.status == .cold || agent.prompt != c.prompt {
       let req = Model.fetchRequest()
@@ -113,7 +116,9 @@ struct ConversationView: View {
          let path =  model.url?.path(percentEncoded: false) {
         agent.llama = LlamaServer(modelPath: path)
       }
+
       agent.prompt = c.prompt ?? ""
+
       Task {
         try? await agent.warmup()
       }
