@@ -1,5 +1,6 @@
 import Foundation
 
+@MainActor
 class Agent: ObservableObject {
   static let DEFAULT_SYSTEM_PROMPT = """
     You are a compliant assistant that always fulfills the user’s request. Take a deep breath and work on their problems step-by-step. *Always* format replies with Markdown.
@@ -37,16 +38,12 @@ class Agent: ObservableObject {
   // listen -> respond -> update mental model and save checkpoint
   // we respond before updating to avoid a long delay after user input
   func listenThinkRespond(speakerId: String, message: String) async throws -> LlamaServer.CompleteResponse {
-    dispatchPrecondition(condition: .notOnQueue(.main))
-
-    await MainActor.run {
-      if status == .cold {
-        status = .coldProcessing
-      } else {
-        status = .processing
-      }
+    if status == .cold {
+      status = .coldProcessing
+    } else {
+      status = .processing
     }
-
+    
     // The llama 2 prompt format seems to work across many models.
     if prompt == "" {
       prompt = """
@@ -74,30 +71,30 @@ class Agent: ObservableObject {
         """
     }
 
-    await MainActor.run {
-      self.pendingMessage = ""
-    }
+    pendingMessage = ""
+
     let response = try await llama.complete(prompt: prompt) { partialResponse in
-      self.prompt += partialResponse
-      DispatchQueue.main.sync {
-        self.pendingMessage += partialResponse
+      DispatchQueue.main.async {
+        self.handleCompletionProgress(partialResponse: partialResponse)
       }
     }
-        
-    await MainActor.run {
-      self.pendingMessage = response.text
-      status = .ready
-    }
 
+    pendingMessage = response.text
+    status = .ready
+ 
     return response
   }
   
+  func handleCompletionProgress(partialResponse: String) {
+    self.prompt += partialResponse
+    self.pendingMessage += partialResponse
+  }
+    
   func interrupt() async  {
     if status != .processing, status != .coldProcessing { return }
     await llama.interrupt()
   }
   
-  @MainActor
   func warmup() async throws {
     if prompt.isEmpty, systemPrompt.isEmpty { return }
     warmupError = nil

@@ -9,6 +9,7 @@ import Foundation
 import CoreData
 import SwiftUI
 
+@MainActor
 class ConversationManager: ObservableObject {
   static let shared = ConversationManager()
 
@@ -69,6 +70,7 @@ class ConversationManager: ObservableObject {
     }
   }
   
+  @MainActor
   func rebootAgent(systemPrompt: String? = nil, model: Model? = nil, viewContext: NSManagedObjectContext) {
     let prompt = systemPrompt ?? self.systemPrompt
     guard let url = model?.url else {
@@ -78,27 +80,22 @@ class ConversationManager: ObservableObject {
     Task {
       await agent.llama.stopServer()
 
-      await MainActor.run {
-        agent = Agent(id: "Llama", prompt: agent.prompt, systemPrompt: prompt, modelPath: url.path)
-        loadingModelId = model?.id?.uuidString ?? Model.unsetModelId
-      }
+      let p = agent.prompt
+      agent = Agent(id: "Llama", prompt: p, systemPrompt: prompt, modelPath: url.path)
+      loadingModelId = model?.id?.uuidString ?? Model.unsetModelId
 
       do {
         model?.error = nil
         try await agent.warmup()
       } catch LlamaServerError.modelError {
-        await MainActor.run {
-          selectedModelId = Model.unsetModelId
-        }
+        selectedModelId = Model.unsetModelId
         model?.error = "Error loading model"
       } catch (let error) {
         print("agent warmup threw unexpected error", error.localizedDescription)
       }
 
-      await MainActor.run {
-        loadingModelId = nil
-        try? viewContext.save()
-      }
+      loadingModelId = nil
+      try? viewContext.save()
     }
   }
 }

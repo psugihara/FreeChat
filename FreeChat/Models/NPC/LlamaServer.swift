@@ -1,4 +1,4 @@
-import EventSource
+@preconcurrency import EventSource
 import Foundation
 import os.lock
 
@@ -148,11 +148,12 @@ actor LlamaServer {
     }
   }
   
-  func complete(prompt: String, progressHandler: ((String) -> Void)? = nil) async throws -> CompleteResponse {
+  func complete(prompt: String, progressHandler: (@Sendable (String) -> Void)? = nil) async throws -> CompleteResponse {
+    dispatchPrecondition(condition: .notOnQueue(.main))
 #if DEBUG
     print("START PROMPT\n \(prompt) \nEND PROMPT\n\n")
 #endif
-    
+
     let start = CFAbsoluteTimeGetCurrent()
     try await startServer()
     
@@ -189,7 +190,8 @@ actor LlamaServer {
       case .open:
         continue
       case .error(let error):
-        print("llama.cpp server error:", error.localizedDescription)
+        print("llama.cpp EventSource server error:", error.localizedDescription)
+        break listenLoop
       case .message(let message):
         // parse json in message.data string then print the data.content value and append it to response
         if let data = message.data?.data(using: .utf8) {
@@ -211,6 +213,7 @@ actor LlamaServer {
           }
         }
       case .closed:
+        print("llama.cpp EventSource closed")
         break listenLoop
     }
   }
@@ -233,8 +236,8 @@ actor LlamaServer {
   }
   
   func interrupt() async {
-    if eventSource != nil {
-      await eventSource!.close()
+    if let eventSource {
+      await eventSource.close()
     }
     interrupted = true
   }
