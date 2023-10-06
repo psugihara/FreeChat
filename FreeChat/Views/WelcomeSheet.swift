@@ -118,3 +118,17 @@ struct WelcomeSheet: View {
     .environment(\.managedObjectContext, ctx)
     .environmentObject(conversationManager)
 }
+
+// works but generates deprecation warning
+//#Preview("Loading") {
+//  @State var isPresented: Bool = true
+//  @StateObject var conversationManager = ConversationManager.shared
+//
+//  let ctx = PersistenceController.preview.container.viewContext
+//
+//  DownloadManager.shared.tasks.append(URLSessionTask())
+//
+//  return WelcomeSheet(isPresented: $isPresented)
+//    .environment(\.managedObjectContext, ctx)
+//    .environmentObject(conversationManager)
+//}
