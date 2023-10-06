@@ -68,11 +68,7 @@ struct ConversationView: View {
       .onReceive(
         agent.$pendingMessage.throttle(for: .seconds(0.1), scheduler: RunLoop.main, latest: true)
       ) { text in
-        if conversation.prompt != nil,
-           text != pendingMessageText,
-            agent.prompt.hasPrefix(conversation.prompt!) {
-          pendingMessageText = text
-        }
+        pendingMessageText = text
       }
       .onReceive(
         agent.$pendingMessage.throttle(for: .seconds(0.4), scheduler: RunLoop.main, latest: true)
@@ -109,7 +105,6 @@ struct ConversationView: View {
     }
 
     messages = c.orderedMessages
-    agent.prompt = c.prompt ?? ""
 
     // warmup the agent if it's cold or model has changed
     let req = Model.fetchRequest()
@@ -231,7 +226,6 @@ struct ConversationView: View {
       }
         
       await MainActor.run {
-        agentConversation.prompt = agent.prompt
         m.text = response.text
         m.predictedPerSecond = response.predictedPerSecond ?? -1
         m.responseStartSeconds = response.responseStartSeconds

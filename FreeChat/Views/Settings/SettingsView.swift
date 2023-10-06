@@ -109,11 +109,23 @@ struct SettingsView: View {
       } else {
         model = models.first { i in i.id?.uuidString == newModelId }
       }
+      guard let model else {
+        return
+      }
 
       conversationManager.rebootAgent(systemPrompt: self.systemPrompt, model: model, viewContext: viewContext)
     }
     .onChange(of: systemPrompt) { nextPrompt in
-      let model = models.first { i in i.id?.uuidString == selectedModelId }
+      var model: Model?
+      if selectedModelId == Model.unsetModelId {
+        model = models.first
+      } else {
+        model = models.first { i in i.id?.uuidString == selectedModelId }
+      }
+      guard let model else {
+        return
+      }
+      
       conversationManager.rebootAgent(systemPrompt: self.systemPrompt, model: model, viewContext: viewContext)
     }
     .frame(minWidth: 300, maxWidth: 600, minHeight: 184, idealHeight: 195, maxHeight: 400, alignment: .center)
