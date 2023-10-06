@@ -109,25 +109,20 @@ struct ConversationView: View {
     }
 
     messages = c.orderedMessages
-    if agent.status == .cold || agent.prompt != c.prompt {
-      let req = Model.fetchRequest()
-      req.predicate = NSPredicate(format: "id = %@", selectedModelId)
+    agent.prompt = c.prompt ?? ""
 
-
-
-      agent.prompt = c.prompt ?? ""
-
-      Task {
-        let llamaPath = await agent.llama.modelPath
-        await MainActor.run {
-          if let models = try? viewContext.fetch(req),
-             let model = models.first,
-             let path = model.url?.path(percentEncoded: false),
-             path != llamaPath {
-            agent.llama = LlamaServer(modelPath: path)
-          }
-        }
-        
+    // warmup the agent if it's cold or model has changed
+    let req = Model.fetchRequest()
+    req.predicate = NSPredicate(format: "id = %@", selectedModelId)
+    Task {
+      let llamaPath = await agent.llama.modelPath
+      if let models = try? viewContext.fetch(req),
+         let model = models.first,
+         let modelPath = model.url?.path(percentEncoded: false),
+         modelPath != llamaPath {
+        agent.llama = LlamaServer(modelPath: modelPath)
+        try? await agent.warmup()
+      } else if agent.status == .cold {
         try? await agent.warmup()
       }
     }
@@ -181,7 +176,7 @@ struct ConversationView: View {
       }
       return
     }
-    
+
     showUserMessage = false
     engageAutoScroll()
     
@@ -207,12 +202,6 @@ struct ConversationView: View {
     m.text = ""
     pendingMessage = m
     
-//    // Replace the agent's prompt if they don't know the conversation.
-//    if conversation.prompt != nil && !agent.prompt.hasPrefix(conversation.prompt!) {
-//      agent.prompt = conversation.prompt!
-//    }
-//
-    
     agent.systemPrompt = systemPrompt
 
     DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
@@ -220,7 +209,7 @@ struct ConversationView: View {
         return
       }
       
-      m.conversation = conversation
+      m.conversation = agentConversation
       messages = agentConversation.orderedMessages
       
       withAnimation {
@@ -232,6 +221,7 @@ struct ConversationView: View {
       var response: LlamaServer.CompleteResponse
       do {
         response = try await agent.listenThinkRespond(speakerId: Message.USER_SPEAKER_ID, message: input)
+        print("response ended in ConversationView#submit")
       } catch let error as LlamaServerError {
         handleResponseError(error)
         return
