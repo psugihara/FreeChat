@@ -109,22 +109,20 @@ struct ConversationView: View {
     }
 
     messages = c.orderedMessages
+    agent.prompt = c.prompt ?? ""
 
-    if agent.status == .cold {
-      let req = Model.fetchRequest()
-      req.predicate = NSPredicate(format: "id = %@", selectedModelId)
-
-      agent.prompt = c.prompt ?? ""
-
-      Task {
-        let llamaPath = await agent.llama.modelPath
-        if let models = try? viewContext.fetch(req),
-           let model = models.first,
-           let path = model.url?.path(percentEncoded: false),
-           path != llamaPath {
-          agent.llama = LlamaServer(modelPath: path)
-        }
-      
+    // warmup the agent if it's cold or model has changed
+    let req = Model.fetchRequest()
+    req.predicate = NSPredicate(format: "id = %@", selectedModelId)
+    Task {
+      let llamaPath = await agent.llama.modelPath
+      if let models = try? viewContext.fetch(req),
+         let model = models.first,
+         let modelPath = model.url?.path(percentEncoded: false),
+         modelPath != llamaPath {
+        agent.llama = LlamaServer(modelPath: modelPath)
+        try? await agent.warmup()
+      } else if agent.status == .cold {
         try? await agent.warmup()
       }
     }

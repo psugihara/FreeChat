@@ -54,6 +54,8 @@ class Agent: ObservableObject {
         \(Message.USER_SPEAKER_ID): hi [/INST] ### Assistant: Hello there.</s>
         """
     }
+    
+    // help LLM if it didn't end with the stop token
     if !prompt.hasSuffix("</s>") {
       prompt += "</s>"
     }

@@ -72,7 +72,7 @@ class ConversationManager: ObservableObject {
   
   @MainActor
   func rebootAgent(systemPrompt: String? = nil, model: Model? = nil, viewContext: NSManagedObjectContext) {
-    let prompt = systemPrompt ?? self.systemPrompt
+    let systemPrompt = systemPrompt ?? self.systemPrompt
     guard let url = model?.url else {
       return
     }
@@ -80,8 +80,8 @@ class ConversationManager: ObservableObject {
     Task {
       await agent.llama.stopServer()
 
-      let p = agent.prompt
-      agent = Agent(id: "Llama", prompt: p, systemPrompt: prompt, modelPath: url.path)
+      let convoPrompt = currentConversation.prompt ?? ""
+      agent = Agent(id: "Llama", prompt: convoPrompt, systemPrompt: systemPrompt, modelPath: url.path)
       loadingModelId = model?.id?.uuidString ?? Model.unsetModelId
 
       do {
