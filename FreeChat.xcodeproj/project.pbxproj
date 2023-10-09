@@ -7,8 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		A1156D2F2AD0954C00081313 /* PromptTemplate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1156D2E2AD0954C00081313 /* PromptTemplate.swift */; };
+		A1156D2F2AD0954C00081313 /* TemplateManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1156D2E2AD0954C00081313 /* TemplateManager.swift */; };
 		A1156D312AD09FDD00081313 /* PromptTemplateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1156D302AD09FDD00081313 /* PromptTemplateTests.swift */; };
+		A1156D342AD1F5EF00081313 /* Templates.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1156D332AD1F5EF00081313 /* Templates.swift */; };
 		A11721992A7D5274003B0358 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = A11721982A7D5274003B0358 /* README.md */; };
 		A117219C2A7D7B70003B0358 /* MarkdownUI in Frameworks */ = {isa = PBXBuildFile; productRef = A117219B2A7D7B70003B0358 /* MarkdownUI */; };
 		A12B52DE2AA5228100658707 /* EditModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = A12B52DD2AA5228100658707 /* EditModels.swift */; };
@@ -112,8 +113,9 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		A1156D2E2AD0954C00081313 /* PromptTemplate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PromptTemplate.swift; sourceTree = "<group>"; };
+		A1156D2E2AD0954C00081313 /* TemplateManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TemplateManager.swift; sourceTree = "<group>"; };
 		A1156D302AD09FDD00081313 /* PromptTemplateTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PromptTemplateTests.swift; sourceTree = "<group>"; };
+		A1156D332AD1F5EF00081313 /* Templates.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Templates.swift; sourceTree = "<group>"; };
 		A11721982A7D5274003B0358 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		A12B52DD2AA5228100658707 /* EditModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditModels.swift; sourceTree = "<group>"; };
 		A12B52E32AA5A99E00658707 /* EditSystemPrompt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditSystemPrompt.swift; sourceTree = "<group>"; };
@@ -196,6 +198,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		A1156D322AD1F5C700081313 /* PromptTemplates */ = {
+			isa = PBXGroup;
+			children = (
+				A1156D2E2AD0954C00081313 /* TemplateManager.swift */,
+				A1156D332AD1F5EF00081313 /* Templates.swift */,
+			);
+			path = PromptTemplates;
+			sourceTree = "<group>";
+		};
 		A13C8C5E2A8FF02500EC18D8 /* Markdown */ = {
 			isa = PBXGroup;
 			children = (
@@ -225,7 +236,7 @@
 		A17A2E1B2A79A00D006CDD90 /* NPC */ = {
 			isa = PBXGroup;
 			children = (
-				A1156D2E2AD0954C00081313 /* PromptTemplate.swift */,
+				A1156D322AD1F5C700081313 /* PromptTemplates */,
 				A137A3872AB502DB00BE1AE0 /* ggml-metal.metal */,
 				A17A2E122A79A005006CDD90 /* Agent.swift */,
 				A17A2E132A79A005006CDD90 /* LlamaServer.swift */,
@@ -535,8 +546,9 @@
 				A1F617582A7836AE00F2048C /* Message+Extensions.swift in Sources */,
 				A13C8C682A902A1200EC18D8 /* CGKeycode+Extensions.swift in Sources */,
 				A15D50D22A7F539800FC1681 /* NavList.swift in Sources */,
+				A1156D342AD1F5EF00081313 /* Templates.swift in Sources */,
 				A1F617262A782AA100F2048C /* FreeChat.swift in Sources */,
-				A1156D2F2AD0954C00081313 /* PromptTemplate.swift in Sources */,
+				A1156D2F2AD0954C00081313 /* TemplateManager.swift in Sources */,
 				A1E4A6942A82B41F00BF9D34 /* Model+Extensions.swift in Sources */,
 				A12B52DE2AA5228100658707 /* EditModels.swift in Sources */,
 				A17AB1C22ABB4B5E00CD3100 /* CircleMenuStyle.swift in Sources */,

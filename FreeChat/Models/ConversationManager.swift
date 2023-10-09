@@ -80,9 +80,8 @@ class ConversationManager: ObservableObject {
     Task {
       await agent.llama.stopServer()
 
-      let format = model.promptTemplate == nil ? nil : PromptTemplate.Format(rawValue: model.promptTemplate!)
       let messages = currentConversation.orderedMessages.map { $0.text ?? "" }
-      let convoPrompt = PromptTemplate(systemPrompt: systemPrompt, messages: messages).run(format ?? .continuation)
+      let convoPrompt = model.template.run(systemPrompt: systemPrompt, messages: messages)
       agent = Agent(id: "Llama", prompt: convoPrompt, systemPrompt: systemPrompt, modelPath: url.path)
       loadingModelId = model.id?.uuidString ?? Model.unsetModelId
 

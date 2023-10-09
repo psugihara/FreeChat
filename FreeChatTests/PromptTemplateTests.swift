@@ -12,8 +12,7 @@ final class PromptTemplateTests: XCTestCase {
   var shortConvo: [String] = [
     "Hey baby!",
     "Wassup, user?",
-    "n2m hbu",
-    ";)"
+    "n2m hbu"
   ]
   var longConvo: [String] = [
     
@@ -27,8 +26,8 @@ final class PromptTemplateTests: XCTestCase {
     // Put teardown code here. This method is called after the invocation of each test method in the class.
   }
   
-  func testRunLlama2Blank() throws {
-    let p = PromptTemplate(systemPrompt: "A system prompt", messages: []).run(.llama2)
+  func testLlama2Blank() throws {
+    let p = Llama2Template().run(systemPrompt: "A system prompt", messages: [])
     let expected = """
     <s>[INST] <<SYS>>
     A system prompt
@@ -41,14 +40,14 @@ final class PromptTemplateTests: XCTestCase {
     XCTAssertEqual(p, expected)
   }
   
-  func testRunLlama2ShortConvo() throws {
-    let p = PromptTemplate(systemPrompt: "A system prompt", messages: shortConvo).run(.llama2)
+  func testLlama2ShortConvo() throws {
+    let p = Llama2Template().run(systemPrompt: "A system prompt", messages: shortConvo)
     let expected = """
     <s>[INST] <<SYS>>
     A system prompt
     <</SYS>>
     
-    Hey baby! [/INST] Wassup, user? </s><s>[INST] n2m hbu [/INST] ;) </s>
+    Hey baby! [/INST] Wassup, user? </s><s>[INST] n2m hbu [/INST] 
     """
     
     XCTAssert(!p.isEmpty)
