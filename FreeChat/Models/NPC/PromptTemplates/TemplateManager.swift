@@ -12,19 +12,17 @@ struct TemplateManager {
     case unrecognizedFormat(formatString: String)
   }
   enum Format: String {
-    case continuation, llama2, chatML, userAssistant, alpaca, vicuna
+    case llama2, chatML, alpaca, vicuna
   }
   
   //
   static func getTemplate(_ templateName: String?, modelName: String?) -> Template {
     switch try? formatWithDefault(templateName, modelName: modelName) {
-      case .continuation:
-        ContinuationTemplate()
       case .llama2:
         Llama2Template()
-//      case .chatML:
-        //        runChatML()z
-//      case .userAssistant:
+      case .chatML:
+        ChatMLTemplate()
+        //      case .userAssistant:
         //        runUserAssistant()
 //      case .alpaca:
       default:
@@ -46,7 +44,7 @@ struct TemplateManager {
   
   static func formatFromModel(_ name: String?) -> Format {
     guard let name, !name.isEmpty else {
-      return .continuation
+      return .vicuna
     }
     
     if name.contains(/Mistral-7B-Instruct/.ignoresCase()) {
@@ -61,6 +59,6 @@ struct TemplateManager {
       return .vicuna
     }
 
-    return .continuation
+    return .vicuna
   }
 }

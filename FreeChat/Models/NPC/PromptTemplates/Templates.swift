@@ -50,30 +50,6 @@ struct Llama2Template: Template {
   }
 }
 
-struct ContinuationTemplate: Template {
-  static var stopWords: [String] = ["\nUser:", "\nUSER:", "\nuser"]
-  
-  func run(systemPrompt: String, messages: [String]) -> String {
-    var p = """
-      \(systemPrompt)
-      A conversation between User and you, Assistant.
-      """
-    
-    var userTalking = true
-    for message in messages {
-      if userTalking {
-        p.append("\nUser: \(message)")
-      } else {
-        p.append("\nAssistant: \(message)")
-      }
-      
-      userTalking.toggle()
-    }
-    
-    return p
-  }
-}
-
 struct VicunaTemplate: Template {
   static var stopWords: [String] = ["USER:"]
   
@@ -91,7 +67,7 @@ struct VicunaTemplate: Template {
     }
     
     if !userTalking {
-      p.append(" ASSISTANT:")
+      p.append(" ASSISTANT: ")
     }
     
     return p
@@ -104,14 +80,18 @@ struct ChatMLTemplate: Template {
   func run(systemPrompt: String, messages: [String]) -> String {
     var p = """
     <|im_start|>system
-    \(systemPrompt)<|im_end|>
+    \(systemPrompt)
+    <|im_end|>
+    
     """
     
     var userTalking = true
     for message in messages {
       p.append("""
           <|im_start|>\(userTalking ? "user" : "assistant")
-          \(message)<|im_end|>
+          \(message)
+          <|im_end|>
+          
           """)
       userTalking.toggle()
     }
