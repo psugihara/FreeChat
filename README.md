@@ -25,6 +25,8 @@ Or build from source via "Archive" in Xcode after completing dev setup below.
 
 ## Goals
 
+The main goal of FreeChat is to make open, local, private models accessible to more people.
+
 FreeChat is a native LLM appliance for macOS that runs completely locally. Download it and ask your LLM a question without doing any configuration. A local/llama version of OpenAI's chat without login or tracking. You should be able to install from the Mac App Store and use it immediatly.
 
 - No config. Usable by people who haven't heard of models, prompts, or LLMs.
