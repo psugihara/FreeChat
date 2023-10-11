@@ -33,6 +33,7 @@ FreeChat is a native LLM appliance for macOS that runs completely locally. Downl
 - Performance and simplicity over dev experience or features. Notes not Word, Swift not Elektron.
 - Local first. Core functionality should not require an internet connection. There are lots of great clients for GPT-4, claude, etc. This is not one of them.
 - No conversation tracking. Talk about whatever you want with FreeChat, just like Notes.
+- Open source. What's the point of running local AI if you can't audit that it's actually running locally?
 
 ### Upgrade your models
 Once you're up and running, it's fun to try different models in FreeChat. The AI training community is releasing new models basically every day. FreeChat is compatible with any gguf formatted model that [llama.cpp](https://github.com/ggerganov/llama.cpp) works with. Models can be found on [HuggingFace](https://huggingface.co/models?sort=trending&search=gguf). Most models have a "model card" by the author that discusses its training and abilities.
