@@ -37,41 +37,14 @@ class Agent: ObservableObject {
   // this is the main loop of the agent
   // listen -> respond -> update mental model and save checkpoint
   // we respond before updating to avoid a long delay after user input
-  func listenThinkRespond(speakerId: String, message: String) async throws -> LlamaServer.CompleteResponse {
+  func listenThinkRespond(speakerId: String, messages: [String], template: Template) async throws -> LlamaServer.CompleteResponse {
     if status == .cold {
       status = .coldProcessing
     } else {
       status = .processing
     }
     
-    // The llama 2 prompt format seems to work across many models.
-    if prompt == "" {
-      prompt = """
-        <s>[INST] <<SYS>>
-        \(systemPrompt)
-        <</SYS>>
-        
-        \(Message.USER_SPEAKER_ID): hi [/INST] ### Assistant: Hello there.</s>
-        """
-    }
-    
-    // help LLM if it didn't end with the stop token
-    if !prompt.hasSuffix("</s>") {
-      prompt += "</s>"
-    }
-    
-    if prompt.suffix(2000).contains(systemPrompt) {
-      prompt += "<s>[INST] \(Message.USER_SPEAKER_ID): \(message) [/INST] ### Assistant:"
-    } else {
-      // if the system prompt hasn't been covered in a while, pepper it in
-      prompt += """
-        <s>[INST] <<SYS>>
-        \(systemPrompt)
-        <<SYS>>
-        
-        \(Message.USER_SPEAKER_ID): \(message)[/INST] ### Assistant:
-        """
-    }
+    prompt = template.run(systemPrompt: systemPrompt, messages: messages)
 
     pendingMessage = ""
 

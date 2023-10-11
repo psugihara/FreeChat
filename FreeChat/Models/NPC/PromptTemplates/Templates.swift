@@ -7,22 +7,31 @@
 
 import Foundation
 
+enum TemplateFormat: String, CaseIterable {
+  case llama2
+  case chatML
+  case alpaca
+  case vicuna
+}
+
 protocol Template {
+  var format: TemplateFormat { get }
   static var stopWords: [String] { get }
   func run(systemPrompt: String, messages: [String]) -> String
 }
 
 struct Llama2Template: Template {
+  var format = TemplateFormat.llama2
   static var stopWords: [String] = ["</s>"]
   
   func run(systemPrompt: String, messages: [String]) -> String {
     var p = """
-      <s>[INST] <<SYS>>
-      \(systemPrompt)
-      <</SYS>>
-      
-      \(messages.first ?? "hi") [/INST] 
-      """
+    <s>[INST] <<SYS>>
+    \(systemPrompt)
+    <</SYS>>
+    
+    \(messages.first ?? "hi") [/INST]
+    """
     
     var userTalking = false
     for message in messages.dropFirst() {
@@ -32,12 +41,12 @@ struct Llama2Template: Template {
         } else {
           // if the system prompt hasn't been covered in a while, pepper it in
           p += """
-            <s>[INST] <<SYS>>
-            \(systemPrompt)
-            <<SYS>>
-            
-            \(message) [/INST] 
-            """
+          <s>[INST] <<SYS>>
+          \(systemPrompt)
+          <<SYS>>
+          
+          \(message) [/INST]
+          """
         }
       } else {
         p += "\(message) </s>"
@@ -51,6 +60,7 @@ struct Llama2Template: Template {
 }
 
 struct VicunaTemplate: Template {
+  var format = TemplateFormat.vicuna
   static var stopWords: [String] = ["USER:"]
   
   func run(systemPrompt: String, messages: [String]) -> String {
@@ -75,26 +85,53 @@ struct VicunaTemplate: Template {
 }
 
 struct ChatMLTemplate: Template {
+  var format = TemplateFormat.chatML
   static var stopWords: [String] = ["<|im_end|>"]
   
   func run(systemPrompt: String, messages: [String]) -> String {
     var p = """
-    <|im_start|>system
+  <|im_start|>system
+  \(systemPrompt)
+  <|im_end|>
+  
+  """
+    
+    var userTalking = true
+    for message in messages {
+      p.append("""
+        <|im_start|>\(userTalking ? "user" : "assistant")
+        \(message)
+        <|im_end|>
+        
+        """)
+      userTalking.toggle()
+    }
+    
+    return p
+  }
+}
+
+struct AlpacaTemplate: Template {
+  var format = TemplateFormat.alpaca
+  static var stopWords: [String] = ["\n\n", "### Instruction:", "### Input:", "USER"]
+  
+  func run(systemPrompt: String, messages: [String]) -> String {
+    var p = """
+    ### Instruction:
     \(systemPrompt)
-    <|im_end|>
+    
+    Conversation so far:
     
     """
     
     var userTalking = true
     for message in messages {
-      p.append("""
-          <|im_start|>\(userTalking ? "user" : "assistant")
-          \(message)
-          <|im_end|>
-          
-          """)
+      let from = userTalking ? "user" : "you"
+      p.append("\(from): \(message)\n")
       userTalking.toggle()
     }
+    
+    p += "you: \n\nResponse to user's last line with markdown.\n\n### Response:\n"
     
     return p
   }

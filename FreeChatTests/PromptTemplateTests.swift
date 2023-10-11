@@ -33,7 +33,7 @@ final class PromptTemplateTests: XCTestCase {
     A system prompt
     <</SYS>>
     
-    sup [/INST] 
+    sup [/INST]
     """
     
     XCTAssert(!p.isEmpty)
@@ -106,5 +106,12 @@ final class PromptTemplateTests: XCTestCase {
     
     XCTAssert(!p.isEmpty)
     XCTAssertEqual(p, expected)
+  }
+  
+  func testTemplatesHaveMatchingFormats() throws {
+    for format in TemplateFormat.allCases {
+      let template = TemplateManager.templates[format]
+      XCTAssertEqual(template.format, format)
+    }
   }
 }

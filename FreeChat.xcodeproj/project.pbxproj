@@ -10,6 +10,8 @@
 		A1156D2F2AD0954C00081313 /* TemplateManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1156D2E2AD0954C00081313 /* TemplateManager.swift */; };
 		A1156D312AD09FDD00081313 /* PromptTemplateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1156D302AD09FDD00081313 /* PromptTemplateTests.swift */; };
 		A1156D342AD1F5EF00081313 /* Templates.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1156D332AD1F5EF00081313 /* Templates.swift */; };
+		A1156D362AD5AB8700081313 /* EditFormat.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1156D352AD5AB8700081313 /* EditFormat.swift */; };
+		A1156D382AD5E75A00081313 /* EnumMap.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1156D372AD5E75A00081313 /* EnumMap.swift */; };
 		A11721992A7D5274003B0358 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = A11721982A7D5274003B0358 /* README.md */; };
 		A117219C2A7D7B70003B0358 /* MarkdownUI in Frameworks */ = {isa = PBXBuildFile; productRef = A117219B2A7D7B70003B0358 /* MarkdownUI */; };
 		A12B52DE2AA5228100658707 /* EditModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = A12B52DD2AA5228100658707 /* EditModels.swift */; };
@@ -116,6 +118,8 @@
 		A1156D2E2AD0954C00081313 /* TemplateManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TemplateManager.swift; sourceTree = "<group>"; };
 		A1156D302AD09FDD00081313 /* PromptTemplateTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PromptTemplateTests.swift; sourceTree = "<group>"; };
 		A1156D332AD1F5EF00081313 /* Templates.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Templates.swift; sourceTree = "<group>"; };
+		A1156D352AD5AB8700081313 /* EditFormat.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditFormat.swift; sourceTree = "<group>"; };
+		A1156D372AD5E75A00081313 /* EnumMap.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnumMap.swift; sourceTree = "<group>"; };
 		A11721982A7D5274003B0358 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		A12B52DD2AA5228100658707 /* EditModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditModels.swift; sourceTree = "<group>"; };
 		A12B52E32AA5A99E00658707 /* EditSystemPrompt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditSystemPrompt.swift; sourceTree = "<group>"; };
@@ -203,6 +207,7 @@
 			children = (
 				A1156D2E2AD0954C00081313 /* TemplateManager.swift */,
 				A1156D332AD1F5EF00081313 /* Templates.swift */,
+				A1156D372AD5E75A00081313 /* EnumMap.swift */,
 			);
 			path = PromptTemplates;
 			sourceTree = "<group>";
@@ -265,6 +270,7 @@
 				A15D50D32A80BCA900FC1681 /* SettingsView.swift */,
 				A12B52DD2AA5228100658707 /* EditModels.swift */,
 				A12B52E32AA5A99E00658707 /* EditSystemPrompt.swift */,
+				A1156D352AD5AB8700081313 /* EditFormat.swift */,
 			);
 			path = Settings;
 			sourceTree = "<group>";
@@ -534,6 +540,7 @@
 				A137A38E2AB6B52400BE1AE0 /* Constants.swift in Sources */,
 				A13C8C602A8FF03800EC18D8 /* TextOutputFormat.swift in Sources */,
 				A1F6175B2A7838F700F2048C /* Conversation+Extensions.swift in Sources */,
+				A1156D362AD5AB8700081313 /* EditFormat.swift in Sources */,
 				A13C8C622A8FF27000EC18D8 /* Theme+FreeChat.swift in Sources */,
 				A1F6172F2A782AA200F2048C /* Persistence.swift in Sources */,
 				A12B52E42AA5A99E00658707 /* EditSystemPrompt.swift in Sources */,
@@ -557,6 +564,7 @@
 				A13C8C662A9027A200EC18D8 /* CopyButton.swift in Sources */,
 				A17A2E182A79A006006CDD90 /* Agent.swift in Sources */,
 				A12FAAEC2AC5E0C0006ACC43 /* WelcomeSheet.swift in Sources */,
+				A1156D382AD5E75A00081313 /* EnumMap.swift in Sources */,
 				A137A37C2AB3D26C00BE1AE0 /* ObservableScrollView.swift in Sources */,
 				A1F617562A782E4F00F2048C /* ConversationView.swift in Sources */,
 				A13C8C5A2A8FEEE400EC18D8 /* SplashCodeSyntaxHighlighter.swift in Sources */,
@@ -881,9 +889,10 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.npc-pet.MantrasUITests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
-				TEST_TARGET_NAME = Mantras;
+				TEST_TARGET_NAME = FreeChat;
 			};
 			name = Debug;
 		};
@@ -899,9 +908,10 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.npc-pet.MantrasUITests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
-				TEST_TARGET_NAME = Mantras;
+				TEST_TARGET_NAME = FreeChat;
 			};
 			name = Release;
 		};

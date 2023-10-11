@@ -15,12 +15,25 @@ struct ConversationView: View {
   @AppStorage("selectedModelId") private var selectedModelId: String = Model.unsetModelId
   @AppStorage("systemPrompt") private var systemPrompt: String = Agent.DEFAULT_SYSTEM_PROMPT
 
+  @FetchRequest(
+    sortDescriptors: [NSSortDescriptor(keyPath: \Model.size, ascending: true)],
+    animation: .default)
+  private var models: FetchedResults<Model>
+
   var conversation: Conversation {
     conversationManager.currentConversation
   }
   
   var agent: Agent {
     conversationManager.agent
+  }
+  
+  var selectedModel: Model? {
+    if selectedModelId == Model.unsetModelId {
+      models.first
+    } else {
+      models.first { i in i.id?.uuidString == selectedModelId }
+    }
   }
 
   @State var pendingMessage: Message?
@@ -171,6 +184,10 @@ struct ConversationView: View {
       }
       return
     }
+    
+    guard let model = selectedModel else {
+      return
+    }
 
     showUserMessage = false
     engageAutoScroll()
@@ -188,6 +205,8 @@ struct ConversationView: View {
     withAnimation {
       showUserMessage = true
     }
+    
+    let messageTexts = messages.map { $0.text ?? "" }
     
     // Pending message for bot's reply
     let m = Message(context: viewContext)
@@ -215,8 +234,7 @@ struct ConversationView: View {
     Task {
       var response: LlamaServer.CompleteResponse
       do {
-        response = try await agent.listenThinkRespond(speakerId: Message.USER_SPEAKER_ID, message: input)
-        print("response ended in ConversationView#submit")
+        response = try await agent.listenThinkRespond(speakerId: Message.USER_SPEAKER_ID, messages: messageTexts, template: model.template)
       } catch let error as LlamaServerError {
         handleResponseError(error)
         return
