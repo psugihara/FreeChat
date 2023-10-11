@@ -33,7 +33,8 @@ final class PromptTemplateTests: XCTestCase {
     A system prompt
     <</SYS>>
     
-    sup [/INST]
+    sup [/INST] \
+    
     """
     
     XCTAssert(!p.isEmpty)
@@ -55,7 +56,12 @@ final class PromptTemplateTests: XCTestCase {
   }
 
   func testVicunaOpening() throws {
-    let expected = "A system prompt USER: hi ASSISTANT: "
+    let expected = """
+    A system prompt
+    USER: hi
+    ASSISTANT: \
+
+    """
     let p = VicunaTemplate().run(systemPrompt: "A system prompt", messages: ["hi"])
     
     XCTAssert(!p.isEmpty)
@@ -63,7 +69,14 @@ final class PromptTemplateTests: XCTestCase {
   }
   
   func testVicunaShortConvo() throws {
-    let expected = "A system prompt USER: Hey baby! ASSISTANT: Wassup, user? USER: n2m hbu ASSISTANT: "
+    let expected = """
+    A system prompt
+    USER: Hey baby!
+    ASSISTANT: Wassup, user?
+    USER: n2m hbu
+    ASSISTANT: \
+
+    """
     let p = VicunaTemplate().run(systemPrompt: "A system prompt", messages: shortConvo)
     
     XCTAssert(!p.isEmpty)
@@ -78,7 +91,8 @@ final class PromptTemplateTests: XCTestCase {
     <|im_start|>user
     hi
     <|im_end|>
-    
+    <|im_start|>assistant
+
     """
     let p = ChatMLTemplate().run(systemPrompt: "A system prompt", messages: ["hi"])
     
@@ -100,7 +114,8 @@ final class PromptTemplateTests: XCTestCase {
     <|im_start|>user
     n2m hbu
     <|im_end|>
-    
+    <|im_start|>assistant
+
     """
     let p = ChatMLTemplate().run(systemPrompt: "A system prompt", messages: shortConvo)
     

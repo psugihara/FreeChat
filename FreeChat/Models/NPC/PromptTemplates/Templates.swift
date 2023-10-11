@@ -16,13 +16,13 @@ enum TemplateFormat: String, CaseIterable {
 
 protocol Template {
   var format: TemplateFormat { get }
-  static var stopWords: [String] { get }
+  var stopWords: [String] { get }
   func run(systemPrompt: String, messages: [String]) -> String
 }
 
 struct Llama2Template: Template {
   var format = TemplateFormat.llama2
-  static var stopWords: [String] = ["</s>"]
+  var stopWords: [String] = ["</s>"]
   
   func run(systemPrompt: String, messages: [String]) -> String {
     var p = """
@@ -30,7 +30,8 @@ struct Llama2Template: Template {
     \(systemPrompt)
     <</SYS>>
     
-    \(messages.first ?? "hi") [/INST]
+    \(messages.first ?? "hi") [/INST] \
+    
     """
     
     var userTalking = false
@@ -61,23 +62,23 @@ struct Llama2Template: Template {
 
 struct VicunaTemplate: Template {
   var format = TemplateFormat.vicuna
-  static var stopWords: [String] = ["USER:"]
+  var stopWords: [String] = ["USER:"]
   
   func run(systemPrompt: String, messages: [String]) -> String {
-    var p = "\(systemPrompt)"
+    var p = "\(systemPrompt)\n"
     
     var userTalking = true
     for message in messages {
       if userTalking {
-        p.append(" USER: \(message)")
+        p.append("USER: \(message)\n")
       } else {
-        p.append(" ASSISTANT: \(message)")
+        p.append("ASSISTANT: \(message)\n")
       }
       userTalking.toggle()
     }
     
     if !userTalking {
-      p.append(" ASSISTANT: ")
+      p.append("ASSISTANT: ")
     }
     
     return p
@@ -86,7 +87,7 @@ struct VicunaTemplate: Template {
 
 struct ChatMLTemplate: Template {
   var format = TemplateFormat.chatML
-  static var stopWords: [String] = ["<|im_end|>"]
+  var stopWords: [String] = ["<|im_end|>"]
   
   func run(systemPrompt: String, messages: [String]) -> String {
     var p = """
@@ -107,13 +108,15 @@ struct ChatMLTemplate: Template {
       userTalking.toggle()
     }
     
+    p += "<|im_start|>assistant\n"
+    
     return p
   }
 }
 
 struct AlpacaTemplate: Template {
   var format = TemplateFormat.alpaca
-  static var stopWords: [String] = ["\n\n", "### Instruction:", "### Input:", "USER"]
+  var stopWords: [String] = ["\n\n", "### Instruction:", "### Input:", "USER"]
   
   func run(systemPrompt: String, messages: [String]) -> String {
     var p = """

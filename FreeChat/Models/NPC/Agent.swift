@@ -48,7 +48,7 @@ class Agent: ObservableObject {
 
     pendingMessage = ""
 
-    let response = try await llama.complete(prompt: prompt) { partialResponse in
+    let response = try await llama.complete(prompt: prompt, stop: template.stopWords) { partialResponse in
       DispatchQueue.main.async {
         self.handleCompletionProgress(partialResponse: partialResponse)
       }
@@ -74,7 +74,7 @@ class Agent: ObservableObject {
     if prompt.isEmpty, systemPrompt.isEmpty { return }
     warmupError = nil
     do {
-      _ = try await llama.complete(prompt: prompt)
+      _ = try await llama.complete(prompt: prompt, stop: nil)
       status = .ready
     } catch {
       status = .cold

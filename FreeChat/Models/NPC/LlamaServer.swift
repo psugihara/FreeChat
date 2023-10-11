@@ -148,7 +148,7 @@ actor LlamaServer {
     }
   }
   
-  func complete(prompt: String, progressHandler: (@Sendable (String) -> Void)? = nil) async throws -> CompleteResponse {
+  func complete(prompt: String, stop: [String]?, progressHandler: (@Sendable (String) -> Void)? = nil) async throws -> CompleteResponse {
     dispatchPrecondition(condition: .notOnQueue(.main))
 #if DEBUG
     print("START PROMPT\n \(prompt) \nEND PROMPT\n\n")
@@ -160,7 +160,7 @@ actor LlamaServer {
     // hit localhost for completion
     let params = CompleteParams(
       prompt: prompt,
-      stop: ["</s>",
+      stop: stop ?? ["</s>",
              "\n\(Message.USER_SPEAKER_ID):",
              "\n\(Message.USER_SPEAKER_ID.lowercased()):",
              "[/INST]",
