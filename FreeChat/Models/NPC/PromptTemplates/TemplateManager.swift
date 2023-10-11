@@ -52,8 +52,14 @@ struct TemplateManager {
       return .vicuna
     }
     
+    // This is terrible and I would love a better way to do it.
+    
     if name.contains(/Mistral-7B-Instruct/.ignoresCase()) {
       return .llama2
+    }
+    
+    if name.contains(/Mistral-7B-OpenOrca/.ignoresCase()) {
+      return .chatML
     }
     
     print("formatFromModel", name)
