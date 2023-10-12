@@ -71,25 +71,26 @@ class ConversationManager: ObservableObject {
   }
   
   @MainActor
-  func rebootAgent(systemPrompt: String? = nil, model: Model? = nil, viewContext: NSManagedObjectContext) {
+  func rebootAgent(systemPrompt: String? = nil, model: Model, viewContext: NSManagedObjectContext) {
     let systemPrompt = systemPrompt ?? self.systemPrompt
-    guard let url = model?.url else {
+    guard let url = model.url else {
       return
     }
     
     Task {
       await agent.llama.stopServer()
 
-      let convoPrompt = currentConversation.prompt ?? ""
+      let messages = currentConversation.orderedMessages.map { $0.text ?? "" }
+      let convoPrompt = model.template.run(systemPrompt: systemPrompt, messages: messages)
       agent = Agent(id: "Llama", prompt: convoPrompt, systemPrompt: systemPrompt, modelPath: url.path)
-      loadingModelId = model?.id?.uuidString ?? Model.unsetModelId
+      loadingModelId = model.id?.uuidString ?? Model.unsetModelId
 
       do {
-        model?.error = nil
+        model.error = nil
         try await agent.warmup()
       } catch LlamaServerError.modelError {
         selectedModelId = Model.unsetModelId
-        model?.error = "Error loading model"
+        model.error = "Error loading model"
       } catch (let error) {
         print("agent warmup threw unexpected error", error.localizedDescription)
       }

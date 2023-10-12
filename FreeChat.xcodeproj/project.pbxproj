@@ -7,6 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		A1156D2F2AD0954C00081313 /* TemplateManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1156D2E2AD0954C00081313 /* TemplateManager.swift */; };
+		A1156D312AD09FDD00081313 /* PromptTemplateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1156D302AD09FDD00081313 /* PromptTemplateTests.swift */; };
+		A1156D342AD1F5EF00081313 /* Templates.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1156D332AD1F5EF00081313 /* Templates.swift */; };
+		A1156D362AD5AB8700081313 /* EditFormat.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1156D352AD5AB8700081313 /* EditFormat.swift */; };
+		A1156D382AD5E75A00081313 /* EnumMap.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1156D372AD5E75A00081313 /* EnumMap.swift */; };
 		A11721992A7D5274003B0358 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = A11721982A7D5274003B0358 /* README.md */; };
 		A117219C2A7D7B70003B0358 /* MarkdownUI in Frameworks */ = {isa = PBXBuildFile; productRef = A117219B2A7D7B70003B0358 /* MarkdownUI */; };
 		A12B52DE2AA5228100658707 /* EditModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = A12B52DD2AA5228100658707 /* EditModels.swift */; };
@@ -43,7 +48,6 @@
 		A1F6172D2A782AA200F2048C /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A1F6172C2A782AA200F2048C /* Preview Assets.xcassets */; };
 		A1F6172F2A782AA200F2048C /* Persistence.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1F6172E2A782AA200F2048C /* Persistence.swift */; };
 		A1F617322A782AA200F2048C /* Chats.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = A1F617302A782AA200F2048C /* Chats.xcdatamodeld */; };
-		A1F6173D2A782AA200F2048C /* FreeChatTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1F6173C2A782AA200F2048C /* FreeChatTests.swift */; };
 		A1F617472A782AA200F2048C /* FreeChatUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1F617462A782AA200F2048C /* FreeChatUITests.swift */; };
 		A1F617492A782AA200F2048C /* FreeChatUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1F617482A782AA200F2048C /* FreeChatUITestsLaunchTests.swift */; };
 		A1F617562A782E4F00F2048C /* ConversationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1F617552A782E4F00F2048C /* ConversationView.swift */; };
@@ -111,6 +115,11 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		A1156D2E2AD0954C00081313 /* TemplateManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TemplateManager.swift; sourceTree = "<group>"; };
+		A1156D302AD09FDD00081313 /* PromptTemplateTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PromptTemplateTests.swift; sourceTree = "<group>"; };
+		A1156D332AD1F5EF00081313 /* Templates.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Templates.swift; sourceTree = "<group>"; };
+		A1156D352AD5AB8700081313 /* EditFormat.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditFormat.swift; sourceTree = "<group>"; };
+		A1156D372AD5E75A00081313 /* EnumMap.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnumMap.swift; sourceTree = "<group>"; };
 		A11721982A7D5274003B0358 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		A12B52DD2AA5228100658707 /* EditModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditModels.swift; sourceTree = "<group>"; };
 		A12B52E32AA5A99E00658707 /* EditSystemPrompt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditSystemPrompt.swift; sourceTree = "<group>"; };
@@ -149,7 +158,6 @@
 		A1F617312A782AA200F2048C /* Mantras.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Mantras.xcdatamodel; sourceTree = "<group>"; };
 		A1F617332A782AA200F2048C /* FreeChat.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = FreeChat.entitlements; sourceTree = "<group>"; };
 		A1F617382A782AA200F2048C /* FreeChatTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FreeChatTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		A1F6173C2A782AA200F2048C /* FreeChatTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FreeChatTests.swift; sourceTree = "<group>"; };
 		A1F617422A782AA200F2048C /* FreeChatUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FreeChatUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		A1F617462A782AA200F2048C /* FreeChatUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FreeChatUITests.swift; sourceTree = "<group>"; };
 		A1F617482A782AA200F2048C /* FreeChatUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FreeChatUITestsLaunchTests.swift; sourceTree = "<group>"; };
@@ -194,6 +202,16 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		A1156D322AD1F5C700081313 /* PromptTemplates */ = {
+			isa = PBXGroup;
+			children = (
+				A1156D2E2AD0954C00081313 /* TemplateManager.swift */,
+				A1156D332AD1F5EF00081313 /* Templates.swift */,
+				A1156D372AD5E75A00081313 /* EnumMap.swift */,
+			);
+			path = PromptTemplates;
+			sourceTree = "<group>";
+		};
 		A13C8C5E2A8FF02500EC18D8 /* Markdown */ = {
 			isa = PBXGroup;
 			children = (
@@ -223,6 +241,7 @@
 		A17A2E1B2A79A00D006CDD90 /* NPC */ = {
 			isa = PBXGroup;
 			children = (
+				A1156D322AD1F5C700081313 /* PromptTemplates */,
 				A137A3872AB502DB00BE1AE0 /* ggml-metal.metal */,
 				A17A2E122A79A005006CDD90 /* Agent.swift */,
 				A17A2E132A79A005006CDD90 /* LlamaServer.swift */,
@@ -251,6 +270,7 @@
 				A15D50D32A80BCA900FC1681 /* SettingsView.swift */,
 				A12B52DD2AA5228100658707 /* EditModels.swift */,
 				A12B52E32AA5A99E00658707 /* EditSystemPrompt.swift */,
+				A1156D352AD5AB8700081313 /* EditFormat.swift */,
 			);
 			path = Settings;
 			sourceTree = "<group>";
@@ -314,7 +334,7 @@
 		A1F6173B2A782AA200F2048C /* FreeChatTests */ = {
 			isa = PBXGroup;
 			children = (
-				A1F6173C2A782AA200F2048C /* FreeChatTests.swift */,
+				A1156D302AD09FDD00081313 /* PromptTemplateTests.swift */,
 			);
 			path = FreeChatTests;
 			sourceTree = "<group>";
@@ -520,6 +540,7 @@
 				A137A38E2AB6B52400BE1AE0 /* Constants.swift in Sources */,
 				A13C8C602A8FF03800EC18D8 /* TextOutputFormat.swift in Sources */,
 				A1F6175B2A7838F700F2048C /* Conversation+Extensions.swift in Sources */,
+				A1156D362AD5AB8700081313 /* EditFormat.swift in Sources */,
 				A13C8C622A8FF27000EC18D8 /* Theme+FreeChat.swift in Sources */,
 				A1F6172F2A782AA200F2048C /* Persistence.swift in Sources */,
 				A12B52E42AA5A99E00658707 /* EditSystemPrompt.swift in Sources */,
@@ -532,7 +553,9 @@
 				A1F617582A7836AE00F2048C /* Message+Extensions.swift in Sources */,
 				A13C8C682A902A1200EC18D8 /* CGKeycode+Extensions.swift in Sources */,
 				A15D50D22A7F539800FC1681 /* NavList.swift in Sources */,
+				A1156D342AD1F5EF00081313 /* Templates.swift in Sources */,
 				A1F617262A782AA100F2048C /* FreeChat.swift in Sources */,
+				A1156D2F2AD0954C00081313 /* TemplateManager.swift in Sources */,
 				A1E4A6942A82B41F00BF9D34 /* Model+Extensions.swift in Sources */,
 				A12B52DE2AA5228100658707 /* EditModels.swift in Sources */,
 				A17AB1C22ABB4B5E00CD3100 /* CircleMenuStyle.swift in Sources */,
@@ -541,6 +564,7 @@
 				A13C8C662A9027A200EC18D8 /* CopyButton.swift in Sources */,
 				A17A2E182A79A006006CDD90 /* Agent.swift in Sources */,
 				A12FAAEC2AC5E0C0006ACC43 /* WelcomeSheet.swift in Sources */,
+				A1156D382AD5E75A00081313 /* EnumMap.swift in Sources */,
 				A137A37C2AB3D26C00BE1AE0 /* ObservableScrollView.swift in Sources */,
 				A1F617562A782E4F00F2048C /* ConversationView.swift in Sources */,
 				A13C8C5A2A8FEEE400EC18D8 /* SplashCodeSyntaxHighlighter.swift in Sources */,
@@ -552,7 +576,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A1F6173D2A782AA200F2048C /* FreeChatTests.swift in Sources */,
+				A1156D312AD09FDD00081313 /* PromptTemplateTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -865,9 +889,10 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.npc-pet.MantrasUITests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
-				TEST_TARGET_NAME = Mantras;
+				TEST_TARGET_NAME = FreeChat;
 			};
 			name = Debug;
 		};
@@ -883,9 +908,10 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.npc-pet.MantrasUITests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
-				TEST_TARGET_NAME = Mantras;
+				TEST_TARGET_NAME = FreeChat;
 			};
 			name = Release;
 		};

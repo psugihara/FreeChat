@@ -26,7 +26,7 @@ struct ChatStyle: TextFieldStyle {
       )
       .overlay( // focus ring
         rect
-          .stroke(Color.accentColor.opacity(0.5), lineWidth: 2)
+          .stroke(Color.accentColor.opacity(0.3), lineWidth: 1)
           .scaleEffect(focused ? 1 : 1.02)
           .shadow(color: .black.opacity(0.1), radius: 2, x: 0, y: 0.5)
           .opacity(focused ? 1 : 0)
@@ -85,34 +85,17 @@ struct MessageTextField: View {
   
   
   var body: some View {
+    let messages = conversation.messages
+    let showNullState = input == "" && (messages == nil || messages!.count == 0)
+    
     VStack(alignment: .trailing) {
       if showNullState {
-        nullState.transition(.asymmetric(insertion: .push(from: .trailing), removal: .opacity))
+        nullState.transition(.asymmetric(insertion: .push(from: .trailing), removal: .identity))
       }
       inputField
     }
-    .onAppear {
-      maybeShowNullState()
-    }
-    .onChange(of: conversation) { c in
-      maybeShowNullState(newMessages: c.messages)
-    }
-    .onChange(of: conversation.messages) { m in
-      maybeShowNullState(newMessages: m)
-    }
-    .onChange(of: input) { newInput in
-      maybeShowNullState(newInput: newInput)
-    }
   }
-  
-  private func maybeShowNullState(newMessages: NSSet? = nil, newInput: String? = nil) {
-    let m = newMessages ?? conversation.messages
-    let i = newInput ?? input
-    withAnimation {
-      showNullState = (m == nil || m!.count == 0) && i == ""
-    }
-  }
-  
+
   private func maybeFocus(_ conversation: Conversation) {
     if conversation.createdAt == nil { return }
     let fiveSecondsAgo = Date() - TimeInterval(5) // 5 seconds ago

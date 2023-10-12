@@ -15,12 +15,25 @@ struct ConversationView: View {
   @AppStorage("selectedModelId") private var selectedModelId: String = Model.unsetModelId
   @AppStorage("systemPrompt") private var systemPrompt: String = Agent.DEFAULT_SYSTEM_PROMPT
 
+  @FetchRequest(
+    sortDescriptors: [NSSortDescriptor(keyPath: \Model.size, ascending: true)],
+    animation: .default)
+  private var models: FetchedResults<Model>
+
   var conversation: Conversation {
     conversationManager.currentConversation
   }
   
   var agent: Agent {
     conversationManager.agent
+  }
+  
+  var selectedModel: Model? {
+    if selectedModelId == Model.unsetModelId {
+      models.first
+    } else {
+      models.first { i in i.id?.uuidString == selectedModelId }
+    }
   }
 
   @State var pendingMessage: Message?
@@ -68,11 +81,7 @@ struct ConversationView: View {
       .onReceive(
         agent.$pendingMessage.throttle(for: .seconds(0.1), scheduler: RunLoop.main, latest: true)
       ) { text in
-        if conversation.prompt != nil,
-           text != pendingMessageText,
-            agent.prompt.hasPrefix(conversation.prompt!) {
-          pendingMessageText = text
-        }
+        pendingMessageText = text
       }
       .onReceive(
         agent.$pendingMessage.throttle(for: .seconds(0.4), scheduler: RunLoop.main, latest: true)
@@ -109,7 +118,6 @@ struct ConversationView: View {
     }
 
     messages = c.orderedMessages
-    agent.prompt = c.prompt ?? ""
 
     // warmup the agent if it's cold or model has changed
     let req = Model.fetchRequest()
@@ -176,6 +184,10 @@ struct ConversationView: View {
       }
       return
     }
+    
+    guard let model = selectedModel else {
+      return
+    }
 
     showUserMessage = false
     engageAutoScroll()
@@ -193,6 +205,8 @@ struct ConversationView: View {
     withAnimation {
       showUserMessage = true
     }
+    
+    let messageTexts = messages.map { $0.text ?? "" }
     
     // Pending message for bot's reply
     let m = Message(context: viewContext)
@@ -220,8 +234,7 @@ struct ConversationView: View {
     Task {
       var response: LlamaServer.CompleteResponse
       do {
-        response = try await agent.listenThinkRespond(speakerId: Message.USER_SPEAKER_ID, message: input)
-        print("response ended in ConversationView#submit")
+        response = try await agent.listenThinkRespond(speakerId: Message.USER_SPEAKER_ID, messages: messageTexts, template: model.template)
       } catch let error as LlamaServerError {
         handleResponseError(error)
         return
@@ -231,7 +244,6 @@ struct ConversationView: View {
       }
         
       await MainActor.run {
-        agentConversation.prompt = agent.prompt
         m.text = response.text
         m.predictedPerSecond = response.predictedPerSecond ?? -1
         m.responseStartSeconds = response.responseStartSeconds
@@ -293,6 +305,18 @@ struct ConversationView: View {
       """
   
   
+  return ConversationView()
+    .environment(\.managedObjectContext, ctx)
+    .environmentObject(cm)
+}
+
+#Preview("null state") {
+  let ctx = PersistenceController.preview.container.viewContext
+  let c = try! Conversation.create(ctx: ctx)
+  let cm = ConversationManager()
+  cm.currentConversation = c
+  cm.agent = Agent(id: "llama", prompt: "", systemPrompt: "", modelPath: "")
+
   return ConversationView()
     .environment(\.managedObjectContext, ctx)
     .environmentObject(cm)

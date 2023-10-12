@@ -27,7 +27,7 @@ extension Model {
   static let unsetModelId = "unset"
   static let defaultModelUrl = URL(string: "https://huggingface.co/TheBloke/Spicyboros-7B-2.2-GGUF/resolve/main/spicyboros-7b-2.2.Q3_K_S.gguf")!
 //  static let defaultModelUrl = URL(string: "http://localhost:8080/spicyboros-7b-2.2.Q3_K_S.gguf")!
-
+  
   var url: URL? {
     if bookmark == nil { return nil }
     var stale = false
@@ -49,6 +49,10 @@ extension Model {
       print("Error resolving model bookmark", error.localizedDescription)
       return nil
     }
+  }
+  
+  var template: Template {
+    TemplateManager.getTemplate(promptTemplate, modelName: name)
   }
   
   public static func create(context: NSManagedObjectContext, fileURL: URL) throws -> Model {

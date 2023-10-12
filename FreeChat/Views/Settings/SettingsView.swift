@@ -27,6 +27,15 @@ struct SettingsView: View {
   @State var pickedModel: String = Model.unsetModelId
   @State var customizeModels = false
   @State var editSystemPrompt = false
+  @State var editFormat = false
+  
+  var selectedModel: Model? {
+    if selectedModelId == Model.unsetModelId {
+      models.first
+    } else {
+      models.first { i in i.id?.uuidString == selectedModelId }
+    }
+  }
   
   var globalHotkey: some View {
     KeyboardShortcuts.Recorder("Summon chat", name: .summonFreeChat)
@@ -81,6 +90,20 @@ struct SettingsView: View {
         .foregroundColor(Color(NSColor.secondaryLabelColor))
         .lineLimit(5)
         .fixedSize(horizontal: false, vertical: true)
+      
+      if let model = selectedModel {
+        HStack {
+          Text("Prompt format: \(TemplateManager.formatTitle(model.template.format))")
+            .foregroundColor(Color(NSColor.secondaryLabelColor))
+            .font(.caption)
+          Button("Edit") {
+            editFormat = true
+          }.buttonStyle(.link).font(.caption)
+        }
+        .sheet(isPresented: $editFormat, content: {
+          EditFormat(model: model)
+        })
+      }
     }
   }
   
@@ -109,11 +132,18 @@ struct SettingsView: View {
       } else {
         model = models.first { i in i.id?.uuidString == newModelId }
       }
+      guard let model else {
+        return
+      }
 
       conversationManager.rebootAgent(systemPrompt: self.systemPrompt, model: model, viewContext: viewContext)
     }
     .onChange(of: systemPrompt) { nextPrompt in
-      let model = models.first { i in i.id?.uuidString == selectedModelId }
+      let model: Model? = selectedModel
+      guard let model else {
+        return
+      }
+      
       conversationManager.rebootAgent(systemPrompt: self.systemPrompt, model: model, viewContext: viewContext)
     }
     .frame(minWidth: 300, maxWidth: 600, minHeight: 184, idealHeight: 195, maxHeight: 400, alignment: .center)
