@@ -93,7 +93,7 @@ struct SettingsView: View {
       
       if let model = selectedModel {
         HStack {
-          Text("Prompt format: \(model.template.format.rawValue)")
+          Text("Prompt format: \(TemplateManager.formatTitle(model.template.format))")
             .foregroundColor(Color(NSColor.secondaryLabelColor))
             .font(.caption)
           Button("Edit") {

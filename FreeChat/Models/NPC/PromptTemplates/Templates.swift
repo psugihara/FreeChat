@@ -31,7 +31,7 @@ struct Llama2Template: Template {
     <</SYS>>
     
     \(messages.first ?? "hi") [/INST] \
-    
+
     """
     
     var userTalking = false
@@ -65,7 +65,7 @@ struct VicunaTemplate: Template {
   var stopWords: [String] = ["USER:"]
   
   func run(systemPrompt: String, messages: [String]) -> String {
-    var p = "\(systemPrompt)\n"
+    var p = "SYSTEM: \(systemPrompt)\n"
     
     var userTalking = true
     for message in messages {
@@ -116,8 +116,8 @@ struct ChatMLTemplate: Template {
 
 struct AlpacaTemplate: Template {
   var format = TemplateFormat.alpaca
-  var stopWords: [String] = ["\n\n", "### Instruction:", "### Input:", "USER"]
-  
+  var stopWords: [String] = ["\n\n", "### Instruction:", "### Input:", "USER", "### Response:"]
+
   func run(systemPrompt: String, messages: [String]) -> String {
     var p = """
     ### Instruction:
@@ -134,7 +134,7 @@ struct AlpacaTemplate: Template {
       userTalking.toggle()
     }
     
-    p += "you: \n\nResponse to user's last line with markdown.\n\n### Response:\n"
+    p += "you:\n\nRespond to user's last line with markdown.\n\n### Response:\n"
     
     return p
   }

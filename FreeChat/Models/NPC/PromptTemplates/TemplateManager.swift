@@ -49,37 +49,41 @@ struct TemplateManager {
   
   static func formatFromModel(_ name: String?) -> TemplateFormat {
     guard let name, !name.isEmpty else {
+      // vicuna is a decent default because it's simple
       return .vicuna
     }
     
     // This is terrible and I would love a better way to do it.
-    
-    if name.contains(/Mistral-7B-Instruct/.ignoresCase()) {
+
+    if name.contains(/(code)?llama(2-|-2-)?-?(7B-|13B-|70B-)?instruct/.ignoresCase()) || name.contains(/Mistral-7B-Instruct/.ignoresCase()) {
       return .llama2
     }
-    
-    if name.contains(/Mistral-7B-OpenOrca/.ignoresCase()) {
+
+    if name.contains(/Mistral-7B-OpenOrca/.ignoresCase()) ||
+        name.contains(/dolphin-2.1-mistral-7B/.ignoresCase()) ||
+        name.contains(/samantha-1.2-mistral-7B/.ignoresCase()) ||
+        name.contains(/jackalope-7b/.ignoresCase()) {
       return .chatML
     }
-    
-    print("formatFromModel", name)
+
     if name.contains(/nous-hermes-llama-?2/.ignoresCase()) {
       print("match")
       return .alpaca
     }
-
-    if name.contains(/wizardlm/.ignoresCase()) {
-      return .vicuna
-    }
     
-    if name.contains(/(code)?llama(2-|-2-)?-?(7B-|13B-|70B-)?instruct/.ignoresCase()) {
-      return .llama2
-    }
-    
-    if name.contains(/jackalope-7b/.ignoresCase()) {
-      return .chatML
-    }
-
     return .vicuna
+  }
+
+  static func formatTitle(_ format: TemplateFormat) -> String {
+    switch format {
+      case .alpaca:
+        "Alpaca"
+      case .chatML:
+        "ChatML"
+      case .llama2:
+        "Llama 2"
+      case .vicuna:
+        "Vicuna"
+    }
   }
 }

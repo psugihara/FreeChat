@@ -14,9 +14,6 @@ final class PromptTemplateTests: XCTestCase {
     "Wassup, user?",
     "n2m hbu"
   ]
-  var longConvo: [String] = [
-    
-  ]
   
   override func setUpWithError() throws {
     // Put setup code here. This method is called before the invocation of each test method in the class.
@@ -57,7 +54,7 @@ final class PromptTemplateTests: XCTestCase {
 
   func testVicunaOpening() throws {
     let expected = """
-    A system prompt
+    SYSTEM: A system prompt
     USER: hi
     ASSISTANT: \
 
@@ -70,7 +67,7 @@ final class PromptTemplateTests: XCTestCase {
   
   func testVicunaShortConvo() throws {
     let expected = """
-    A system prompt
+    SYSTEM: A system prompt
     USER: Hey baby!
     ASSISTANT: Wassup, user?
     USER: n2m hbu
@@ -122,7 +119,49 @@ final class PromptTemplateTests: XCTestCase {
     XCTAssert(!p.isEmpty)
     XCTAssertEqual(p, expected)
   }
-  
+
+  func testAlpacaOpening() throws {
+    let expected = """
+    ### Instruction:
+    A system prompt
+
+    Conversation so far:
+    user: hi
+    you:
+
+    Respond to user's last line with markdown.
+
+    ### Response:
+
+    """
+    let p = AlpacaTemplate().run(systemPrompt: "A system prompt", messages: ["hi"])
+
+    XCTAssert(!p.isEmpty)
+    XCTAssertEqual(p, expected)
+  }
+
+  func testAlpacaShortConvo() throws {
+    let expected = """
+    ### Instruction:
+    A system prompt
+
+    Conversation so far:
+    user: Hey baby!
+    you: Wassup, user?
+    user: n2m hbu
+    you:
+
+    Respond to user's last line with markdown.
+
+    ### Response:
+
+    """
+    let p = AlpacaTemplate().run(systemPrompt: "A system prompt", messages: shortConvo)
+
+    XCTAssert(!p.isEmpty)
+    XCTAssertEqual(p, expected)
+  }
+
   func testTemplatesHaveMatchingFormats() throws {
     for format in TemplateFormat.allCases {
       let template = TemplateManager.templates[format]

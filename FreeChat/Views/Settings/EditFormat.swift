@@ -16,19 +16,21 @@ struct EditFormat: View {
   var model: Model
   
   var body: some View {
-    return VStack {
-      Text("Template format").font(.title2)
+    VStack(alignment: .leading) {
+      Text("Prompt format").font(.body)
       if let modelName = model.name {
-        Text(modelName).font(.subheadline).foregroundStyle(.secondary)
+        Text("for \(modelName)").font(.caption).foregroundStyle(.secondary)
       }
       Picker("", selection: $selection) {
-        Format(TemplateManager.formatFromModel(model.name), title: "Auto (\(formatTitle(TemplateManager.formatFromModel(model.name))))")
+        Format(TemplateManager.formatFromModel(model.name), title: "Auto (\(TemplateManager.formatTitle(TemplateManager.formatFromModel(model.name))))")
         ForEach(TemplateFormat.allCases, id: \.self) { format in
-          Format(format, title: formatTitle(format))
+          Format(format, title: TemplateManager.formatTitle(format))
         }
-      }.pickerStyle(.radioGroup)
+      }
+      .padding(.top, 8)
+      .pickerStyle(.menu)
+        .labelsHidden()
         .onChange(of: selection) { next in
-          print(model)
           model.promptTemplate = next?.rawValue
           do {
             try viewContext.save()
@@ -36,44 +38,45 @@ struct EditFormat: View {
             print("Error saving prompt template: \(error.localizedDescription)")
           }
         }
+
+      Text(templateText())
+        .foregroundColor(.secondary)
+        .font(.monospaced(.caption)())
+        .padding(.vertical, 6)
+        .padding(.horizontal, 8)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .lineLimit(9, reservesSpace: true)
+        .fixedSize(horizontal: false, vertical: false)
+        .background(.gray.opacity(0.15))
+        .textSelection(.enabled)
+
       Button("Done") {
         dismiss()
       }.frame(maxWidth: .infinity, alignment: .trailing)
         .padding(.top, 10)
+        .keyboardShortcut(.defaultAction)
     }.padding()
+      .padding(.horizontal, 2)
       .onAppear() {
         if selection == nil, let templateName = model.promptTemplate {
           selection = TemplateFormat(rawValue: templateName)
         }
       }
-      .frame(maxWidth: 500)
+      .frame(minWidth: 360, maxWidth: 400)
   }
   
   func Format(_ format: TemplateFormat, title: String) -> some View {
-    let template = TemplateManager.templates[format]
     return VStack(alignment: .leading) {
-      Text(title).font(.headline)
-      Text(template.run(systemPrompt: "{{system prompt}}", messages: ["hi, bot"])
-        .trimmingCharacters(in: .whitespacesAndNewlines))
-        .foregroundColor(.secondary)
-        .font(.monospaced(.body)())
+      Text(title)
     }.padding(.vertical, 4)
       .id(title)
       .tag(title.hasPrefix("Auto ") ? nil : format)
   }
-  
-  func formatTitle(_ format: TemplateFormat) -> String {
-    switch format {
-      case .alpaca:
-        "Alpaca"
-      case .chatML:
-        "ChatML"
-      case .llama2:
-        "Llama 2"
-      case .vicuna:
-        "Vicuna"
-    }
 
+  func templateText() -> String {
+    let format = selection ?? TemplateManager.formatFromModel(model.name)
+    let template = TemplateManager.templates[format]
+    return template.run(systemPrompt: "{{system prompt}}", messages: ["hi, bot"]).trimmingCharacters(in: .whitespacesAndNewlines)
   }
 }
 
