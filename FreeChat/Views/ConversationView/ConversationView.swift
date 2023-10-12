@@ -310,3 +310,15 @@ struct ConversationView: View {
     .environmentObject(cm)
 }
 
+#Preview("null state") {
+  let ctx = PersistenceController.preview.container.viewContext
+  let c = try! Conversation.create(ctx: ctx)
+  let cm = ConversationManager()
+  cm.currentConversation = c
+  cm.agent = Agent(id: "llama", prompt: "", systemPrompt: "", modelPath: "")
+
+  return ConversationView()
+    .environment(\.managedObjectContext, ctx)
+    .environmentObject(cm)
+}
+

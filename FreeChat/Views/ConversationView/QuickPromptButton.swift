@@ -14,17 +14,17 @@ struct CapsuleButtonStyle: ButtonStyle {
       .font(hovered ? .body.bold() : .body)
       .background(
         RoundedRectangle(cornerSize: CGSize(width: 10, height: 10), style: .continuous)
-          .strokeBorder(Color.primary.opacity(0.2), lineWidth: 1)
+          .strokeBorder(Color.primary.opacity(0.2), lineWidth: 0.5)
           .foregroundColor(Color.primary)
-          .background(hovered ? Color.secondary.opacity(0.02) : Color.clear)
-          .shadow(radius: hovered ? 5 : 0)
+          .background(hovered ? Color.primary.opacity(0.1) : Color.clear)
       )
       .multilineTextAlignment(.leading) // Center-align multiline text
       .lineLimit(nil) // Allow unlimited lines
       .onHover(perform: { hovering in
         hovered = hovering
       })
-      .animation(Animation.easeInOut(duration: 0.2), value: hovered)
+      .animation(Animation.easeInOut(duration: 0.16), value: hovered)
+      .clipShape(RoundedRectangle(cornerSize: CGSize(width: 10, height: 10), style: .continuous))
   }
 }
 
@@ -130,19 +130,19 @@ struct QuickPromptButton: View {
   }
 }
 
-struct QuickPromptButton_Previews_Container: View {
-  var p: QuickPromptButton.QuickPrompt
-  @State var input = ""
-  var body: some View {
-    QuickPromptButton(input: $input, prompt: p)
-  }
-}
-
-struct QuickPromptButton_Previews: PreviewProvider {
-  static var previews: some View {
-    ForEach(QuickPromptButton.quickPrompts) { p in
-      QuickPromptButton_Previews_Container(p: p)
-        .previewDisplayName(p.title)
-    }
-  }
-}
+//struct QuickPromptButton_Previews_Container: View {
+//  var p: QuickPromptButton.QuickPrompt
+//  @State var input = ""
+//  var body: some View {
+//    QuickPromptButton(input: $input, prompt: p)
+//  }
+//}
+//
+//struct QuickPromptButton_Previews: PreviewProvider {
+//  static var previews: some View {
+//    ForEach(QuickPromptButton.quickPrompts) { p in
+//      QuickPromptButton_Previews_Container(p: p)
+//        .previewDisplayName(p.title)
+//    }
+//  }
+//}
