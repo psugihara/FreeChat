@@ -20,7 +20,7 @@ struct ConversationView: View {
     animation: .default)
   private var models: FetchedResults<Model>
 
-  private static let SEND = NSDataAsset(name: "ESM_Deep_UI_Sound_4_Glitch_Software_Particle_Processed_Beep_Chrip_Electronic")
+  private static let SEND = NSDataAsset(name: "ESM_Perfect_App_Button_2_Organic_Simple_Classic_Game_Click")
   private static let PING = NSDataAsset(name: "ESM_POWER_ON_SYNTH")
   let sendSound = NSSound(data: SEND!.data)
   let receiveSound = NSSound(data: PING!.data)
