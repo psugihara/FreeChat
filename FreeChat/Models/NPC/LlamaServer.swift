@@ -104,7 +104,7 @@ actor LlamaServer {
       "--ctx-size", "4096",
       "--port", port,
       // llama crashes on intel macs when gpu-layers != 0, not sure why
-      "--gpu-layers", getMachineHardwareName() == "arm64" ? "4" : "0"
+      "--n-gpu-layers", getMachineHardwareName() == "arm64" ? "4" : "0"
     ]
     
     print("starting llama.cpp server \(process.arguments!.joined(separator: " "))")
