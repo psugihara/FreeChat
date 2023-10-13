@@ -208,7 +208,7 @@ actor LlamaServer {
             do {
               stopResponse = try decoder.decode(StopResponse.self, from: data)
             } catch {
-              print("error decoding stopResponse", error.localizedDescription, data)
+              print("error decoding stopResponse", error as Any, data)
             }
 #if DEBUG
             print("server.cpp stopResponse", NSString(data: data, encoding: String.Encoding.utf8.rawValue) ?? "missing")
@@ -345,7 +345,7 @@ actor LlamaServer {
     let predicted_n: Int
     let predicted_ms: Double
     let predicted_per_token_ms: Double
-    let predicted_per_second: Double
+    let predicted_per_second: Double?
   }
   
   struct Response: Codable {
