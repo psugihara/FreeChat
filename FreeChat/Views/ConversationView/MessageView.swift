@@ -19,7 +19,7 @@ struct MessageView: View {
   
   @State var showInfoPopover = false
   @State var isHover = false
-  
+
   init(_ m: Message, overrideText: String = "", agentStatus: Agent.Status?) {
     self.m = m
     self.overrideText = overrideText
@@ -101,9 +101,12 @@ struct MessageView: View {
           ZStack {
             Circle()
               .fill(.background)
-              .frame(width: 14, height: 14)
-            ProgressView().controlSize(.mini)
-          }
+
+            Text(" ••• ")
+              .font(.callout)
+              .kerning(-1.5)
+              .offset(y: -4)
+          }.frame(width: 14, height: 14)
           .transition(.opacity)
         }
       }
@@ -181,7 +184,7 @@ struct MessageView_Previews: PreviewProvider {
   
   static var previews: some View {
     List(MessageView_Previews.messages) {
-      MessageView($0, agentStatus: .cold)
+      MessageView($0, agentStatus: .processing)
     }.environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
   }
 }
