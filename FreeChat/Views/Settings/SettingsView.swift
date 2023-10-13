@@ -23,7 +23,8 @@ struct SettingsView: View {
   
   @AppStorage("selectedModelId") private var selectedModelId: String = Model.unsetModelId
   @AppStorage("systemPrompt") private var systemPrompt = Agent.DEFAULT_SYSTEM_PROMPT
-  
+  @AppStorage("playSoundEffects") private var playSoundEffects = true
+
   @State var pickedModel: String = Model.unsetModelId
   @State var customizeModels = false
   @State var editSystemPrompt = false
@@ -41,6 +42,10 @@ struct SettingsView: View {
     KeyboardShortcuts.Recorder("Summon chat", name: .summonFreeChat)
   }
   
+  var soundEffects: some View {
+    Toggle("Play sound effects", isOn: $playSoundEffects)
+  }
+
   var systemPromptEditor: some View {
     LabeledContent("System prompt") {
       ZStack(alignment: .topTrailing) {
@@ -110,6 +115,7 @@ struct SettingsView: View {
   var body: some View {
     Form {
       globalHotkey
+      soundEffects
       systemPromptEditor
       modelPicker
     }

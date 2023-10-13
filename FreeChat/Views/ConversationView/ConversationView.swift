@@ -14,6 +14,7 @@ struct ConversationView: View {
   
   @AppStorage("selectedModelId") private var selectedModelId: String = Model.unsetModelId
   @AppStorage("systemPrompt") private var systemPrompt: String = Agent.DEFAULT_SYSTEM_PROMPT
+  @AppStorage("playSoundEffects") private var playSoundEffects = true
 
   @FetchRequest(
     sortDescriptors: [NSSortDescriptor(keyPath: \Model.size, ascending: true)],
@@ -117,13 +118,13 @@ struct ConversationView: View {
   }
 
   private func playSendSound() {
-    guard let sendSound else { return }
+    guard let sendSound, playSoundEffects else { return }
     sendSound.volume = 0.3
     sendSound.play()
   }
 
   private func playReceiveSound() {
-    guard let receiveSound else { return }
+    guard let receiveSound, playSoundEffects else { return }
     receiveSound.volume = 0.5
     receiveSound.play()
   }
