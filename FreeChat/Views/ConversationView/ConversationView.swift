@@ -20,6 +20,11 @@ struct ConversationView: View {
     animation: .default)
   private var models: FetchedResults<Model>
 
+  private static let SEND = NSDataAsset(name: "ESM_Perfect_App_Button_2_Organic_Simple_Classic_Game_Click")
+  private static let PING = NSDataAsset(name: "ESM_POWER_ON_SYNTH")
+  let sendSound = NSSound(data: SEND!.data)
+  let receiveSound = NSSound(data: PING!.data)
+
   var conversation: Conversation {
     conversationManager.currentConversation
   }
@@ -84,7 +89,7 @@ struct ConversationView: View {
         pendingMessageText = text
       }
       .onReceive(
-        agent.$pendingMessage.throttle(for: .seconds(0.4), scheduler: RunLoop.main, latest: true)
+        agent.$pendingMessage.throttle(for: .seconds(0.2), scheduler: RunLoop.main, latest: true)
       ) { _ in
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
           autoScroll(proxy)
@@ -110,7 +115,19 @@ struct ConversationView: View {
       Text(error.recoverySuggestion ?? "Try again later.")
     }
   }
-  
+
+  private func playSendSound() {
+    guard let sendSound else { return }
+    sendSound.volume = 0.3
+    sendSound.play()
+  }
+
+  private func playReceiveSound() {
+    guard let receiveSound else { return }
+    receiveSound.volume = 0.5
+    receiveSound.play()
+  }
+
   private func showConversation(_ c: Conversation, modelId: String? = nil) {
     let selectedModelId = modelId ?? self.selectedModelId
     guard !selectedModelId.isEmpty, selectedModelId != Model.unsetModelId else {
@@ -176,6 +193,8 @@ struct ConversationView: View {
   @MainActor
   func submit(_ input: String) {
     dispatchPrecondition(condition: .onQueue(.main))
+
+    playSendSound()
 
     if (agent.status == .processing || agent.status == .coldProcessing) {
       Task {
@@ -244,6 +263,7 @@ struct ConversationView: View {
       }
         
       await MainActor.run {
+        playReceiveSound()
         m.text = response.text
         m.predictedPerSecond = response.predictedPerSecond ?? -1
         m.responseStartSeconds = response.responseStartSeconds
@@ -254,7 +274,7 @@ struct ConversationView: View {
         }
         do {
           try viewContext.save()
-        } catch (let error) {
+        } catch  {
           print("error creating message", error.localizedDescription)
         }
         

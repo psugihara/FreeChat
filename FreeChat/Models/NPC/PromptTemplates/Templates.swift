@@ -116,7 +116,7 @@ struct ChatMLTemplate: Template {
 
 struct AlpacaTemplate: Template {
   var format = TemplateFormat.alpaca
-  var stopWords: [String] = ["\n\n", "### Instruction:", "### Input:", "USER", "### Response:"]
+  var stopWords: [String] = ["### Instruction:", "### Input:", "USER", "### Response:"]
 
   func run(systemPrompt: String, messages: [String]) -> String {
     var p = """
