@@ -14,7 +14,7 @@ struct CapsuleButtonStyle: ButtonStyle {
       .font(hovered ? .body.bold() : .body)
       .background(
         RoundedRectangle(cornerSize: CGSize(width: 10, height: 10), style: .continuous)
-          .strokeBorder(Color.primary.opacity(0.2), lineWidth: 0.5)
+          .strokeBorder(hovered ? Color.primary.opacity(0) : Color.primary.opacity(0.2), lineWidth: 0.5)
           .foregroundColor(Color.primary)
           .background(hovered ? Color.primary.opacity(0.1) : Color.clear)
       )
