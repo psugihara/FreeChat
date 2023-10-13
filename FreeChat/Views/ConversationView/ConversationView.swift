@@ -235,11 +235,13 @@ struct ConversationView: View {
     m.updatedAt = m.createdAt
     m.text = ""
     pendingMessage = m
-    
+
     agent.systemPrompt = systemPrompt
 
     DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
-      if agentConversation != conversation {
+      guard agentConversation == conversation,
+            !m.isDeleted,
+            m.managedObjectContext == agentConversation.managedObjectContext else {
         return
       }
       
@@ -264,32 +266,37 @@ struct ConversationView: View {
       }
         
       await MainActor.run {
-        playReceiveSound()
         m.text = response.text
         m.predictedPerSecond = response.predictedPerSecond ?? -1
         m.responseStartSeconds = response.responseStartSeconds
         m.modelName = response.modelName
         m.updatedAt = Date()
         if m.text == "" {
+          if m == pendingMessage {
+            pendingMessage = nil
+          }
           viewContext.delete(m)
+        } else {
+          playReceiveSound()
         }
         do {
           try viewContext.save()
         } catch  {
           print("error creating message", error.localizedDescription)
         }
-        
+
         if pendingMessage?.text != nil,
            !pendingMessage!.text!.isEmpty,
-           response.text.hasPrefix(agent.pendingMessage)  {
+           response.text.hasPrefix(agent.pendingMessage),
+           m == pendingMessage {
           pendingMessage = nil
           agent.pendingMessage = ""
         }
-        
+
         if conversation != agentConversation {
           return
         }
-        
+
         messages = agentConversation.orderedMessages
       }
     }
