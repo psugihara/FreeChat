@@ -67,7 +67,6 @@ struct TemplateManager {
     }
 
     if name.contains(/nous-hermes-llama-?2/.ignoresCase()) {
-      print("match")
       return .alpaca
     }
     
