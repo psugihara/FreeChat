@@ -44,7 +44,9 @@ struct ContentView: View {
       NavList(selection: $selection, showDeleteConfirmation: $showDeleteConfirmation)
         .navigationSplitViewColumnWidth(min: 160, ideal: 160)
     } detail: {
-      if conversationManager.showConversation() {
+      if selection.count > 1 {
+        Text("\(selection.count) conversations selected")
+      } else if conversationManager.showConversation() {
         ConversationView()
       } else if conversations.count == 0 {
         Text("Hit ⌘N to start a conversation")
@@ -60,14 +62,15 @@ struct ContentView: View {
     .onDeleteCommand { showDeleteConfirmation = true }
     .onAppear(perform: initializeFirstLaunchData)
     .onChange(of: selection) { nextSelection in
-      if nextSelection.first != nil {
-        conversationManager.currentConversation = nextSelection.first!
+      if nextSelection.count == 1,
+         let first = nextSelection.first {
+        conversationManager.currentConversation = first
       } else {
         conversationManager.unsetConversation()
       }
     }
     .onChange(of: conversationManager.currentConversation) { nextCurrent in
-      if !selection.contains(nextCurrent) {
+      if conversationManager.showConversation(), !selection.contains(nextCurrent) {
         selection = Set([nextCurrent])
       }
     }

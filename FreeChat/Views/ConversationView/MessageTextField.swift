@@ -73,11 +73,13 @@ struct MessageTextField: View {
         .submitLabel(.send)
         .padding(.all, 10)
         .onAppear {
-          maybeFocus(conversation)
+          self.focused = true
         }
         .onChange(of: conversation) { nextConversation in
-          maybeFocus(nextConversation)
-          QuickPromptButton.quickPrompts.shuffle()
+          if conversationManager.showConversation() {
+            self.focused = true
+            QuickPromptButton.quickPrompts.shuffle()
+          }
         }
         .background(.thinMaterial)
     }
@@ -93,14 +95,6 @@ struct MessageTextField: View {
         nullState.transition(.asymmetric(insertion: .push(from: .trailing), removal: .identity))
       }
       inputField
-    }
-  }
-
-  private func maybeFocus(_ conversation: Conversation) {
-    if conversation.createdAt == nil { return }
-    let fiveSecondsAgo = Date() - TimeInterval(5) // 5 seconds ago
-    if conversation.createdAt != nil, conversation.createdAt! >= fiveSecondsAgo, conversation.messages?.count == 0 {
-      self.focused = true
     }
   }
 }
