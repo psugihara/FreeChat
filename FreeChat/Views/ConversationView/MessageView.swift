@@ -12,34 +12,35 @@ import Splash
 
 struct MessageView: View {
   @Environment(\.colorScheme) private var colorScheme
-  
+
   let m: Message
   let overrideText: String // for streaming replies
   let agentStatus: Agent.Status?
-  
+
   @State var showInfoPopover = false
   @State var isHover = false
+  @State var animateDots = false
 
   init(_ m: Message, overrideText: String = "", agentStatus: Agent.Status?) {
     self.m = m
     self.overrideText = overrideText
     self.agentStatus = agentStatus
   }
-  
+
   var messageText: String {
     (overrideText.isEmpty && m.text != nil ? m.text! : overrideText)
-      // make newlines display https://github.com/gonzalezreal/swift-markdown-ui/issues/92
+    // make newlines display https://github.com/gonzalezreal/swift-markdown-ui/issues/92
       .replacingOccurrences(of: "\n", with: "  \n", options: .regularExpression)
   }
-  
+
   var infoText: some View {
 
     (agentStatus == .coldProcessing && overrideText.isEmpty
-       ? Text("warming up...")
-       : Text(m.createdAt ?? Date(), formatter: messageTimestampFormatter))
-      .font(.caption)
+     ? Text("warming up...")
+     : Text(m.createdAt ?? Date(), formatter: messageTimestampFormatter))
+    .font(.caption)
   }
-  
+
   var info: String {
     var parts: [String] = []
     if m.responseStartSeconds > 0 {
@@ -53,7 +54,7 @@ struct MessageView: View {
     }
     return parts.joined(separator: "\n")
   }
-  
+
   var menuContent: some View {
     Group {
       if m.responseStartSeconds > 0 {
@@ -66,7 +67,7 @@ struct MessageView: View {
       }
     }
   }
-  
+
   var infoLine: some View {
     HStack(alignment: .center, spacing: 4) {
       infoText.padding(.trailing, 3)
@@ -81,17 +82,17 @@ struct MessageView: View {
           .background(.secondary.opacity(0.0001))
           .padding(.horizontal, 3)
       })
-        .offset(y: -1)
-        .menuStyle(.circle)
-        .popover(isPresented: $showInfoPopover) {
-          Text(info).padding(12).font(.caption).textSelection(.enabled)
-        }
-        .opacity(isHover && overrideText.isEmpty ? 1 : 0)
-        .disabled(!overrideText.isEmpty)
+      .offset(y: -1)
+      .menuStyle(.circle)
+      .popover(isPresented: $showInfoPopover) {
+        Text(info).padding(12).font(.caption).textSelection(.enabled)
+      }
+      .opacity(isHover && overrideText.isEmpty ? 1 : 0)
+      .disabled(!overrideText.isEmpty)
     }.foregroundColor(.gray)
       .fixedSize(horizontal: false, vertical: true)
   }
-  
+
   var body: some View {
     HStack(alignment: .top) {
       ZStack(alignment: .bottomTrailing) {
@@ -101,18 +102,38 @@ struct MessageView: View {
           ZStack {
             Circle()
               .fill(.background)
+              .overlay(Circle().stroke(.gray.opacity(0.2), lineWidth: 0.5))
 
-            Text(" ••• ")
-              .font(.callout)
-              .kerning(-1.5)
-              .offset(y: -4)
+            Group {
+              Text("•")
+                .opacity(animateDots ? 1 : 0)
+                .offset(x: 0)
+              Text("•")
+                .offset(x: 4)
+                .opacity(animateDots ? 1 : 0.5)
+                .opacity(animateDots ? 1 : 0)
+              Text("•")
+                .offset(x: 8)
+                .opacity(animateDots ? 1 : 0)
+                .opacity(animateDots ? 1 : 0)
+            }.animation(Animation.easeInOut(duration: 1.5).repeatForever(autoreverses: true), value: animateDots)
+              .offset(x: -4, y: -0.5)
+              .font(.caption)
+
           }.frame(width: 14, height: 14)
-          .transition(.opacity)
+            .task {
+              animateDots.toggle()
+              animateDots = true
+            }
+            .onDisappear {
+              animateDots = false
+            }
+            .transition(.opacity)
         }
       }
       .padding(2)
       .padding(.top, 1)
-      
+
       VStack(alignment: .leading, spacing: 1) {
         infoLine
         Markdown(messageText)
@@ -137,7 +158,7 @@ struct MessageView: View {
       isHover = hovered
     }
   }
-  
+
   private var theme: Splash.Theme {
     // NOTE: We are ignoring the Splash theme font
     switch self.colorScheme {
@@ -181,7 +202,7 @@ struct MessageView_Previews: PreviewProvider {
       """
     return [m, m2, m3]
   }
-  
+
   static var previews: some View {
     List(MessageView_Previews.messages) {
       MessageView($0, agentStatus: .processing)
