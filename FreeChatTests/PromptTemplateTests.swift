@@ -168,4 +168,11 @@ final class PromptTemplateTests: XCTestCase {
       XCTAssertEqual(template.format, format)
     }
   }
+
+  func testFormatWithModelName() throws {
+    XCTAssertEqual(TemplateManager.formatFromModel(nil), .vicuna)
+    XCTAssertEqual(TemplateManager.formatFromModel(""), .vicuna)
+    XCTAssertEqual(TemplateManager.formatFromModel("codellama-34b-instruct.Q4_K_M.gguf"), .llama2)
+    XCTAssertEqual(TemplateManager.formatFromModel("nous-hermes-llama-2-7b.Q5_K_M.gguf"), .alpaca)
+  }
 }

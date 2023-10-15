@@ -55,7 +55,7 @@ struct TemplateManager {
     
     // This is terrible and I would love a better way to do it.
 
-    if name.contains(/(code)?llama(2-|-2-)?-?(7B-|13B-|70B-)?instruct/.ignoresCase()) || name.contains(/Mistral-7B-Instruct/.ignoresCase()) {
+    if name.contains(/(codellama|llama)(2-|-2-)?-?(\d{1,2}B-)?instruct/.ignoresCase()) || name.contains(/Mistral-7B-Instruct/.ignoresCase()) {
       return .llama2
     }
 
