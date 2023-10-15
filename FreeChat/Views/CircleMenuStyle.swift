@@ -15,8 +15,7 @@ struct CircleMenuStyle: MenuStyle {
       .menuStyle(.button)
       .buttonStyle(.plain)
       .padding(1)
-      .background(Circle().fill(hovered ? Color.secondary.opacity(0.1) : Color.secondary.opacity(0.05))
-      )
+      .foregroundColor(hovered ? .primary : .gray)
       .onHover(perform: { hovering in
         hovered = hovering
       })

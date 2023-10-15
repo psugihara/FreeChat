@@ -70,17 +70,20 @@ struct MessageView: View {
 
   var infoLine: some View {
     HStack(alignment: .center, spacing: 4) {
-      infoText.padding(.trailing, 3)
+      infoText
       Menu(content: {
         menuContent
       }, label: {
         Group {
-          Image(systemName: "ellipsis").imageScale(.medium)
-        }.foregroundColor(.gray)
+          Image(systemName: "ellipsis.circle").imageScale(.medium)
+            .background(.clear)
+        }
           .imageScale(.small)
           .frame(minHeight: 16, maxHeight: .infinity)
-          .background(.secondary.opacity(0.0001))
-          .padding(.horizontal, 3)
+          .padding(.leading, 3)
+          .padding(.trailing, 10) // expand click area
+          .padding(.vertical, 2)
+          .background(.primary.opacity(0.00001)) // needed to be clickable
       })
       .offset(y: -1)
       .menuStyle(.circle)
