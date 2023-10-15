@@ -7,8 +7,9 @@
 
 import SwiftUI
 import MarkdownUI
+import Foundation
 
-struct ConversationView: View {
+struct ConversationView: View, Sendable {
   @Environment(\.managedObjectContext) private var viewContext
   @EnvironmentObject private var conversationManager: ConversationManager
   
@@ -195,16 +196,20 @@ struct ConversationView: View {
   func submit(_ input: String) {
     dispatchPrecondition(condition: .onQueue(.main))
 
-    playSendSound()
-
     if (agent.status == .processing || agent.status == .coldProcessing) {
       Task {
         await agent.interrupt()
-        submit(input)
+        
+        Task.detached(priority: .userInitiated) {
+          try? await Task.sleep(for: .seconds(1))
+          await submit(input)
+        }
       }
       return
     }
     
+    playSendSound()
+
     guard let model = selectedModel else {
       return
     }

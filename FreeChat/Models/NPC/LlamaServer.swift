@@ -238,7 +238,7 @@ actor LlamaServer {
   }
   
   func interrupt() async {
-    if let eventSource {
+    if let eventSource, eventSource.readyState != .closed {
       await eventSource.close()
     }
     interrupted = true

@@ -50,7 +50,6 @@ class DownloadManager: NSObject, ObservableObject {
       DispatchQueue.main.async {
         self.tasks = tasks
         self.lastUpdatedAt = Date()
-//        self.tasksInProgress = tasks.filter({ t in (t.progress.fractionCompleted) > 0 }).count
       }
     }
   }
@@ -91,16 +90,17 @@ extension DownloadManager: URLSessionDelegate, URLSessionDownloadDelegate {
     }
     
     // create Model that points to file
-    os_log("CREATE MODEL", type: .info)
-    DispatchQueue.main.async {
-      let ctx = self.viewContext ?? PersistenceController.shared.container.viewContext
+    os_log("DownloadManager creating model", type: .info)
+    DispatchQueue.main.async { [self] in
+      let ctx = viewContext ?? PersistenceController.shared.container.viewContext
       do {
         let m = try Model.create(context: ctx, fileURL: destinationURL)
-        self.selectedModelId = m.id?.uuidString ?? Model.unsetModelId
+        os_log("DownloadManager created model %@", type: .info, m.id?.uuidString ?? "missing id")
+        selectedModelId = m.id?.uuidString ?? Model.unsetModelId
       } catch {
         os_log("Error creating model on main thread: %@", type: .error, error.localizedDescription)
       }
-      self.lastUpdatedAt = Date()
+      lastUpdatedAt = Date()
     }
   }
   
