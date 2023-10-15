@@ -37,8 +37,6 @@ func getMachineHardwareName() -> String? {
 }
 
 actor LlamaServer {
-//  static let DEFAULT_MODEL_FILENAME = "spicyboros-7b-2.2.Q3_K_S"
-//  static let DEFAULT_MODEL_URL =  Bundle.main.url(forResource: DEFAULT_MODEL_FILENAME, withExtension: ".gguf")!
   var modelPath = ""
   
   private var process = Process()
