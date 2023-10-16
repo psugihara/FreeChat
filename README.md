@@ -10,7 +10,6 @@ Chat with Meta’s Llama 2 on your MacBook without installing any other software
 - Customize persona and expertise by changing the system prompt
 - Try any llama.cpp compatible model
 - No internet connection required, all local
-- Conversations sync natively via iCloud
 
 https://github.com/psugihara/FreeChat/assets/282016/fd546e39-7657-4ccd-a44f-0b872547a629
 
