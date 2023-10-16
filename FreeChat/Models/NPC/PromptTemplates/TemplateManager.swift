@@ -63,7 +63,8 @@ struct TemplateManager {
     if name.contains(/Mistral-7B-OpenOrca/.ignoresCase()) ||
         name.contains(/dolphin-2.1-mistral-7B/.ignoresCase()) ||
         name.contains(/samantha-1.2-mistral-7B/.ignoresCase()) ||
-        name.contains(/jackalope-7b/.ignoresCase()) {
+        name.contains(/jackalope-7b/.ignoresCase()) ||
+        name.contains(/openhermes-2-mistral-7b/.ignoresCase()) {
       return .chatML
     }
 

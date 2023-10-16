@@ -176,5 +176,6 @@ final class PromptTemplateTests: XCTestCase {
     XCTAssertEqual(TemplateManager.formatFromModel("nous-hermes-llama-2-7b.Q5_K_M.gguf"), .alpaca)
     XCTAssertEqual(TemplateManager.formatFromModel("airoboros-m-7b-3.1.Q4_0.gguf"), .llama2)
     XCTAssertEqual(TemplateManager.formatFromModel("synthia-7b-v1.5.Q3_K_S.gguf"), .vicuna)
+    XCTAssertEqual(TemplateManager.formatFromModel("openhermes-2-mistral-7b.Q8_0.gguf"), .chatML)
   }
 }
