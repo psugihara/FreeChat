@@ -62,7 +62,7 @@ struct Llama2Template: Template {
 
 struct VicunaTemplate: Template {
   var format = TemplateFormat.vicuna
-  var stopWords: [String] = ["USER", "User:", "user:"]
+  var stopWords: [String] = ["USER", "User:", "user:", "<|im_end|>", "</s>"]
 
   func run(systemPrompt: String, messages: [String]) -> String {
     var p = "SYSTEM: \(systemPrompt)\n"
