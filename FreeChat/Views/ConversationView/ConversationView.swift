@@ -266,7 +266,7 @@ struct ConversationView: View, Sendable {
         handleResponseError(error)
         return
       } catch {
-        print("agent listen threw unexpected error", error.localizedDescription)
+        print("agent listen threw unexpected error", error as Any)
         return
       }
         
