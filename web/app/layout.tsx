@@ -18,7 +18,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         {children}
-        <footer className="flex flex-col items-center text-center text-white dark:bg-black text-neutral-800 dark:text-neutral-400">
+        <footer className="flex flex-col items-center text-center dark:bg-black">
           <div className="w-full p-4 text-center">
             © 2023{" "}
             <a
