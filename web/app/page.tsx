@@ -11,7 +11,7 @@ export default function Home() {
           Local, secure, open-source AI chat for macOS
         </h2>
         <a
-          className="z-50 text-center group"
+          className="z-50 text-center group duration-300 ease-in-out"
           href="https://6032904148827.gumroad.com/l/freechat-beta?_gl=1*1qow0km*_ga*MjEwOTUwNzk3MC4xNjk1MjMyNjEz*_ga_6LJN6D94N6*MTY5NzY5MzA5MS4xNC4xLjE2OTc2OTMwOTQuMC4wLjA."
           target="_blank"
           rel="noopener noreferrer"
@@ -23,7 +23,7 @@ export default function Home() {
               width={256}
               height={256}
               priority
-              className="transition-translate duration-300 group-hover:-translate-y-2 group-hover:translate-x-2 group-active:translate-x-0 group-active:translate-y-0 group-active:skew-y-0 transform-gpu skew-y-0 hover:skew-y-2 transition-transform duration-300 ease-in-out motion-reduce:transform-none"
+              className="transition-translate duration-300 group-hover:-translate-y-2 group-hover:translate-x-2 group-active:translate-x-0 group-active:translate-y-0 group-active:skew-y-0 transform-gpu skew-y-0 hover:skew-y-2 transition-transform motion-reduce:transform-none"
             />
             <Image
               src="/tidles-1024.png"
@@ -31,13 +31,13 @@ export default function Home() {
               width={256}
               height={256}
               priority
-              className="absolute top-0 left-0 opacity-0 group-active:opacity-0 transition-opacity group-hover:opacity-100 invert z-[-1] duration-500"
+              className="absolute top-0 left-0 opacity-0 group-active:opacity-0 transition-opacity group-hover:opacity-50 invert dark:invert-0 z-[-1] duration-500"
             />
           </div>
 
           <h2 className="mb-3 text-2xl font-semibold">
             Download it{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 group-hover:scale-110 motion-reduce:transform-none">
+            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
               -&gt;
             </span>
           </h2>
