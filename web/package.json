@@ -15,14 +15,15 @@
     "react-parallax-tilt": "^1.7.171"
   },
   "devDependencies": {
-    "typescript": "^5",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "autoprefixer": "^10",
+    "eslint": "^8",
+    "eslint-config-next": "13.5.6",
     "postcss": "^8",
     "tailwindcss": "^3",
-    "eslint": "^8",
-    "eslint-config-next": "13.5.6"
+    "tailwindcss-3d": "^1.0.2",
+    "typescript": "^5"
   }
 }
