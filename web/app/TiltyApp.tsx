@@ -12,7 +12,7 @@ export default function TiltyApp() {
         tiltMaxAngleY={20}
         perspective={2000}
         transitionSpeed={1500}
-        scale={1.05}
+        scale={1.04}
         tiltReverse={true}
       >
         <Image
@@ -21,7 +21,7 @@ export default function TiltyApp() {
           width={256}
           height={256}
           priority
-          className="transition-translate duration-300 translate-z-96 group-hover:-translate-y-2 group-hover:translate-x-2 group-active:translate-x-0 group-active:translate-y-0 transform-gpu transition-transform motion-reduce:transform-none"
+          className="transition-translate duration-300 translate-z-96 group-hover:-translate-y-3 group-hover:translate-x-3 group-active:translate-x-0 group-active:translate-y-0 transform-gpu transition-transform motion-reduce:transform-none"
         />
       </Tilt>
       <Image

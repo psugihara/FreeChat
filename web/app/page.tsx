@@ -5,7 +5,7 @@ export default function Home() {
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-24 text-center">
       <div className="flex flex-col place-items-center relative">
-        <h1 className="text-6xl font-black before:absolute before:h-[300px] before:w-[500px] before:rounded-full before:bg-gradient-radial before:from-white before:to-transparent before:blur-2xl before:content-[''] after:absolute after:-z-20 after:h-[180px] after:w-[340px] after:-translate-x-1/3 after:bg-gradient-conic after:from-gray-200 after:via-violet-200 after:blur-2xl after:content-[''] before:dark:bg-gradient-to-br before:dark:from-transparent before:dark:to-violet-700 before:dark:opacity-10 after:dark:from-white after:dark:via-[#0141ff] after:dark:opacity-40 before:lg:h-[360px] z-10">
+        <h1 className="text-6xl font-black before:absolute before:h-[300px] before:w-[500px] before:rounded-full before:bg-gradient-radial before:from-white before:to-transparent before:blur-2xl before:content-[''] after:absolute after:-z-20 after:h-[180px] after:w-[340px] after:-translate-x-1/3 before:dark:bg-gradient-to-br before:dark:from-transparent before:dark:to-violet-700 before:dark:opacity-10 after:dark:from-white after:dark:via-[#0141ff] after:dark:opacity-40 before:lg:h-[360px] z-10">
           FreeChat
         </h1>
         <h2 className="text-2xl block pt-3 z-50">
@@ -17,7 +17,7 @@ export default function Home() {
           target="_blank"
           rel="noopener noreferrer"
         >
-          <div className="relative">
+          <div className="relative my-2">
             <TiltyApp />
           </div>
 
