@@ -2,14 +2,29 @@
 
 import Tilt from "react-parallax-tilt";
 import Image from "next/image";
+import { useEffect } from "react";
+import { textFlag } from "cursor-effects";
+
+const messages = ["Let's chat", "It's free", "Just click it"].reverse();
+let effect: any;
+
+function activateCursor() {
+  if (messages.length == 0) return;
+  const text = messages.pop();
+  effect?.destroy();
+  effect = new textFlag({ text, color: ["black"] });
+}
 
 export default function TiltyApp() {
   return (
-    <>
+    <div
+      className="rounded-3xl transition-all group-hover:bg-gray-200 dark:group-hover:bg-gray-600"
+      onMouseEnter={activateCursor}
+    >
       <Tilt
         className="group"
-        tiltMaxAngleX={10}
-        tiltMaxAngleY={10}
+        tiltMaxAngleX={20}
+        tiltMaxAngleY={20}
         perspective={2000}
         transitionSpeed={1500}
         scale={1.04}
@@ -18,20 +33,12 @@ export default function TiltyApp() {
         <Image
           src="/tidles-1024.png"
           alt="FreeChat app icon"
-          width={256}
-          height={256}
+          width={128}
+          height={128}
           priority
-          className="transition-translate duration-300 translate-z-96 group-hover:-translate-y-3 group-hover:translate-x-3 group-active:translate-x-0 group-active:translate-y-0 transform-gpu transition-transform motion-reduce:transform-none"
+          className="bg-white shadow-icon rounded-3xl transition-all duration-300 translate-z-96 group-hover:-translate-y-3 group-hover:translate-x-3 group-hover:skew-y-6 group-active:translate-x-0 group-active:translate-y-0 transform-gpu motion-reduce:transform-none"
         />
       </Tilt>
-      <Image
-        src="/tidles-1024.png"
-        alt="FreeChat app icon"
-        width={256}
-        height={256}
-        priority
-        className="absolute top-0 left-0 opacity-0 -translate-z-96 group-active:opacity-0 transition-opacity group-hover:opacity-50 invert dark:invert-0 z-[-1] duration-500"
-      />
-    </>
+    </div>
   );
 }
