@@ -3,10 +3,16 @@
 import Tilt from "react-parallax-tilt";
 import Image from "next/image";
 import { useEffect } from "react";
-import { emojiCursor } from "cursor-effects";
+import { textFlag } from "cursor-effects";
+
+const messages = ["Let's chat", "It's free", "Just click it"].reverse();
+let effect: any;
 
 function activateCursor() {
-  emojiCursor({ emoji: ["🔥", "🐬", "🦆"] });
+  if (messages.length == 0) return;
+  const text = messages.pop();
+  effect?.destroy();
+  effect = new textFlag({ text, color: ["black"] });
 }
 
 export default function TiltyApp() {
