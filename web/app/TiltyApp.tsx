@@ -5,14 +5,21 @@ import Image from "next/image";
 import { useEffect } from "react";
 import { textFlag } from "cursor-effects";
 
-const messages = ["Let's chat", "It's free", "Just click it"].reverse();
+const messages = [
+  "Let's chat",
+  "It's free",
+  "Click it already",
+  "What are you waiting for?",
+  "????????",
+  "¯_(ツ)/¯",
+].reverse();
 let effect: any;
 
 function activateCursor() {
   if (messages.length == 0) return;
   const text = messages.pop();
   effect?.destroy();
-  effect = new textFlag({ text, color: ["black"] });
+  effect = new textFlag({ text, color: ["#CEA5EE"] });
 }
 
 export default function TiltyApp() {
