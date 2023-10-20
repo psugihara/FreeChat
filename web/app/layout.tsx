@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 
-const inter = Inter({ subsets: ["latin"] });
+// const bodyFont = IBM_Plex_Mono({ subsets: ["latin"], weight: "500" });
+const bodyFont = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "FreeChat",
@@ -16,18 +17,28 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={inter.className}>
+      <body className={bodyFont.className}>
         {children}
-        <footer className="flex flex-col items-center text-center dark:bg-black">
-          <div className="w-full p-4 text-center">
-            © 2023{" "}
+        <footer className="w-full m-auto">
+          <div className="flex max-w-xs flex-col sm:flex-row justify-between dark:bg-black p-4 space-y-2 sm:space-y-0 sm:max-w-xl m-auto">
             <a
-              href="https://x.com/_0_"
+              href="https://github.com/psugihara/FreeChat"
               target="_blank"
               rel="noopener noreferrer"
             >
-              Peter Sugihara
+              Github
             </a>
+            <a href="/legal/privacy">Privacy</a>
+            <a href="/legal/terms">Terms</a>
+            <div className="whitespace-nowrap">
+              <a
+                href="https://x.com/_0_"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                © 2023 Peter Sugihara
+              </a>
+            </div>
           </div>
         </footer>
       </body>
