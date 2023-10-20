@@ -2,7 +2,6 @@
 
 import Tilt from "react-parallax-tilt";
 import Image from "next/image";
-import { useEffect } from "react";
 import { textFlag } from "cursor-effects";
 
 const messages = [
@@ -43,7 +42,7 @@ export default function TiltyApp() {
           width={128}
           height={128}
           priority
-          className="bg-white shadow-icon rounded-3xl transition-all duration-300 translate-z-96 group-hover:-translate-y-3 group-hover:translate-x-3 group-hover:skew-y-6 group-active:translate-x-0 group-active:translate-y-0 transform-gpu motion-reduce:transform-none"
+          className="bg-white shadow-icon rounded-3xl transition-all duration-300 translate-z-96 group-hover:-translate-y-3 group-hover:translate-x-3 group-hover:skew-y-6 group-active:skew-y-0 group-active:translate-x-0 group-active:translate-y-0 transform-gpu motion-reduce:transform-none"
         />
       </Tilt>
     </div>
