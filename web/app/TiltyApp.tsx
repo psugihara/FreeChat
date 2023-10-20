@@ -28,7 +28,6 @@ export default function TiltyApp() {
       onMouseEnter={activateCursor}
     >
       <Tilt
-        className="group"
         tiltMaxAngleX={20}
         tiltMaxAngleY={20}
         perspective={2000}

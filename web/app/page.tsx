@@ -4,7 +4,7 @@ import TiltyApp from "./TiltyApp";
 export default function Home() {
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-24">
-      <div className="flex flex-col  relative">
+      <div className="flex flex-col relative">
         <Image
           src="/tidles-1024.png"
           alt="FreeChat app icon"
