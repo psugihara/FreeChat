@@ -8,8 +8,8 @@ export default function TiltyApp() {
     <>
       <Tilt
         className="group"
-        tiltMaxAngleX={40}
-        tiltMaxAngleY={20}
+        tiltMaxAngleX={10}
+        tiltMaxAngleY={10}
         perspective={2000}
         transitionSpeed={1500}
         scale={1.04}
