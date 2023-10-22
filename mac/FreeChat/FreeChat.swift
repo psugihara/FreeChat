@@ -20,6 +20,10 @@ struct FreeChatApp: App {
       ContentView()
         .environment(\.managedObjectContext, persistenceController.container.viewContext)
         .environmentObject(conversationManager)
+        .onAppear {
+          NSWindow.allowsAutomaticWindowTabbing = false
+          let _ = NSApplication.shared.windows.map { $0.tabbingMode = .disallowed }
+        }
     }
     .commands {
       CommandGroup(replacing: .newItem) {
