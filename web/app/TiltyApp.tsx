@@ -7,10 +7,9 @@ import { textFlag } from "cursor-effects";
 const messages = [
   "Let's chat",
   "It's free",
-  "Click it already",
-  "What are you waiting for?",
-  "????????",
+  "Let's chat",
   "¯_(ツ)/¯",
+  "Let's chat",
 ].reverse();
 let effect: any;
 
