@@ -31,7 +31,11 @@ extension Conversation {
     } else if messages?.count ?? 0 > 0 {
       let firstMessage = orderedMessages.first!
       let prefix = firstMessage.text?.prefix(200)
-      return prefix != nil ? String(prefix!) : dateTitle
+      if let firstLine = prefix?.split(separator: "\n").first {
+        return String(firstLine)
+      } else {
+        return dateTitle
+      }
     } else {
       return dateTitle
     }
