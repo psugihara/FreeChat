@@ -19,12 +19,12 @@ export default function Home() {
         </h2>
         <a
           className="group duration-300 ease-in-out flex items-center justify-between"
-          href="https://6032904148827.gumroad.com/l/freechat-beta?_gl=1*1qow0km*_ga*MjEwOTUwNzk3MC4xNjk1MjMyNjEz*_ga_6LJN6D94N6*MTY5NzY5MzA5MS4xNC4xLjE2OTc2OTMwOTQuMC4wLjA."
+          href="https://apps.apple.com/us/app/freechat/id6458534902"
           target="_blank"
           rel="noopener noreferrer"
         >
           <h2 className="mb-3 text-3xl sm:text-6xl font-semibold light:text-slate-800 light:hover:text-black">
-            Try the beta{" "}
+            Get it now{" "}
             <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
               -&gt;
             </span>

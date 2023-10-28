@@ -19,7 +19,6 @@ class DownloadManager: NSObject, ObservableObject {
 
   private var urlSession: URLSession!
   @Published var tasks: [URLSessionTask] = []
-//  @Published var tasksInProgress = 0
   @Published var lastUpdatedAt = Date()
   
   override private init() {
