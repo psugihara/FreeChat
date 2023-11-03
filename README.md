@@ -14,9 +14,9 @@ https://github.com/psugihara/FreeChat/assets/282016/fd546e39-7657-4ccd-a44f-0b87
 
 ## Install
 
-Download the TestFlight here: https://6032904148827.gumroad.com/l/freechat-beta
+Join the TestFlight beta: https://6032904148827.gumroad.com/l/freechat-beta
 
-Mac App Store soon!
+Or download on the Mac App Store: https://apps.apple.com/us/app/freechat/id6458534902
 
 Or build from source via "Archive" in Xcode after completing dev setup below.
 
