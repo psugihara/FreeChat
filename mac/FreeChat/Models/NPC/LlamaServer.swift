@@ -98,7 +98,7 @@ actor LlamaServer {
     let processes = ProcessInfo.processInfo.activeProcessorCount
     process.arguments = [
       "--model", modelPath,
-      "--threads", "\(max(1, ceil(Double(processes) / 2.0)))",
+      "--threads", "\(max(1, ceil(Double(processes) / 3.0 * 2.0)))",
       "--ctx-size", "4096",
       "--port", port,
       // llama crashes on intel macs when gpu-layers != 0, not sure why
