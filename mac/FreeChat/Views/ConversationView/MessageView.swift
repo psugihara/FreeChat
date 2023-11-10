@@ -6,8 +6,7 @@
 //
 
 import SwiftUI
-import MarkdownUI
-import Splash
+import MarkdownView
 
 
 struct MessageView: View {
@@ -139,9 +138,9 @@ struct MessageView: View {
 
       VStack(alignment: .leading, spacing: 1) {
         infoLine
-        Markdown(messageText)
-          .markdownTheme(.freeChat)
-          .markdownCodeSyntaxHighlighter(.splash(theme: self.theme))
+        MarkdownView(text:messageText)
+//          .markdownTheme(.freeChat)
+//          .markdownCodeSyntaxHighlighter(.splash(theme: self.theme))
           .textSelection(.enabled)
           .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
           .transition(.identity)
@@ -162,15 +161,15 @@ struct MessageView: View {
     }
   }
 
-  private var theme: Splash.Theme {
-    // NOTE: We are ignoring the Splash theme font
-    switch self.colorScheme {
-      case ColorScheme.dark:
-        return .wwdc17(withFont: .init(size: 16))
-      default:
-        return .sunset(withFont: .init(size: 16))
-    }
-  }
+//  private var theme: Splash.Theme {
+//    // NOTE: We are ignoring the Splash theme font
+//    switch self.colorScheme {
+//      case ColorScheme.dark:
+//        return .wwdc17(withFont: .init(size: 16))
+//      default:
+//        return .sunset(withFont: .init(size: 16))
+//    }
+//  }
 }
 
 private let messageTimestampFormatter: DateFormatter = {

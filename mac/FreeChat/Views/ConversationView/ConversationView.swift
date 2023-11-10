@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import MarkdownUI
 import Foundation
 
 struct ConversationView: View, Sendable {
