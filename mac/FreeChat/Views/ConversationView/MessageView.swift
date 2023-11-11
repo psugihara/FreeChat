@@ -81,7 +81,7 @@ struct MessageView: View {
           .imageScale(.small)
           .frame(minHeight: 16, maxHeight: .infinity)
           .padding(.leading, 3)
-          .padding(.trailing, 10) // expand click area
+          .padding(.trailing, 3) // expand click area
         .padding(.vertical, 2)
           .background(.primary.opacity(0.00001)) // needed to be clickable
       })
