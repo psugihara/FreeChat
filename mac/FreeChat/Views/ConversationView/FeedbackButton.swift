@@ -55,6 +55,15 @@ struct FeedbackButton: View {
     status = .loading
     print("post feedback")
 
+    let messages = message.conversation?.orderedMessages
+      .filter { $0.createdAt == nil || message.createdAt == nil || $0.createdAt! <= message.createdAt! }
+      .map { HumanFeedbackMessage(fromUser: $0.fromId == Message.USER_SPEAKER_ID, text: $0.text ?? "") }
+    let feedback = HumanFeedback(
+      messages: messages ?? [],
+      modelName: message.modelName ?? "",
+      promptTemplate: message.promptTemplate ?? ""
+    )
+
     Task {
       let url = URL(string: "http://localhost:3000/api/conversation")!
       var request = URLRequest(url: url)
@@ -62,16 +71,33 @@ struct FeedbackButton: View {
       request.httpMethod = "POST"
       let encoder = JSONEncoder()
       do {
-        let data = try encoder.encode(message)
+        let data = try encoder.encode(feedback)
         request.httpBody = data
-        
-        let (responseData, response) = try await URLSession.shared.upload(for: request, from: data, delegate: self)
+        let (responseData, response) = try await URLSession.shared.upload(for: request, from: data)
+
+        print("responseData", responseData)
+        print("response", response)
+
+        status = .success
+      } catch {
+        status = .failure
       }
 
-      status = .success
     }
 
   }
+}
+
+struct HumanFeedback: Codable {
+  var messages: [HumanFeedbackMessage]
+  var modelName: String
+  var promptTemplate: String
+  var lastSystemPrompt: String?
+}
+
+struct HumanFeedbackMessage: Codable {
+  let fromUser: Bool
+  let text: String
 }
 
 //#Preview {
