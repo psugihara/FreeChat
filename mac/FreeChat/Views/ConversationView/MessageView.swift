@@ -30,15 +30,15 @@ struct MessageView: View {
   var messageText: String {
     (overrideText.isEmpty && m.text != nil ? m.text! : overrideText)
     // make newlines display https://github.com/gonzalezreal/swift-markdown-ui/issues/92
-      .replacingOccurrences(of: "\n", with: "  \n", options: .regularExpression)
+    .replacingOccurrences(of: "\n", with: "  \n", options: .regularExpression)
   }
 
   var infoText: some View {
 
     (agentStatus == .coldProcessing && overrideText.isEmpty
-     ? Text("warming up...")
-     : Text(m.createdAt ?? Date(), formatter: messageTimestampFormatter))
-    .font(.caption)
+      ? Text("warming up...")
+    : Text(m.createdAt ?? Date(), formatter: messageTimestampFormatter))
+      .font(.caption)
   }
 
   var info: String {
@@ -82,16 +82,18 @@ struct MessageView: View {
           .frame(minHeight: 16, maxHeight: .infinity)
           .padding(.leading, 3)
           .padding(.trailing, 10) // expand click area
-          .padding(.vertical, 2)
+        .padding(.vertical, 2)
           .background(.primary.opacity(0.00001)) // needed to be clickable
       })
-      .offset(y: -1)
-      .menuStyle(.circle)
-      .popover(isPresented: $showInfoPopover) {
+        .offset(y: -1)
+        .menuStyle(.circle)
+        .popover(isPresented: $showInfoPopover) {
         Text(info).padding(12).font(.caption).textSelection(.enabled)
       }
-      .opacity(isHover && overrideText.isEmpty ? 1 : 0)
-      .disabled(!overrideText.isEmpty)
+        .opacity(isHover && overrideText.isEmpty ? 1 : 0)
+        .disabled(!overrideText.isEmpty)
+      FeedbackButton(message: m)
+        .opacity(isHover && overrideText.isEmpty ? 1 : 0)
     }.foregroundColor(.gray)
       .fixedSize(horizontal: false, vertical: true)
   }
@@ -125,17 +127,17 @@ struct MessageView: View {
 
           }.frame(width: 14, height: 14)
             .task {
-              animateDots.toggle()
-              animateDots = true
-            }
+            animateDots.toggle()
+            animateDots = true
+          }
             .onDisappear {
-              animateDots = false
-            }
+            animateDots = false
+          }
             .transition(.opacity)
         }
       }
-      .padding(2)
-      .padding(.top, 1)
+        .padding(2)
+        .padding(.top, 1)
 
       VStack(alignment: .leading, spacing: 1) {
         infoLine
@@ -146,18 +148,18 @@ struct MessageView: View {
           .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
           .transition(.identity)
       }
-      .padding(.top, 3)
-      .padding(.bottom, 8)
-      .padding(.horizontal, 3)
+        .padding(.top, 3)
+        .padding(.bottom, 8)
+        .padding(.horizontal, 3)
     }
-    .padding(.vertical, 3)
-    .padding(.horizontal, 8)
-    .background(Color(white: 1, opacity: 0.000001)) // makes contextMenu work
+      .padding(.vertical, 3)
+      .padding(.horizontal, 8)
+      .background(Color(white: 1, opacity: 0.000001)) // makes contextMenu work
     .animation(Animation.easeOut, value: isHover)
-    .contextMenu {
+      .contextMenu {
       menuContent
     }
-    .onHover { hovered in
+      .onHover { hovered in
       isHover = hovered
     }
   }
@@ -165,10 +167,10 @@ struct MessageView: View {
   private var theme: Splash.Theme {
     // NOTE: We are ignoring the Splash theme font
     switch self.colorScheme {
-      case ColorScheme.dark:
-        return .wwdc17(withFont: .init(size: 16))
-      default:
-        return .sunset(withFont: .init(size: 16))
+    case ColorScheme.dark:
+      return .wwdc17(withFont: .init(size: 16))
+    default:
+      return .sunset(withFont: .init(size: 16))
     }
   }
 }
