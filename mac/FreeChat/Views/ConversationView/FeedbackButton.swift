@@ -8,6 +8,19 @@
 import SwiftUI
 
 struct FeedbackButton: View {
+
+  enum ThumbDirection {
+    case up
+    case down
+  }
+
+  public static let PENDING_FEEDBACK_ID = "pending"
+
+  @Environment(\.managedObjectContext) private var viewContext
+
+  let host = "http://localhost:3000"
+//  let host = "https://www.otherbrain.world"
+
   enum Status {
     case ready
     case loading
@@ -16,6 +29,7 @@ struct FeedbackButton: View {
   }
 
   let message: Message
+  let thumbs: ThumbDirection
 
   @State var confirm = false
   @State var showPostSheet = false
@@ -23,9 +37,34 @@ struct FeedbackButton: View {
 
   var body: some View {
     Button(action: {
-      confirm = true
+      if let feedbackId = message.feedbackId,
+        feedbackId != FeedbackButton.PENDING_FEEDBACK_ID,
+        status != .failure,
+        let url = URL(string: "\(host)/api/label-human-feedback/\(feedbackId)") {
+        NSWorkspace.shared.open(url)
+      } else {
+        confirm = true
+      }
     }, label: {
-      Image(systemName: "hand.thumbsup.circle")
+      if message.feedbackId != nil,
+        message.feedbackId != FeedbackButton.PENDING_FEEDBACK_ID,
+        status != .failure {
+        Image(systemName: "checkmark.circle.fill")
+          .help("View Feedback")
+      } else {
+        switch status {
+        case .loading:
+          ProgressView().controlSize(.mini)
+        default:
+          if thumbs == .up {
+            Image(systemName: "hand.thumbsup.circle")
+              .help("Share feedback")
+          } else {
+            Image(systemName: "hand.thumbsdown.circle")
+              .help("Share feedback")
+          }
+        }
+      }
     })
       .buttonStyle(.plain)
       .confirmationDialog("Share Feedback", isPresented: $confirm, actions: {
@@ -38,22 +77,12 @@ struct FeedbackButton: View {
     }, message: {
       Text("Help train future models by publishing this conversation to an open dataset. Please do not share conversations with sensitive info like your real name.")
     })
-      .sheet(isPresented: $showPostSheet, content: {
-      switch status {
-      case .loading, .ready:
-        ProgressView()
-      case .failure:
-        Text("Error posting, try again later")
-      case .success:
-        Text("Success!")
-      }
-    })
   }
 
   private func postFeedback() {
     showPostSheet = true
     status = .loading
-    print("post feedback")
+    message.feedbackId = FeedbackButton.PENDING_FEEDBACK_ID
 
     let messages = message.conversation?.orderedMessages
       .filter { $0.createdAt == nil || message.createdAt == nil || $0.createdAt! <= message.createdAt! }
@@ -61,28 +90,52 @@ struct FeedbackButton: View {
     let feedback = HumanFeedback(
       messages: messages ?? [],
       modelName: message.modelName ?? "",
-      promptTemplate: message.promptTemplate ?? ""
+      promptTemplate: message.promptTemplate ?? "",
+      lastSystemPrompt: message.systemPrompt ?? "",
+      quality: thumbs == .up ? 5 : 1
     )
 
     Task {
-      let url = URL(string: "http://localhost:3000/api/conversation")!
-      var request = URLRequest(url: url)
-      request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-      request.httpMethod = "POST"
-      let encoder = JSONEncoder()
+      let url = URL(string: "\(host)/api/human-feedback")
       do {
+        var request = URLRequest(url: url!)
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.httpMethod = "POST"
+        let encoder = JSONEncoder()
+
         let data = try encoder.encode(feedback)
         request.httpBody = data
-        let (responseData, response) = try await URLSession.shared.upload(for: request, from: data)
+        let (responseData, response) = try await URLSession.shared.data(for: request)
 
-        print("responseData", responseData)
         print("response", response)
+        let statusCode = (response as! HTTPURLResponse).statusCode
 
-        status = .success
+        if statusCode == 200,
+          let json = try? JSONDecoder().decode(HumanFeedbackResponse.self, from: responseData) {
+          message.feedbackId = json.id
+          try viewContext.save()
+          status = .success
+
+          if let feedbackId = message.feedbackId,
+            let url = URL(string: "\(host)/api/label-human-feedback/\(feedbackId)") {
+            NSWorkspace.shared.open(url)
+          } else {
+            status = .failure
+          }
+
+        } else {
+          print("FAILURE")
+          status = .failure
+        }
+
       } catch {
+        print("error posting to \(url?.debugDescription ?? "null")", error.localizedDescription)
         status = .failure
       }
 
+      if message.feedbackId == FeedbackButton.PENDING_FEEDBACK_ID {
+        message.feedbackId = nil
+      }
     }
 
   }
@@ -92,12 +145,18 @@ struct HumanFeedback: Codable {
   var messages: [HumanFeedbackMessage]
   var modelName: String
   var promptTemplate: String
-  var lastSystemPrompt: String?
+  var lastSystemPrompt: String
+  var client = "FreeChat \(Bundle.main.infoDictionary!["CFBundleShortVersionString"]!)"
+  var quality: Int
 }
 
 struct HumanFeedbackMessage: Codable {
   let fromUser: Bool
   let text: String
+}
+
+struct HumanFeedbackResponse: Codable {
+  let id: String
 }
 
 //#Preview {

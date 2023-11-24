@@ -15,12 +15,14 @@ extension Message {
     text: String,
     fromId: String,
     conversation: Conversation,
+    systemPrompt: String,
     inContext ctx: NSManagedObjectContext
   ) throws -> Self {
     let record = self.init(context: ctx)
     record.text = text
     record.conversation = conversation
     record.createdAt = Date()
+    record.systemPrompt = systemPrompt
     conversation.lastMessageAt = record.createdAt
     record.fromId = fromId
 
@@ -28,7 +30,7 @@ extension Message {
 
     return record
   }
-  
+
   public override func willSave() {
     super.willSave()
 

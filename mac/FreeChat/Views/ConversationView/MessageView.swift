@@ -92,8 +92,14 @@ struct MessageView: View {
       }
         .opacity(isHover && overrideText.isEmpty ? 1 : 0)
         .disabled(!overrideText.isEmpty)
-      FeedbackButton(message: m)
-        .opacity(isHover && overrideText.isEmpty ? 1 : 0)
+      if m.fromId != Message.USER_SPEAKER_ID {
+        FeedbackButton(message: m, thumbs: .up)
+          .opacity((isHover && overrideText.isEmpty) || m.feedbackId == FeedbackButton.PENDING_FEEDBACK_ID ? 1 : 0)
+        if m.feedbackId == nil {
+          FeedbackButton(message: m, thumbs: .down)
+            .opacity((isHover && overrideText.isEmpty) || m.feedbackId == FeedbackButton.PENDING_FEEDBACK_ID ? 1 : 0)
+        }
+      }
     }.foregroundColor(.gray)
       .fixedSize(horizontal: false, vertical: true)
   }
@@ -186,8 +192,20 @@ struct MessageView_Previews: PreviewProvider {
   static var messages: [Message] {
     let ctx = PersistenceController.preview.container.viewContext
     let c = try! Conversation.create(ctx: ctx)
-    let m = try! Message.create(text: "hello there, I'm well! How are **you**?", fromId: "User", conversation: c, inContext: ctx)
-    let m2 = try! Message.create(text: "Doing pretty well, can you write me some code?", fromId: Message.USER_SPEAKER_ID, conversation: c, inContext: ctx)
+    let m = try! Message.create(
+      text: "hello there, I'm well! How are **you**?",
+      fromId: "User",
+      conversation: c,
+      systemPrompt: "you are a system prompt",
+      inContext: ctx
+    )
+    let m2 = try! Message.create(
+      text: "Doing pretty well, can you write me some code?",
+      fromId: Message.USER_SPEAKER_ID,
+      conversation: c,
+      systemPrompt: "you are a system prompt",
+      inContext: ctx
+    )
     let m3 = Message(context: ctx)
     m3.conversation = c
     m3.fromId = "llama"

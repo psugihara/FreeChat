@@ -9,6 +9,7 @@
     </entity>
     <entity name="Message" representedClassName="Message" syncable="YES" codeGenerationType="class">
         <attribute name="createdAt" attributeType="Date" defaultDateTimeInterval="712518960" usesScalarValueType="NO"/>
+        <attribute name="feedbackId" optional="YES" attributeType="String"/>
         <attribute name="fromId" attributeType="String" defaultValueString="npc"/>
         <attribute name="modelName" optional="YES" attributeType="String"/>
         <attribute name="predictedPerSecond" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
