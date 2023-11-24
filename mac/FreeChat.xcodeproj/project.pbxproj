@@ -28,6 +28,7 @@
 		A13C8C622A8FF27000EC18D8 /* Theme+FreeChat.swift in Sources */ = {isa = PBXBuildFile; fileRef = A13C8C612A8FF27000EC18D8 /* Theme+FreeChat.swift */; };
 		A13C8C662A9027A200EC18D8 /* CopyButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = A13C8C652A9027A200EC18D8 /* CopyButton.swift */; };
 		A13C8C682A902A1200EC18D8 /* CGKeycode+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = A13C8C672A902A1200EC18D8 /* CGKeycode+Extensions.swift */; };
+		A1506D742B0026B4002194F2 /* FeedbackButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1506D732B0026B4002194F2 /* FeedbackButton.swift */; };
 		A15D50CF2A7EF73E00FC1681 /* MessageTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = A15D50CE2A7EF73E00FC1681 /* MessageTextField.swift */; };
 		A15D50D22A7F539800FC1681 /* NavList.swift in Sources */ = {isa = PBXBuildFile; fileRef = A15D50D12A7F539800FC1681 /* NavList.swift */; };
 		A15D50D42A80BCA900FC1681 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A15D50D32A80BCA900FC1681 /* SettingsView.swift */; };
@@ -132,6 +133,7 @@
 		A13C8C612A8FF27000EC18D8 /* Theme+FreeChat.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Theme+FreeChat.swift"; sourceTree = "<group>"; };
 		A13C8C652A9027A200EC18D8 /* CopyButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CopyButton.swift; sourceTree = "<group>"; };
 		A13C8C672A902A1200EC18D8 /* CGKeycode+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CGKeycode+Extensions.swift"; sourceTree = "<group>"; };
+		A1506D732B0026B4002194F2 /* FeedbackButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedbackButton.swift; sourceTree = "<group>"; };
 		A15D50CE2A7EF73E00FC1681 /* MessageTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageTextField.swift; sourceTree = "<group>"; };
 		A15D50D12A7F539800FC1681 /* NavList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavList.swift; sourceTree = "<group>"; };
 		A15D50D32A80BCA900FC1681 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
@@ -254,6 +256,7 @@
 			isa = PBXGroup;
 			children = (
 				A1A286E72A7D8A7D0004967A /* MessageView.swift */,
+				A1506D732B0026B4002194F2 /* FeedbackButton.swift */,
 				A1F617552A782E4F00F2048C /* ConversationView.swift */,
 				A15D50CE2A7EF73E00FC1681 /* MessageTextField.swift */,
 				A19AA5212AA667BE009D9573 /* QuickPromptButton.swift */,
@@ -541,6 +544,7 @@
 				A1F6172F2A782AA200F2048C /* Persistence.swift in Sources */,
 				A12B52E42AA5A99E00658707 /* EditSystemPrompt.swift in Sources */,
 				A19AA5222AA667BE009D9573 /* QuickPromptButton.swift in Sources */,
+				A1506D742B0026B4002194F2 /* FeedbackButton.swift in Sources */,
 				A12FAAF02AC638DE006ACC43 /* DownloadManager.swift in Sources */,
 				A1F617282A782AA100F2048C /* ContentView.swift in Sources */,
 				A1F617322A782AA200F2048C /* Chats.xcdatamodeld in Sources */,
@@ -770,7 +774,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 18;
+				CURRENT_PROJECT_VERSION = 19;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "\"FreeChat/Preview Content\"";
 				DEVELOPMENT_TEAM = 6577JALN5F;
@@ -788,7 +792,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 13.0;
-				MARKETING_VERSION = 1.0.1;
+				MARKETING_VERSION = 1.0.2;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.npc-pet.Chats";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -807,7 +811,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 18;
+				CURRENT_PROJECT_VERSION = 19;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "\"FreeChat/Preview Content\"";
 				DEVELOPMENT_TEAM = 6577JALN5F;
@@ -825,7 +829,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 13.0;
-				MARKETING_VERSION = 1.0.1;
+				MARKETING_VERSION = 1.0.2;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.npc-pet.Chats";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";

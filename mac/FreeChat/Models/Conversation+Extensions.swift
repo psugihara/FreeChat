@@ -13,11 +13,11 @@ extension Conversation {
     let record = self.init(context: ctx)
     record.createdAt = Date()
     record.lastMessageAt = record.createdAt
-    
+
     try ctx.save()
     return record
   }
-  
+
   var orderedMessages: [Message] {
     let set = messages as? Set<Message> ?? []
     return set.sorted {
@@ -40,7 +40,7 @@ extension Conversation {
       return dateTitle
     }
   }
-  
+
   var dateTitle: String {
     (createdAt ?? Date())!.formatted(Conversation.titleFormat)
   }
@@ -52,7 +52,7 @@ extension Conversation {
     .hour()
     .minute()
     .locale(Locale(identifier: "en_US"))
-  
+
   public override func willSave() {
     super.willSave()
 
