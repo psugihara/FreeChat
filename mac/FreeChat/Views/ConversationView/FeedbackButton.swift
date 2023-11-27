@@ -18,8 +18,8 @@ struct FeedbackButton: View {
 
   @Environment(\.managedObjectContext) private var viewContext
 
-//  let host = "http://localhost:3000"
-  let host = "https://www.otherbrain.world"
+  let host = "http://localhost:3000"
+//  let host = "https://www.otherbrain.world"
 
   enum Status {
     case ready
@@ -28,7 +28,7 @@ struct FeedbackButton: View {
     case success
   }
 
-  let message: Message
+  @ObservedObject var message: Message
   let thumbs: ThumbDirection
 
   @State var confirm = false
@@ -52,17 +52,12 @@ struct FeedbackButton: View {
         Image(systemName: "checkmark.circle.fill")
           .help("View Feedback")
       } else {
-        switch status {
-        case .loading:
-          ProgressView().controlSize(.mini)
-        default:
-          if thumbs == .up {
-            Image(systemName: "hand.thumbsup.circle")
-              .help("Share feedback")
-          } else {
-            Image(systemName: "hand.thumbsdown.circle")
-              .help("Share feedback")
-          }
+        if thumbs == .up {
+          Image(systemName: "hand.thumbsup.circle")
+            .help("Share feedback")
+        } else {
+          Image(systemName: "hand.thumbsdown.circle")
+            .help("Share feedback")
         }
       }
     })

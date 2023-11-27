@@ -69,7 +69,9 @@ struct MessageView: View {
   }
 
   var infoLine: some View {
-    HStack(alignment: .center, spacing: 4) {
+    let showButtons = (isHover && overrideText.isEmpty && agentStatus != .processing && agentStatus != .coldProcessing)
+
+    return HStack(alignment: .center, spacing: 4) {
       infoText
       Menu(content: {
         menuContent
@@ -81,8 +83,8 @@ struct MessageView: View {
           .imageScale(.small)
           .frame(minHeight: 16, maxHeight: .infinity)
           .padding(.leading, 3)
-          .padding(.trailing, 3) // expand click area
-        .padding(.vertical, 2)
+          .padding(.trailing, 3) /* expand click area */
+          .padding(.vertical, 2)
           .background(.primary.opacity(0.00001)) // needed to be clickable
       })
         .offset(y: -1)
@@ -90,14 +92,18 @@ struct MessageView: View {
         .popover(isPresented: $showInfoPopover) {
         Text(info).padding(12).font(.caption).textSelection(.enabled)
       }
-        .opacity(isHover && overrideText.isEmpty ? 1 : 0)
+        .opacity(showButtons ? 1 : 0)
         .disabled(!overrideText.isEmpty)
       if m.fromId != Message.USER_SPEAKER_ID {
-        FeedbackButton(message: m, thumbs: .up)
-          .opacity((isHover && overrideText.isEmpty) || m.feedbackId == FeedbackButton.PENDING_FEEDBACK_ID ? 1 : 0)
-        if m.feedbackId == nil {
-          FeedbackButton(message: m, thumbs: .down)
-            .opacity((isHover && overrideText.isEmpty) || m.feedbackId == FeedbackButton.PENDING_FEEDBACK_ID ? 1 : 0)
+        if m.feedbackId == FeedbackButton.PENDING_FEEDBACK_ID {
+          ProgressView().controlSize(.mini)
+        } else {
+          FeedbackButton(message: m, thumbs: .up)
+            .opacity(showButtons ? 1 : 0)
+          if m.feedbackId == nil {
+            FeedbackButton(message: m, thumbs: .down)
+              .opacity(showButtons ? 1 : 0)
+          }
         }
       }
     }.foregroundColor(.gray)
