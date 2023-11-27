@@ -13,7 +13,7 @@ import Splash
 struct MessageView: View {
   @Environment(\.colorScheme) private var colorScheme
 
-  let m: Message
+  @ObservedObject var m: Message
   let overrideText: String // for streaming replies
   let agentStatus: Agent.Status?
 
