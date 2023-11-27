@@ -18,8 +18,8 @@ struct FeedbackButton: View {
 
   @Environment(\.managedObjectContext) private var viewContext
 
-  let host = "http://localhost:3000"
-//  let host = "https://www.otherbrain.world"
+//  let host = "http://localhost:3000"
+  let host = "https://www.otherbrain.world"
 
   enum Status {
     case ready
