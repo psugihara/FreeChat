@@ -18,6 +18,8 @@ struct FeedbackButton: View {
 
   @Environment(\.managedObjectContext) private var viewContext
 
+  @StateObject var network = Network.shared
+
   #if DEBUG
     let host = "http://localhost:3000"
   #else
@@ -37,6 +39,7 @@ struct FeedbackButton: View {
   @State var confirm = false
   @State var showPostSheet = false
   @State var status: Status = .ready
+  @State var showOfflineAlert = false
 
   var body: some View {
     Button(action: {
@@ -45,8 +48,10 @@ struct FeedbackButton: View {
         status != .failure,
         let url = URL(string: "\(host)/api/label-human-feedback/\(feedbackId)") {
         NSWorkspace.shared.open(url)
-      } else {
+      } else if network.isConnected {
         confirm = true
+      } else {
+        showOfflineAlert = true
       }
     }, label: {
       if message.feedbackId != nil,
@@ -74,6 +79,13 @@ struct FeedbackButton: View {
       })
     }, message: {
       Text("Help train future models by publishing this conversation to an open dataset. Please do not share conversations with sensitive info like your real name.")
+    })
+      .alert("You're Offline", isPresented: $showOfflineAlert, actions: {
+      Button("OK") {
+        showOfflineAlert = false
+      }
+    }, message: {
+      Text("Check your internet and try again.")
     })
   }
 
@@ -105,7 +117,9 @@ struct FeedbackButton: View {
         request.httpBody = data
         let (responseData, response) = try await URLSession.shared.data(for: request)
 
-        print("response", response)
+        #if DEBUG
+          print("response", response)
+        #endif
         let statusCode = (response as! HTTPURLResponse).statusCode
 
         if statusCode == 200,
