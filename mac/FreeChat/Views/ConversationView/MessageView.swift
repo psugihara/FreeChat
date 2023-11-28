@@ -100,6 +100,7 @@ struct MessageView: View {
         } else {
           FeedbackButton(message: m, thumbs: .up)
             .opacity(showButtons ? 1 : 0)
+            .padding(.trailing, 3)
           if m.feedbackId == nil {
             FeedbackButton(message: m, thumbs: .down)
               .opacity(showButtons ? 1 : 0)

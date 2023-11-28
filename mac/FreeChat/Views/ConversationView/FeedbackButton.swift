@@ -19,6 +19,7 @@ struct FeedbackButton: View {
   @Environment(\.managedObjectContext) private var viewContext
 
   @StateObject var network = Network.shared
+  @State var isHover = false
 
   #if DEBUG
     let host = "http://localhost:3000"
@@ -40,6 +41,7 @@ struct FeedbackButton: View {
   @State var showPostSheet = false
   @State var status: Status = .ready
   @State var showOfflineAlert = false
+  @State var hover = false
 
   var body: some View {
     Button(action: {
@@ -69,6 +71,9 @@ struct FeedbackButton: View {
         }
       }
     })
+      .animation(Animation.easeOut, value: hover)
+      .onHover { isHovered in hover = isHovered }
+      .opacity(hover ? 1 : 0.8)
       .buttonStyle(.plain)
       .confirmationDialog("Share Feedback", isPresented: $confirm, actions: {
       Button("Cancel", role: .cancel) {
@@ -87,6 +92,7 @@ struct FeedbackButton: View {
     }, message: {
       Text("Check your internet and try again.")
     })
+
   }
 
   private func postFeedback() {
