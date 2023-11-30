@@ -85,15 +85,15 @@ class ConversationManager: ObservableObject {
       agent = Agent(id: "Llama", prompt: convoPrompt, systemPrompt: systemPrompt, modelPath: url.path)
       loadingModelId = model.id?.uuidString ?? Model.unsetModelId
 
-      do {
+//      do {
         model.error = nil
 //        try await agent.warmup()
-      } catch LlamaServerError.modelError {
-        selectedModelId = Model.unsetModelId
-        model.error = "Error loading model"
-      } catch (let error) {
-        print("agent warmup threw unexpected error", error.localizedDescription)
-      }
+//      } catch LlamaServerError.modelError {
+//        selectedModelId = Model.unsetModelId
+//        model.error = "Error loading model"
+//      } catch (let error) {
+//        print("agent warmup threw unexpected error", error.localizedDescription)
+//      }
 
       loadingModelId = nil
       try? viewContext.save()
