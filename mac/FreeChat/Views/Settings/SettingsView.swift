@@ -12,15 +12,15 @@ import KeyboardShortcuts
 struct SettingsView: View {
   static let title = "Settings"
   private static let customizeModelsId = "customizeModels"
-  
+
   @Environment(\.managedObjectContext) private var viewContext
   @EnvironmentObject var conversationManager: ConversationManager
-  
+
   @FetchRequest(
     sortDescriptors: [NSSortDescriptor(keyPath: \Model.size, ascending: true)],
     animation: .default)
   private var models: FetchedResults<Model>
-  
+
   @AppStorage("selectedModelId") private var selectedModelId: String = Model.unsetModelId
   @AppStorage("systemPrompt") private var systemPrompt = Agent.DEFAULT_SYSTEM_PROMPT
   @AppStorage("playSoundEffects") private var playSoundEffects = true
@@ -29,7 +29,7 @@ struct SettingsView: View {
   @State var customizeModels = false
   @State var editSystemPrompt = false
   @State var editFormat = false
-  
+
   var selectedModel: Model? {
     if selectedModelId == Model.unsetModelId {
       models.first
@@ -37,11 +37,11 @@ struct SettingsView: View {
       models.first { i in i.id?.uuidString == selectedModelId }
     }
   }
-  
+
   var globalHotkey: some View {
     KeyboardShortcuts.Recorder("Summon chat", name: .summonFreeChat)
   }
-  
+
   var soundEffects: some View {
     Toggle("Play sound effects", isOn: $playSoundEffects)
   }
@@ -58,27 +58,30 @@ struct SettingsView: View {
             .foregroundColor(Color(NSColor.secondaryLabelColor))
             .padding(.top, 3)
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        
+          .frame(maxWidth: .infinity, alignment: .leading)
+
         Button(action: {
           editSystemPrompt.toggle()
         }, label: {
           Text("Customize")
         })
-        .padding(.leading, 10)
-        .padding(.top, -22.0)
+          .padding(.leading, 10)
+          .padding(.top, -22.0)
       }.frame(maxWidth: .infinity)
     }
   }
-  
+
   var modelPicker: some View {
     VStack(alignment: .leading) {
       Picker("Model", selection: $pickedModel) {
         ForEach(models) { i in
-          Text(i.name ?? i.url?.lastPathComponent ?? "Untitled").tag(i.id?.uuidString ?? "")
-            .help(i.url?.path ?? "Unknown path")
+          if let url = i.url {
+            Text(i.name ?? url.lastPathComponent)
+              .tag(i.id?.uuidString ?? "")
+              .help(url.path)
+          }
         }
-        
+
         Divider().tag(Model.unsetModelId)
         Text("Add or remove models...").tag(SettingsView.customizeModelsId)
       }.onReceive(Just(pickedModel)) { _ in
@@ -89,13 +92,13 @@ struct SettingsView: View {
           selectedModelId = pickedModel
         }
       }
-      
+
       Text("The default model is general purpose, small, and works on most computers. Larger models are slower but wiser. Some models specialize in certain tasks like coding Python. FreeChat is compatible with most models in GGUF format. [Find new models](https://huggingface.co/models?search=GGUF)")
         .font(.callout)
         .foregroundColor(Color(NSColor.secondaryLabelColor))
         .lineLimit(5)
         .fixedSize(horizontal: false, vertical: true)
-      
+
       if let model = selectedModel {
         HStack {
           Text("Prompt format: \(TemplateManager.formatTitle(model.template.format))")
@@ -105,13 +108,13 @@ struct SettingsView: View {
             editFormat = true
           }.buttonStyle(.link).font(.caption)
         }
-        .sheet(isPresented: $editFormat, content: {
+          .sheet(isPresented: $editFormat, content: {
           EditFormat(model: model)
         })
       }
     }
   }
-  
+
   var body: some View {
     Form {
       globalHotkey
@@ -119,18 +122,18 @@ struct SettingsView: View {
       systemPromptEditor
       modelPicker
     }
-    .formStyle(.grouped)
-    .sheet(isPresented: $customizeModels) {
+      .formStyle(.grouped)
+      .sheet(isPresented: $customizeModels) {
       EditModels(selectedModelId: $selectedModelId)
     }
-    .sheet(isPresented: $editSystemPrompt) {
+      .sheet(isPresented: $editSystemPrompt) {
       EditSystemPrompt()
     }
-    .navigationTitle(SettingsView.title)
-    .onAppear {
+      .navigationTitle(SettingsView.title)
+      .onAppear {
       pickedModel = selectedModelId
     }
-    .onChange(of: selectedModelId) { newModelId in
+      .onChange(of: selectedModelId) { newModelId in
       pickedModel = newModelId
       var model: Model?
       if newModelId == Model.unsetModelId {
@@ -144,15 +147,15 @@ struct SettingsView: View {
 
       conversationManager.rebootAgent(systemPrompt: self.systemPrompt, model: model, viewContext: viewContext)
     }
-    .onChange(of: systemPrompt) { nextPrompt in
+      .onChange(of: systemPrompt) { nextPrompt in
       let model: Model? = selectedModel
       guard let model else {
         return
       }
-      
+
       conversationManager.rebootAgent(systemPrompt: self.systemPrompt, model: model, viewContext: viewContext)
     }
-    .frame(minWidth: 300, maxWidth: 600, minHeight: 184, idealHeight: 195, maxHeight: 400, alignment: .center)
+      .frame(minWidth: 300, maxWidth: 600, minHeight: 184, idealHeight: 195, maxHeight: 400, alignment: .center)
   }
 }
 

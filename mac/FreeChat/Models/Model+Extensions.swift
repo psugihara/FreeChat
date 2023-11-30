@@ -12,13 +12,13 @@ import OSLog
 enum ModelCreateError: LocalizedError {
   var errorDescription: String? {
     switch self {
-      case .unknownFormat:
-        "Model files must be in .gguf format"
-      case .accessNotAllowed(let url):
-        "File access not allowed to \(url.absoluteString)"
+    case .unknownFormat:
+      "Model files must be in .gguf format"
+    case .accessNotAllowed(let url):
+      "File access not allowed to \(url.absoluteString)"
     }
   }
-  
+
   case unknownFormat
   case accessNotAllowed(_ url: URL)
 }
@@ -27,7 +27,7 @@ extension Model {
   static let unsetModelId = "unset"
   static let defaultModelUrl = URL(string: "https://huggingface.co/TheBloke/SynthIA-7B-v1.5-GGUF/resolve/main/synthia-7b-v1.5.Q3_K_M.gguf")!
 //  static let defaultModelUrl = URL(string: "http://localhost:8080/synthia-7b-v1.5.Q3_K_M.gguf")!
-  
+
   var url: URL? {
     if bookmark == nil { return nil }
     var stale = false
@@ -38,7 +38,7 @@ extension Model {
         print("error starting security scoped access")
         return nil
       }
-      
+
       if stale {
         print("renewing stale bookmark", res)
         bookmark = try res.bookmarkData(options: [.withSecurityScope, .securityScopeAllowOnlyReadAccess])
@@ -46,15 +46,15 @@ extension Model {
 
       return res
     } catch {
-      print("Error resolving model bookmark", error.localizedDescription)
+      print("Error resolving \(name ?? "unknown model") bookmark", error.localizedDescription)
       return nil
     }
   }
-  
+
   var template: Template {
     TemplateManager.getTemplate(promptTemplate, modelName: name)
   }
-  
+
   public static func create(context: NSManagedObjectContext, fileURL: URL) throws -> Model {
     if fileURL.pathExtension != "gguf" {
       throw ModelCreateError.unknownFormat
@@ -69,7 +69,7 @@ extension Model {
       model.name = fileURL.lastPathComponent
       model.bookmark = try fileURL.bookmarkData(options: [.withSecurityScope, .securityScopeAllowOnlyReadAccess])
       if let attributes = try? FileManager.default.attributesOfItem(atPath: fileURL.path()),
-         let fileSize = attributes[.size] as? Int {
+        let fileSize = attributes[.size] as? Int {
         print("The file size is \(fileSize)")
         model.size = Int32(fileSize / 1000000)
       }
@@ -78,23 +78,23 @@ extension Model {
       if gotAccess {
         fileURL.stopAccessingSecurityScopedResource()
       }
-      
+
       return model
     } catch {
       print("error creating Model", error.localizedDescription)
-      
+
       if gotAccess {
         fileURL.stopAccessingSecurityScopedResource()
       }
 
       throw error
     }
-    
+
   }
-  
+
   public override func willSave() {
     super.willSave()
-    
+
     if !isDeleted, changedValues()["updatedAt"] == nil {
       self.setValue(Date(), forKey: "updatedAt")
     }

@@ -14,19 +14,19 @@ struct EditModels: View {
   @EnvironmentObject var conversationManager: ConversationManager
 
   @Binding var selectedModelId: String
-  
+
   // list state
   @State var editingModelId: String?
   @State var hoveredModelId: String?
-  
+
   @FetchRequest(
     sortDescriptors: [NSSortDescriptor(keyPath: \Model.size, ascending: false)],
     animation: .default)
   private var items: FetchedResults<Model>
-  
+
   @State var showFileImporter = false
   @State var errorText = ""
-  
+
   var bottomToolbar: some View {
     VStack(spacing: 0) {
       Rectangle()
@@ -39,25 +39,25 @@ struct EditModels: View {
           Image(systemName: "plus").padding(.horizontal, 6)
             .frame(maxHeight: .infinity)
         }
-        .frame(maxHeight: .infinity)
-        .padding(.leading, 10)
-        .buttonStyle(.borderless)
-        .help("Add custom model (.gguf file)")
-        .background(Color.white.opacity(0.0001))
-        .fileImporter(
+          .frame(maxHeight: .infinity)
+          .padding(.leading, 10)
+          .buttonStyle(.borderless)
+          .help("Add custom model (.gguf file)")
+          .background(Color.white.opacity(0.0001))
+          .fileImporter(
           isPresented: $showFileImporter,
           allowedContentTypes: [.data],
           onCompletion: importModel
         )
-        
+
         Button(action: deleteEditing) {
           Image(systemName: "minus").padding(.horizontal, 6)
             .frame(maxHeight: .infinity)
         }
-        .frame(maxHeight: .infinity)
-        .buttonStyle(.borderless)
-        .disabled(editingModelId == Model.unsetModelId)
-        
+          .frame(maxHeight: .infinity)
+          .buttonStyle(.borderless)
+          .disabled(editingModelId == Model.unsetModelId)
+
         Spacer()
         if !errorText.isEmpty {
           Text(errorText).foregroundColor(.red)
@@ -66,19 +66,19 @@ struct EditModels: View {
         Button("Select") {
           selectEditing()
         }
-        .keyboardShortcut(.return, modifiers: [])
-        .frame(width: 0)
-        .hidden()
+          .keyboardShortcut(.return, modifiers: [])
+          .frame(width: 0)
+          .hidden()
         Button("Done") {
           dismiss()
         }.padding(.horizontal, 10).keyboardShortcut(.escape)
       }
-      .frame(maxWidth: .infinity, maxHeight: 27, alignment: .leading)
+        .frame(maxWidth: .infinity, maxHeight: 27, alignment: .leading)
     }
-    .background(Material.bar)
+      .background(Material.bar)
   }
-  
-  func modelListItem(_ i: Model) -> some View {
+
+  func modelListItem(_ i: Model, url: URL) -> some View {
     let loading = conversationManager.loadingModelId != nil && conversationManager.loadingModelId == i.id?.uuidString
     return HStack {
       Group {
@@ -88,7 +88,7 @@ struct EditModels: View {
           Text("✓").bold().opacity(selectedModelId == i.id?.uuidString ? 1 : 0)
         }
       }.frame(width: 20)
-      Text(i.name ?? i.url?.lastPathComponent ?? "Untitled").tag(i.id?.uuidString ?? "")
+      Text(i.name ?? url.lastPathComponent).tag(i.id?.uuidString ?? "")
       if i.size != 0 {
         Text("\(String(format: "%.2f", Double(i.size) / 1000.0)) GB")
           .foregroundColor(.secondary)
@@ -103,64 +103,64 @@ struct EditModels: View {
     }.tag(i.id?.uuidString ?? "")
       .padding(4)
       .onHover { hovered in
-        if hovered {
-          hoveredModelId = i.id?.uuidString
-        } else if hoveredModelId == i.id?.uuidString {
-          hoveredModelId = nil
-        }
+      if hovered {
+        hoveredModelId = i.id?.uuidString
+      } else if hoveredModelId == i.id?.uuidString {
+        hoveredModelId = nil
       }
+    }
   }
-  
+
   func hoverSelect(_ modelId: String, loading: Bool = false) -> some View {
     return Button("Select") {
       selectedModelId = modelId
-    }.opacity(hoveredModelId == modelId && selectedModelId != modelId  ? 1 : 0)
+    }.opacity(hoveredModelId == modelId && selectedModelId != modelId ? 1 : 0)
       .disabled(hoveredModelId != modelId || loading || selectedModelId == modelId)
   }
-  
+
   var modelList: some View {
     List(selection: $editingModelId) {
       Section("Models") {
         ForEach(items) { i in
-          modelListItem(i)
-            .help(i.url?.path ?? "Unknown path")
-            .contextMenu {
+          if let url = i.url {
+            modelListItem(i, url: url)
+              .help(url.path)
+              .contextMenu {
               Button("Delete Model") { deleteModel(i) }
-              if let url = i.url {
-                Button("Show in Finder") { showInFinder(url) }
-              }
+              Button("Show in Finder") { showInFinder(url) }
             }
+          }
         }
       }
     }
-    .listStyle(.inset(alternatesRowBackgrounds: true))
-    .onDeleteCommand(perform: deleteEditing)
+      .listStyle(.inset(alternatesRowBackgrounds: true))
+      .onDeleteCommand(perform: deleteEditing)
   }
-  
+
   var body: some View {
     VStack(spacing: 0) {
       modelList
       bottomToolbar
     }.frame(width: 500, height: 290)
   }
-  
+
   private func deleteEditing() {
     errorText = ""
     if let model = items.first(where: { m in m.id?.uuidString == editingModelId }) {
       deleteModel(model)
     }
   }
-  
+
   private func showInFinder(_ url: URL) {
     NSWorkspace.shared.activateFileViewerSelecting([url])
   }
-  
+
   private func selectEditing() {
     if editingModelId != nil {
       selectedModelId = editingModelId!
     }
   }
-  
+
   private func deleteModel(_ model: Model) {
     errorText = ""
     viewContext.delete(model)
@@ -170,34 +170,34 @@ struct EditModels: View {
     }
     editingModelId = nil
   }
-  
+
   private func importModel(result: Result<URL, Error>) {
     errorText = ""
 
     switch result {
-      case .success(let fileURL):
-        // if model has already been added, select it and return
-        let existingModel = items.first(where: { m in m.url == fileURL })
-        if existingModel != nil {
-          DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-            selectedModelId = existingModel!.id?.uuidString ?? selectedModelId
-          }
-          return
+    case .success(let fileURL):
+      // if model has already been added, select it and return
+      let existingModel = items.first(where: { m in m.url == fileURL })
+      if existingModel != nil {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+          selectedModelId = existingModel!.id?.uuidString ?? selectedModelId
         }
-        
-        do {
-          let model = try Model.create(context: viewContext, fileURL: fileURL)
-          DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-            selectedModelId = model.id!.uuidString
-          }
-        } catch let error as ModelCreateError {
-          errorText = error.localizedDescription
-        } catch (let err) {
-          print("Error creating model", err.localizedDescription)
+        return
+      }
+
+      do {
+        let model = try Model.create(context: viewContext, fileURL: fileURL)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+          selectedModelId = model.id!.uuidString
         }
-      case .failure(let error):
-        // handle error
-        print(error)
+      } catch let error as ModelCreateError {
+        errorText = error.localizedDescription
+      } catch (let err) {
+        print("Error creating model", err.localizedDescription)
+      }
+    case .failure(let error):
+      // handle error
+      print(error)
     }
   }
 }
@@ -214,17 +214,17 @@ struct EditModels_Previews_Container: View {
 
 struct EditModels_Previews: PreviewProvider {
   static var previews: some View {
-    
+
     let ctx = PersistenceController.preview.container.viewContext
     let c = try! Conversation.create(ctx: ctx)
     let cm = ConversationManager()
     cm.currentConversation = c
     cm.agent = Agent(id: "llama", prompt: "", systemPrompt: "", modelPath: "")
-    
+
     let question = Message(context: ctx)
     question.conversation = c
     question.text = "how can i check file size in swift?"
-    
+
     let response = Message(context: ctx)
     response.conversation = c
     response.fromId = "llama"
@@ -242,7 +242,7 @@ struct EditModels_Previews: PreviewProvider {
       }
       ```
       """
-    
+
     return EditModels_Previews_Container()
       .environment(\.managedObjectContext, ctx)
       .environmentObject(cm)

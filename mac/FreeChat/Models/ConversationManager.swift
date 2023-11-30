@@ -14,29 +14,29 @@ class ConversationManager: ObservableObject {
   static let shared = ConversationManager()
 
   var summonRegistered = false
-  
+
   @AppStorage("systemPrompt") private var systemPrompt: String = Agent.DEFAULT_SYSTEM_PROMPT
   @AppStorage("selectedModelId") private var selectedModelId: String = Model.unsetModelId
 
   @Published var agent: Agent = Agent(id: "Llama", prompt: "", systemPrompt: "", modelPath: "")
   @Published var loadingModelId: String?
-  
+
   private static var dummyConversation: Conversation = {
     let tempMoc = NSManagedObjectContext(concurrencyType: .mainQueueConcurrencyType)
     return Conversation(context: tempMoc)
   }()
-  
+
   // in the foreground
   @Published var currentConversation: Conversation = ConversationManager.dummyConversation
-  
+
   func showConversation() -> Bool {
     return currentConversation != ConversationManager.dummyConversation
   }
-  
+
   func unsetConversation() {
     currentConversation = ConversationManager.dummyConversation
   }
-  
+
   func bringConversationToFront(openWindow: OpenWindowAction) {
     // bring conversation window to front
     if let conversationWindow = NSApp.windows.first(where: { $0.title == currentConversation.titleWithDefault || $0.title == "FreeChat" }) {
@@ -49,7 +49,7 @@ class ConversationManager: ObservableObject {
 
   func newConversation(viewContext: NSManagedObjectContext, openWindow: OpenWindowAction) {
     bringConversationToFront(openWindow: openWindow)
-    
+
     do {
       // delete old conversations with no messages
       let fetchRequest = Conversation.fetchRequest()
@@ -59,7 +59,7 @@ class ConversationManager: ObservableObject {
           viewContext.delete(conversation)
         }
       }
-      
+
       // make a new convo
       try withAnimation {
         let c = try Conversation.create(ctx: viewContext)
@@ -69,14 +69,14 @@ class ConversationManager: ObservableObject {
       print("error creating new conversation", error.localizedDescription)
     }
   }
-  
+
   @MainActor
   func rebootAgent(systemPrompt: String? = nil, model: Model, viewContext: NSManagedObjectContext) {
     let systemPrompt = systemPrompt ?? self.systemPrompt
     guard let url = model.url else {
       return
     }
-    
+
     Task {
       await agent.llama.stopServer()
 
@@ -87,7 +87,7 @@ class ConversationManager: ObservableObject {
 
       do {
         model.error = nil
-        try await agent.warmup()
+//        try await agent.warmup()
       } catch LlamaServerError.modelError {
         selectedModelId = Model.unsetModelId
         model.error = "Error loading model"
