@@ -43,20 +43,15 @@ class Agent: ObservableObject {
       status = .processing
     }
 
-    print("xxx listenThinkRespond", status, await llama.modelPath)
-
     prompt = template.run(systemPrompt: systemPrompt, messages: messages)
 
     pendingMessage = ""
 
     let response = try! await llama.complete(prompt: prompt, stop: template.stopWords) { partialResponse in
-      print("xxx partial resp", partialResponse)
       DispatchQueue.main.async {
         self.handleCompletionProgress(partialResponse: partialResponse)
       }
     }
-
-    print("xxx did response", response.text)
 
     pendingMessage = response.text
     status = .ready
