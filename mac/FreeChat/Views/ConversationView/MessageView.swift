@@ -55,15 +55,29 @@ struct MessageView: View {
     return parts.joined(separator: "\n")
   }
 
+  var miniInfo: String {
+    var parts: [String] = []
+
+    if let ggufCut = try? Regex(".gguf$"),
+      let modelName = m.modelName?.replacing(ggufCut, with: "") {
+      parts.append("\(modelName)")
+    }
+    if m.predictedPerSecond > 0 {
+      parts.append("\(String(format: "%.1f", m.predictedPerSecond)) tokens/s")
+    }
+
+    return parts.joined(separator: ", ")
+  }
+
   var menuContent: some View {
     Group {
       if m.responseStartSeconds > 0 {
-        Button("Show info") {
+        Button("Advanced details") {
           self.showInfoPopover.toggle()
         }
       }
       if overrideText == "", m.text != nil, !m.text!.isEmpty {
-        CopyButton(text: m.text!, buttonText: "Copy to clipboard")
+        CopyButton(text: m.text!, buttonText: "Copy message to clipboard")
       }
     }
   }
@@ -76,39 +90,49 @@ struct MessageView: View {
       Menu(content: {
         menuContent
       }, label: {
-        Group {
-          Image(systemName: "ellipsis.circle").imageScale(.medium)
-            .background(.clear)
-        }
+        Image(systemName: "ellipsis.circle").imageScale(.medium)
+          .background(.clear)
           .imageScale(.small)
-          .frame(minHeight: 16, maxHeight: .infinity)
-          .padding(.leading, 3)
-          .padding(.trailing, 3) /* expand click area */
-          .padding(.vertical, 2)
+          .padding(.leading, 1)
+          .padding(.horizontal, 3)
+          .frame(width: 15, height: 15)
+          .scaleEffect(CGSize(width: 0.96, height: 0.96))
           .background(.primary.opacity(0.00001)) // needed to be clickable
       })
-        .offset(y: -1)
         .menuStyle(.circle)
         .popover(isPresented: $showInfoPopover) {
         Text(info).padding(12).font(.caption).textSelection(.enabled)
       }
         .opacity(showButtons ? 1 : 0)
         .disabled(!overrideText.isEmpty)
+        .padding(0)
+        .padding(.vertical, 2)
       if m.fromId != Message.USER_SPEAKER_ID {
         if m.feedbackId == FeedbackButton.PENDING_FEEDBACK_ID {
           ProgressView().controlSize(.mini)
         } else {
           FeedbackButton(message: m, thumbs: .up)
             .opacity(showButtons ? 1 : 0)
-            .padding(.trailing, 3)
+            .padding(.leading, 3)
+            .padding(.trailing, 1)
+            .padding(.vertical, 2)
           if m.feedbackId == nil {
             FeedbackButton(message: m, thumbs: .down)
               .opacity(showButtons ? 1 : 0)
+              .padding(.vertical, 2)
+              .padding(.horizontal, 2)
           }
         }
       }
+      if showButtons {
+        Text(miniInfo)
+          .padding(.leading, 2)
+          .font(.caption)
+          .textSelection(.enabled)
+      }
     }.foregroundColor(.gray)
       .fixedSize(horizontal: false, vertical: true)
+      .frame(alignment: .center)
   }
 
   var body: some View {

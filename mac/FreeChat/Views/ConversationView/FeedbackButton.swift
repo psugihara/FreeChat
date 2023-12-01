@@ -59,21 +59,23 @@ struct FeedbackButton: View {
       if message.feedbackId != nil,
         message.feedbackId != FeedbackButton.PENDING_FEEDBACK_ID,
         status != .failure {
-        Image(systemName: "checkmark.circle.fill")
+        Image(systemName: "checkmark.circle.fill").imageScale(.medium)
           .help("View Feedback")
       } else {
         if thumbs == .up {
-          Image(systemName: "hand.thumbsup.circle")
+          Image(systemName: "hand.thumbsup")
+            .imageScale(.small)
             .help("Share feedback")
         } else {
-          Image(systemName: "hand.thumbsdown.circle")
+          Image(systemName: "hand.thumbsdown")
+            .imageScale(.small)
             .help("Share feedback")
         }
       }
     })
       .animation(Animation.easeOut, value: hover)
       .onHover { isHovered in hover = isHovered }
-      .opacity(hover ? 1 : 0.8)
+      .foregroundColor(hover ? .primary : .gray)
       .buttonStyle(.plain)
       .confirmationDialog("Share Feedback", isPresented: $confirm, actions: {
       Button("Cancel", role: .cancel) {
