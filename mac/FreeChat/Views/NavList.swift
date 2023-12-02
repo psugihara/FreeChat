@@ -16,14 +16,14 @@ struct NavList: View {
     sortDescriptors: [NSSortDescriptor(keyPath: \Conversation.lastMessageAt, ascending: false)],
     animation: .default)
   private var items: FetchedResults<Conversation>
-  
+
   @Binding var selection: Set<Conversation>
   @Binding var showDeleteConfirmation: Bool
-  
+
   @State var editing: Conversation?
   @State var newTitle = ""
   @FocusState var fieldFocused
-  
+
   var body: some View {
     List(items, id: \.self, selection: $selection) { item in
       if editing == item {
@@ -31,23 +31,23 @@ struct NavList: View {
           .textFieldStyle(.plain)
           .focused($fieldFocused)
           .onSubmit {
-            saveNewTitle(conversation: item)
-          }
+          saveNewTitle(conversation: item)
+        }
           .onExitCommand {
+          editing = nil
+        }
+          .onChange(of: fieldFocused) { focused in
+          if !focused {
             editing = nil
           }
-          .onChange(of: fieldFocused) { focused in
-            if !focused {
-              editing = nil
-            }
-          }
-          .padding(.trailing, 6)
+        }
+          .padding(.horizontal, 4)
       } else {
         Text(item.titleWithDefault).padding(.leading, 4)
       }
     }
-    .frame(minWidth: 50)
-    .toolbar {
+      .frame(minWidth: 50)
+      .toolbar {
       ToolbarItem {
         Spacer()
       }
@@ -57,10 +57,10 @@ struct NavList: View {
         }
       }
     }
-    .onChange(of: items.count) { _ in
+      .onChange(of: items.count) { _ in
       selection = Set([items.first].compactMap { $0 })
     }
-    .contextMenu(forSelectionType: Conversation.self) { _ in
+      .contextMenu(forSelectionType: Conversation.self) { _ in
       Button {
         deleteSelectedConversations()
       } label: {
@@ -71,11 +71,11 @@ struct NavList: View {
       editing = items.first
       fieldFocused = true
     }
-    .confirmationDialog("Are you sure you want to delete \(selection.count == 1 ? "this" : "\(selection.count)") conversation\(selection.count == 1 ? "" : "s")?", isPresented: $showDeleteConfirmation) {
+      .confirmationDialog("Are you sure you want to delete \(selection.count == 1 ? "this" : "\(selection.count)") conversation\(selection.count == 1 ? "" : "s")?", isPresented: $showDeleteConfirmation) {
       Button("Yes, delete") {
         deleteSelectedConversations()
       }
-      .keyboardShortcut(.defaultAction)
+        .keyboardShortcut(.defaultAction)
     }
   }
 
@@ -84,7 +84,7 @@ struct NavList: View {
     newTitle = ""
     do {
       try viewContext.save()
-      
+
       // HACK: trigger a state change so the title will refresh the title bar
       selection.remove(conversation)
       selection.insert(conversation)
@@ -93,7 +93,7 @@ struct NavList: View {
       print("Unresolved error \(nsError), \(nsError.userInfo)")
     }
   }
-  
+
   private func deleteSelectedConversations() {
     withAnimation {
       selection.forEach(viewContext.delete)
@@ -109,7 +109,7 @@ struct NavList: View {
       }
     }
   }
-  
+
   private func deleteConversation(conversation: Conversation) {
     withAnimation {
       viewContext.delete(conversation)
@@ -121,30 +121,30 @@ struct NavList: View {
       }
     }
   }
-  
+
   private func sortedItems() -> [Conversation] {
     items.sorted(by: { $0.updatedAt!.compare($1.updatedAt!) == .orderedDescending })
   }
-  
+
   private func newConversation() {
     conversationManager.newConversation(viewContext: viewContext, openWindow: openWindow)
   }
 }
 
 #if DEBUG
-struct NavList_Previews_Container : View {
-  @State public var selection: Set<Conversation> = Set()
-  @State public var showDeleteConfirmation = false
+  struct NavList_Previews_Container: View {
+    @State public var selection: Set<Conversation> = Set()
+    @State public var showDeleteConfirmation = false
 
-  var body: some View {
-    NavList(selection: $selection, showDeleteConfirmation: $showDeleteConfirmation)
-      .environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
+    var body: some View {
+      NavList(selection: $selection, showDeleteConfirmation: $showDeleteConfirmation)
+        .environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
+    }
   }
-}
 
-struct NavList_Previews: PreviewProvider {
-  static var previews: some View {
-    NavList_Previews_Container()
+  struct NavList_Previews: PreviewProvider {
+    static var previews: some View {
+      NavList_Previews_Container()
+    }
   }
-}
 #endif
