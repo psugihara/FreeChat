@@ -46,9 +46,7 @@ struct BlurredView: NSViewRepresentable {
     return view
   }
 
-  func updateNSView(_ nsView: NSViewType, context: Context) {
-
-  }
+  func updateNSView(_ nsView: NSViewType, context: Context) { }
 }
 
 struct MessageTextField: View {
