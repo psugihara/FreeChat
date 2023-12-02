@@ -3,7 +3,7 @@
     {
       "color" : {
         "platform" : "osx",
-        "reference" : "windowBackgroundColor"
+        "reference" : "textBackgroundColor"
       },
       "idiom" : "universal"
     },
@@ -16,7 +16,7 @@
       ],
       "color" : {
         "platform" : "osx",
-        "reference" : "controlColor"
+        "reference" : "textBackgroundColor"
       },
       "idiom" : "universal"
     }

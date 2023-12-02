@@ -116,6 +116,7 @@ struct ConversationView: View, Sendable {
     } message: { error in
       Text(error.recoverySuggestion ?? "Try again later.")
     }
+      .background(Color.textBackground)
   }
 
   private func playSendSound() {

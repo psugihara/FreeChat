@@ -21,31 +21,47 @@ struct ChatStyle: TextFieldStyle {
       .padding(EdgeInsets(top: 0, leading: 6, bottom: 0, trailing: 6))
       .padding(8)
       .cornerRadius(cornerRadius)
-      .overlay( // regular border
-        rect.stroke(Color.primary.opacity(0.2), lineWidth: 1)
-      )
-      .overlay( // focus ring
-        rect
-          .stroke(Color.accentColor.opacity(0.3), lineWidth: 1)
-          .scaleEffect(focused ? 1 : 1.02)
-          .shadow(color: .black.opacity(0.1), radius: 2, x: 0, y: 0.5)
-          .opacity(focused ? 1 : 0)
-      )
+      .background(
+      LinearGradient(colors: [Color.textBackground, Color.textBackground.opacity(0.5)], startPoint: .leading, endPoint: .trailing)
+    )
+      .mask(rect)
+      .overlay(rect.stroke(.separator.opacity(0.5), lineWidth: 1)) /* border */
+      .overlay(// focus ring
+    rect
+      .stroke(Color.accentColor.opacity(0.3), lineWidth: 1)
+      .scaleEffect(focused ? 1 : 1.02)
+      .shadow(color: .black.opacity(0.1), radius: 2, x: 0, y: 0.5)
+      .opacity(focused ? 1 : 0)
+    )
       .animation(focused ? .easeIn(duration: 0.2) : .easeOut(duration: 0.0), value: focused)
+  }
+}
+
+struct BlurredView: NSViewRepresentable {
+  func makeNSView(context: Context) -> some NSVisualEffectView {
+    let view = NSVisualEffectView()
+    view.material = .headerView
+    view.blendingMode = .withinWindow
+
+    return view
+  }
+
+  func updateNSView(_ nsView: NSViewType, context: Context) {
+
   }
 }
 
 struct MessageTextField: View {
   @State var input: String = ""
-  
+
   @EnvironmentObject var conversationManager: ConversationManager
-  var conversation: Conversation {  conversationManager.currentConversation }
+  var conversation: Conversation { conversationManager.currentConversation }
 
   var onSubmit: (String) -> Void
   @State var showNullState = false
-  
+
   @FocusState private var focused: Bool
-  
+
   var nullState: some View {
     ScrollView(.horizontal, showsIndicators: false) {
       HStack {
@@ -53,43 +69,44 @@ struct MessageTextField: View {
           QuickPromptButton(input: $input, prompt: p)
         }
       }.padding(.horizontal, 10).padding(.top, 200)
-      
+
     }.frame(maxWidth: .infinity)
   }
-  
+
   var inputField: some View {
     Group {
-      TextField("Message (⌥ + ⏎ for new line)", text: $input, axis: .vertical)
+      TextField("Message", text: $input, axis: .vertical)
         .onSubmit {
-          if CGKeyCode.kVK_Shift.isPressed {
-            input += "\n"
-          } else if input.trimmingCharacters(in: .whitespacesAndNewlines) != "" {
-            onSubmit(input)
-            input = ""
-          }
+        if CGKeyCode.kVK_Shift.isPressed {
+          input += "\n"
+        } else if input.trimmingCharacters(in: .whitespacesAndNewlines) != "" {
+          onSubmit(input)
+          input = ""
         }
+      }
         .focused($focused)
         .textFieldStyle(ChatStyle(focused: focused))
         .submitLabel(.send)
         .padding(.all, 10)
         .onAppear {
-          self.focused = true
-        }
+        self.focused = true
+      }
         .onChange(of: conversation) { nextConversation in
-          if conversationManager.showConversation() {
-            self.focused = true
-            QuickPromptButton.quickPrompts.shuffle()
-          }
+        if conversationManager.showConversation() {
+          self.focused = true
+          QuickPromptButton.quickPrompts.shuffle()
         }
-        .background(.thinMaterial)
+      }
     }
+      .background(BlurredView().ignoresSafeArea())
+
   }
-  
-  
+
+
   var body: some View {
     let messages = conversation.messages
     let showNullState = input == "" && (messages == nil || messages!.count == 0)
-    
+
     VStack(alignment: .trailing) {
       if showNullState {
         nullState.transition(.asymmetric(insertion: .push(from: .trailing), removal: .identity))
