@@ -25,14 +25,7 @@ struct ChatStyle: TextFieldStyle {
       LinearGradient(colors: [Color.textBackground, Color.textBackground.opacity(0.5)], startPoint: .leading, endPoint: .trailing)
     )
       .mask(rect)
-      .overlay(rect.stroke(.separator.opacity(0.5), lineWidth: 1)) /* border */
-      .overlay(// focus ring
-    rect
-      .stroke(Color.accentColor.opacity(0.3), lineWidth: 1)
-      .scaleEffect(focused ? 1 : 1.02)
-      .shadow(color: .black.opacity(0.1), radius: 2, x: 0, y: 0.5)
-      .opacity(focused ? 1 : 0)
-    )
+      .overlay(rect.stroke(.separator, lineWidth: 1)) /* border */
       .animation(focused ? .easeIn(duration: 0.2) : .easeOut(duration: 0.0), value: focused)
   }
 }

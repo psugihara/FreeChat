@@ -114,7 +114,7 @@ struct ConversationView: View, Sendable {
         llamaError = nil
       }
     } message: { error in
-      Text(error.recoverySuggestion ?? "Try again later.")
+      Text(error.recoverySuggestion ?? "")
     }
       .background(Color.textBackground)
   }

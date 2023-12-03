@@ -17,7 +17,7 @@ struct ContentView: View {
   @AppStorage("selectedModelId") private var selectedModelId: String?
   @AppStorage("systemPrompt") private var systemPrompt: String = Agent.DEFAULT_SYSTEM_PROMPT
   @AppStorage("firstLaunchComplete") private var firstLaunchComplete = false
-  
+
   @FetchRequest(
     sortDescriptors: [NSSortDescriptor(keyPath: \Model.size, ascending: false)]
   )
@@ -32,13 +32,13 @@ struct ContentView: View {
   @State private var selection: Set<Conversation> = Set()
   @State private var showDeleteConfirmation = false
   @State private var showWelcome = false
-  
+
   var agent: Agent? {
     conversationManager.agent
   }
-  
+
   @EnvironmentObject var conversationManager: ConversationManager
-  
+
   var body: some View {
     NavigationSplitView {
       NavList(selection: $selection, showDeleteConfirmation: $showDeleteConfirmation)
@@ -54,36 +54,36 @@ struct ContentView: View {
         Text("Select a conversation")
       }
     }
-    .onReceive(NotificationCenter.default.publisher(for: NSApplication.willTerminateNotification), perform: { output in
+      .onReceive(NotificationCenter.default.publisher(for: NSApplication.willTerminateNotification), perform: { output in
       Task {
         await agent?.llama.stopServer()
       }
     })
-    .onDeleteCommand { showDeleteConfirmation = true }
-    .onAppear(perform: initializeFirstLaunchData)
-    .onChange(of: selection) { nextSelection in
+      .onDeleteCommand { showDeleteConfirmation = true }
+      .onAppear(perform: initializeFirstLaunchData)
+      .onChange(of: selection) { nextSelection in
       if nextSelection.count == 1,
-         let first = nextSelection.first {
+        let first = nextSelection.first {
         conversationManager.currentConversation = first
       } else {
         conversationManager.unsetConversation()
       }
     }
-    .onChange(of: conversationManager.currentConversation) { nextCurrent in
+      .onChange(of: conversationManager.currentConversation) { nextCurrent in
       if conversationManager.showConversation(), !selection.contains(nextCurrent) {
         selection = Set([nextCurrent])
       }
     }
-    .onChange(of: models.count, perform: handleModelCountChange)
-    .sheet(isPresented: $showWelcome) {
+      .onChange(of: models.count, perform: handleModelCountChange)
+      .sheet(isPresented: $showWelcome) {
       WelcomeSheet(isPresented: $showWelcome)
     }
   }
-  
+
   private func handleModelCountChange(_ nextCount: Int) {
     showWelcome = showWelcome || nextCount == 0
   }
-  
+
   private func initializeFirstLaunchData() {
     if !conversationManager.summonRegistered {
       KeyboardShortcuts.onKeyUp(for: .summonFreeChat) {
@@ -94,7 +94,7 @@ struct ContentView: View {
     }
 
     handleModelCountChange(models.count)
-    
+
     if firstLaunchComplete { return }
     conversationManager.newConversation(viewContext: viewContext, openWindow: openWindow)
     firstLaunchComplete = true
