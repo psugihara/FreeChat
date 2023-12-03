@@ -279,6 +279,7 @@ struct ConversationView: View, Sendable {
         m.text = response.text
         m.predictedPerSecond = response.predictedPerSecond ?? -1
         m.responseStartSeconds = response.responseStartSeconds
+        m.nPredicted = Int64(response.nPredicted ?? -1)
         m.modelName = response.modelName
         m.updatedAt = Date()
         if m.text == "" {

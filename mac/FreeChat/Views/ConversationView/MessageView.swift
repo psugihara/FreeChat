@@ -46,6 +46,9 @@ struct MessageView: View {
     if m.responseStartSeconds > 0 {
       parts.append("Response started in: \(String(format: "%.3f", m.responseStartSeconds)) seconds")
     }
+    if m.nPredicted > 0 {
+      parts.append("Tokens generated: \(String(format: "%d", m.nPredicted))")
+    }
     if m.predictedPerSecond > 0 {
       parts.append("Tokens generated per second: \(String(format: "%.3f", m.predictedPerSecond))")
     }

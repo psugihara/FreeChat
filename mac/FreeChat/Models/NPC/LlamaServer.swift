@@ -233,7 +233,8 @@ actor LlamaServer {
       text: cleanText,
       responseStartSeconds: responseDiff,
       predictedPerSecond: stopResponse?.timings.predicted_per_second,
-      modelName: modelName
+      modelName: modelName,
+      nPredicted: stopResponse?.tokens_predicted
     )
   }
 
@@ -303,6 +304,7 @@ actor LlamaServer {
     var responseStartSeconds: Double
     var predictedPerSecond: Double?
     var modelName: String?
+    var nPredicted: Int?
   }
 
   struct CompleteParams: Codable {
