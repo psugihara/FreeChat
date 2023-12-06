@@ -24,6 +24,7 @@ struct SettingsView: View {
   @AppStorage("selectedModelId") private var selectedModelId: String = Model.unsetModelId
   @AppStorage("systemPrompt") private var systemPrompt = Agent.DEFAULT_SYSTEM_PROMPT
   @AppStorage("playSoundEffects") private var playSoundEffects = true
+  @AppStorage("showFeedbackButtons") private var showFeedbackButtons = true
 
   @State var pickedModel: String = Model.unsetModelId
   @State var customizeModels = false
@@ -115,12 +116,25 @@ struct SettingsView: View {
     }
   }
 
+  var feedbackButtons: some View {
+    VStack(alignment: .leading) {
+      Toggle("Show feedback buttons", isOn: $showFeedbackButtons)
+
+      Text("The thumb feedback buttons allow you to contribute conversations to an open dataset to help train future models.")
+        .font(.callout)
+        .foregroundColor(Color(NSColor.secondaryLabelColor))
+        .lineLimit(5)
+        .fixedSize(horizontal: false, vertical: true)
+    }
+  }
+
   var body: some View {
     Form {
       globalHotkey
       soundEffects
       systemPromptEditor
       modelPicker
+      feedbackButtons
     }
       .formStyle(.grouped)
       .sheet(isPresented: $customizeModels) {

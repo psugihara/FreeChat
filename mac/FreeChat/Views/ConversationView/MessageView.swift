@@ -21,6 +21,8 @@ struct MessageView: View {
   @State var isHover = false
   @State var animateDots = false
 
+  @AppStorage("showFeedbackButtons") private var showFeedbackButtons = true
+
   init(_ m: Message, overrideText: String = "", agentStatus: Agent.Status?) {
     self.m = m
     self.overrideText = overrideText
@@ -113,7 +115,7 @@ struct MessageView: View {
       if m.fromId != Message.USER_SPEAKER_ID {
         if m.feedbackId == FeedbackButton.PENDING_FEEDBACK_ID {
           ProgressView().controlSize(.mini)
-        } else {
+        } else if showFeedbackButtons {
           FeedbackButton(message: m, thumbs: .up)
             .opacity(showButtons ? 1 : 0)
             .padding(.leading, 3)
