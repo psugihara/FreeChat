@@ -34,35 +34,11 @@ FreeChat is a native LLM appliance for macOS that runs completely locally. Downl
 
 ### Upgrade your models
 
-Once you're up and running, it's fun to try different models in FreeChat. The AI training community is releasing new models basically every day. FreeChat is compatible with any gguf formatted model that [llama.cpp](https://github.com/ggerganov/llama.cpp) works with. Models can be found on [HuggingFace](https://huggingface.co/models?sort=trending&search=gguf). Most models have a "model card" by the author that discusses its training and abilities.
+Once you're up and running, it's fun to try different models in FreeChat. The AI training community is releasing new models basically every day. FreeChat is compatible with any gguf formatted model that [llama.cpp](https://github.com/ggerganov/llama.cpp) works with.
 
 Models are usually named with their parameter count (e.g. 7B) and are formatted with different levels of lossy compression applied (quantization). The general rule of thumb is that models with more parameters tend to be slower and wiser and more quantization makes it dumber.
 
-Here are a few we've tried and recommend:
-
-#### Spicyboros
-
-This is a fun Llama 2 based model for uncensored chat.
-
-- [Spicyboros-7B-2.2-GGUF](https://huggingface.co/TheBloke/Spicyboros-7B-2.2-GGUF?not-for-all-audiences=true)
-- [Spicyboros-13B-2.2-GGUF](https://huggingface.co/TheBloke/Spicyboros-13B-2.2-GGUF?not-for-all-audiences=true)
-- [Spicyboros-70B-2.2-GGUF](https://huggingface.co/TheBloke/Spicyboros-70B-2.2-GGUF?not-for-all-audiences=true)
-
-#### Code Llama
-
-This is the latest set of Llama models from Meta. It is a version of their last foundation model, Llama 2, with additional training on coding tasks. It's good at programming but also has wider knowledge. Read the release note [here](https://about.fb.com/news/2023/08/code-llama-ai-for-coding/).
-
-- [CodeLlama-7B-GGUF](https://huggingface.co/TheBloke/CodeLlama-7B-GGUF)
-- [CodeLlama-13B-GGUF](https://huggingface.co/TheBloke/CodeLlama-13B-GGUF)
-- [CodeLlama-34B-GGUF](https://huggingface.co/TheBloke/CodeLlama-34B-GGUF)
-- [Llama-2-70B-chat-GGUF](https://huggingface.co/TheBloke/Llama-2-70B-chat-GGUF)
-
-#### Samantha
-
-This is an interesting model that's inspired by the AI in the 2013 movie "Her", also named Samantha. It's based on Meta's foundation Llama models but has been trained on philosophy, psychology, and personal relationships. She's an assistant but also want to be a friend.
-
-- [Samantha-1.11-13B-GGUF](https://huggingface.co/TheBloke/Samantha-1.11-13B-GGUF)
-- [Samantha-1.11-CodeLlama-34B-GGUF](https://huggingface.co/TheBloke/Samantha-1.11-CodeLlama-34B-GGUF)
+To find models, try [Otherbrain](https://www.otherbrain.world). Most models have a linked "model card" by the author that discusses its training and abilities.
 
 ## Dev Setup
 
