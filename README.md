@@ -50,7 +50,7 @@ To find models, try [Otherbrain](https://www.otherbrain.world). Most models have
 - [x] Chat with Llama 2 7B without installing anything else
 - [x] Try any llama.cpp compatible model
 - [x] Change system prompts to modify personas or expertise
-- [ ] Download models from within the app (shrink app from 3GB to 10mb, way better for updates)
+- [x] Download models from within the app (shrink app from 3GB to 10mb, way better for updates)
 - [ ] Advanced settings (prompt format, temperature, repeat penalty)
 - [ ] Personas - save system prompt / model settings for later and change personas when you create a new conversation
 - [ ] Search conversations
