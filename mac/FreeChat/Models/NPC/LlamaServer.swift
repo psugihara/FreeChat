@@ -180,8 +180,6 @@ actor LlamaServer {
     request.setValue("keep-alive", forHTTPHeaderField: "Connection")
     request.httpBody = params.toJSON().data(using: .utf8)
 
-    print("temp temp", params.temperature)
-
     // Use EventSource to receive server sent events
     eventSource = EventSource(request: request)
     eventSource!.connect()
@@ -200,23 +198,29 @@ actor LlamaServer {
         // parse json in message.data string then print the data.content value and append it to response
         if let data = message.data?.data(using: .utf8) {
           let decoder = JSONDecoder()
-          let responseObj = try decoder.decode(Response.self, from: data)
-          let fragment = responseObj.content
-          response.append(fragment)
-          progressHandler?(fragment)
-          if responseDiff == 0 {
-            responseDiff = CFAbsoluteTimeGetCurrent() - start
-          }
 
-          if responseObj.stop {
-            do {
-              stopResponse = try decoder.decode(StopResponse.self, from: data)
-            } catch {
-              print("error decoding stopResponse", error as Any, data)
+          do {
+            let responseObj = try decoder.decode(Response.self, from: data)
+            let fragment = responseObj.content
+            response.append(fragment)
+            progressHandler?(fragment)
+            if responseDiff == 0 {
+              responseDiff = CFAbsoluteTimeGetCurrent() - start
             }
-            #if DEBUG
+
+            if responseObj.stop {
+              do {
+                stopResponse = try decoder.decode(StopResponse.self, from: data)
+              } catch {
+                print("error decoding stopResponse", error as Any, data)
+              }
+#if DEBUG
               print("server.cpp stopResponse", NSString(data: data, encoding: String.Encoding.utf8.rawValue) ?? "missing")
-            #endif
+#endif
+              break listenLoop
+            }
+          } catch {
+            print("error decoding responseObj", error as Any, data)
             break listenLoop
           }
         }
@@ -332,6 +336,7 @@ actor LlamaServer {
     var mirostat = 0 // 0/1/2
     var mirostat_tau = 5 // target entropy
     var mirostat_eta = 0.1 // learning rate
+    var cache_prompt = true
 
     func toJSON() -> String {
       let encoder = JSONEncoder()
