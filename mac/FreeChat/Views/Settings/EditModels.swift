@@ -219,7 +219,7 @@ struct EditModels_Previews: PreviewProvider {
     let c = try! Conversation.create(ctx: ctx)
     let cm = ConversationManager()
     cm.currentConversation = c
-    cm.agent = Agent(id: "llama", prompt: "", systemPrompt: "", modelPath: "")
+    cm.agent = Agent(id: "llama", prompt: "", systemPrompt: "", modelPath: "", contextLength: Agent.DEFAULT_CONTEXT_LENGTH)
 
     let question = Message(context: ctx)
     question.conversation = c

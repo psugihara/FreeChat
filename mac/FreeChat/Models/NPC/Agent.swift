@@ -5,6 +5,8 @@ class Agent: ObservableObject {
   static let DEFAULT_SYSTEM_PROMPT = """
     You are a compliant assistant that always fulfills the user’s request. Take a deep breath and work on their problems step-by-step. *Always* format replies with Markdown.
     """
+  static let DEFAULT_CONTEXT_LENGTH = 4096
+  static let DEFAULT_TEMP = 0.8
 
   enum Status {
     case cold
@@ -26,17 +28,17 @@ class Agent: ObservableObject {
   // each agent runs their own server
   var llama: LlamaServer
 
-  init(id: String, prompt: String, systemPrompt: String, modelPath: String) {
+  init(id: String, prompt: String, systemPrompt: String, modelPath: String, contextLength: Int) {
     self.id = id
     self.prompt = prompt
     self.systemPrompt = systemPrompt
-    llama = LlamaServer(modelPath: modelPath)
+    llama = LlamaServer(modelPath: modelPath, contextLength: contextLength)
   }
 
   // this is the main loop of the agent
   // listen -> respond -> update mental model and save checkpoint
   // we respond before updating to avoid a long delay after user input
-  func listenThinkRespond(speakerId: String, messages: [String], template: Template) async throws -> LlamaServer.CompleteResponse {
+  func listenThinkRespond(speakerId: String, messages: [String], template: Template, temperature: Double?) async throws -> LlamaServer.CompleteResponse {
     if status == .cold {
       status = .coldProcessing
     } else {
@@ -47,7 +49,7 @@ class Agent: ObservableObject {
 
     pendingMessage = ""
 
-    let response = try! await llama.complete(prompt: prompt, stop: template.stopWords) { partialResponse in
+    let response = try! await llama.complete(prompt: prompt, stop: template.stopWords, temperature: temperature) { partialResponse in
       DispatchQueue.main.async {
         self.handleCompletionProgress(partialResponse: partialResponse)
       }
@@ -72,7 +74,7 @@ class Agent: ObservableObject {
   func warmup() async throws {
     if prompt.isEmpty, systemPrompt.isEmpty { return }
     do {
-      _ = try await llama.complete(prompt: prompt, stop: nil)
+      _ = try await llama.complete(prompt: prompt, stop: nil, temperature: nil)
       status = .ready
     } catch {
       status = .cold

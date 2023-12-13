@@ -37,6 +37,8 @@
 		A17A2E1F2A79A075006CDD90 /* EventSource in Frameworks */ = {isa = PBXBuildFile; productRef = A17A2E1E2A79A075006CDD90 /* EventSource */; };
 		A17AB1C22ABB4B5E00CD3100 /* CircleMenuStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = A17AB1C12ABB4B5E00CD3100 /* CircleMenuStyle.swift */; };
 		A18A8BAF2B155FC000D2197C /* Network.swift in Sources */ = {isa = PBXBuildFile; fileRef = A18A8BAE2B155FC000D2197C /* Network.swift */; };
+		A18A8BB32B24FC0400D2197C /* AISettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A18A8BB22B24FC0400D2197C /* AISettingsView.swift */; };
+		A18A8BB52B24FC0F00D2197C /* UISettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A18A8BB42B24FC0F00D2197C /* UISettingsView.swift */; };
 		A19AA5222AA667BE009D9573 /* QuickPromptButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = A19AA5212AA667BE009D9573 /* QuickPromptButton.swift */; };
 		A1A286E82A7D8A7D0004967A /* MessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1A286E72A7D8A7D0004967A /* MessageView.swift */; };
 		A1A286F52A7E17750004967A /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1A286F42A7E17750004967A /* main.swift */; };
@@ -143,6 +145,8 @@
 		A17AB1BE2AB8FC4300CD3100 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		A17AB1C12ABB4B5E00CD3100 /* CircleMenuStyle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CircleMenuStyle.swift; sourceTree = "<group>"; };
 		A18A8BAE2B155FC000D2197C /* Network.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Network.swift; sourceTree = "<group>"; };
+		A18A8BB22B24FC0400D2197C /* AISettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AISettingsView.swift; sourceTree = "<group>"; };
+		A18A8BB42B24FC0F00D2197C /* UISettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UISettingsView.swift; sourceTree = "<group>"; };
 		A19AA5212AA667BE009D9573 /* QuickPromptButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickPromptButton.swift; sourceTree = "<group>"; };
 		A1A286E72A7D8A7D0004967A /* MessageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageView.swift; sourceTree = "<group>"; };
 		A1A286F22A7E17750004967A /* server-watchdog */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "server-watchdog"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -271,6 +275,8 @@
 			isa = PBXGroup;
 			children = (
 				A15D50D32A80BCA900FC1681 /* SettingsView.swift */,
+				A18A8BB22B24FC0400D2197C /* AISettingsView.swift */,
+				A18A8BB42B24FC0F00D2197C /* UISettingsView.swift */,
 				A12B52DD2AA5228100658707 /* EditModels.swift */,
 				A12B52E32AA5A99E00658707 /* EditSystemPrompt.swift */,
 				A1156D352AD5AB8700081313 /* EditFormat.swift */,
@@ -540,6 +546,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				A137A38E2AB6B52400BE1AE0 /* Constants.swift in Sources */,
+				A18A8BB52B24FC0F00D2197C /* UISettingsView.swift in Sources */,
 				A13C8C602A8FF03800EC18D8 /* TextOutputFormat.swift in Sources */,
 				A1F6175B2A7838F700F2048C /* Conversation+Extensions.swift in Sources */,
 				A1156D362AD5AB8700081313 /* EditFormat.swift in Sources */,
@@ -570,6 +577,7 @@
 				A12FAAEC2AC5E0C0006ACC43 /* WelcomeSheet.swift in Sources */,
 				A1156D382AD5E75A00081313 /* EnumMap.swift in Sources */,
 				A137A37C2AB3D26C00BE1AE0 /* ObservableScrollView.swift in Sources */,
+				A18A8BB32B24FC0400D2197C /* AISettingsView.swift in Sources */,
 				A1F617562A782E4F00F2048C /* ConversationView.swift in Sources */,
 				A13C8C5A2A8FEEE400EC18D8 /* SplashCodeSyntaxHighlighter.swift in Sources */,
 				A15D50D42A80BCA900FC1681 /* SettingsView.swift in Sources */,

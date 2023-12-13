@@ -37,7 +37,9 @@ func getMachineHardwareName() -> String? {
 }
 
 actor LlamaServer {
-  var modelPath = ""
+
+  var modelPath: String
+  var contextLength: Int
 
   private var process = Process()
   private var outputPipe = Pipe()
@@ -49,8 +51,9 @@ actor LlamaServer {
 
   private var monitor = Process()
 
-  init(modelPath: String) {
+  init(modelPath: String, contextLength: Int) {
     self.modelPath = modelPath
+    self.contextLength = contextLength
   }
 
   // Start a monitor process that will terminate the server when our app dies.
@@ -99,7 +102,7 @@ actor LlamaServer {
     process.arguments = [
       "--model", modelPath,
       "--threads", "\(max(1, ceil(Double(processes) / 3.0 * 2.0)))",
-      "--ctx-size", "4096",
+      "--ctx-size", "\(contextLength)",
       "--port", port,
       // llama crashes on intel macs when gpu-layers != 0, not sure why
       "--n-gpu-layers", getMachineHardwareName() == "arm64" ? "4" : "0"
@@ -146,7 +149,7 @@ actor LlamaServer {
     }
   }
 
-  func complete(prompt: String, stop: [String]?, progressHandler: (@Sendable (String) -> Void)? = nil) async throws -> CompleteResponse {
+  func complete(prompt: String, stop: [String]?, temperature: Double?, progressHandler: (@Sendable (String) -> Void)? = nil) async throws -> CompleteResponse {
     dispatchPrecondition(condition: .notOnQueue(.main))
     #if DEBUG
       print("START PROMPT\n \(prompt) \nEND PROMPT\n\n")
@@ -156,7 +159,7 @@ actor LlamaServer {
     try await startServer()
 
     // hit localhost for completion
-    let params = CompleteParams(
+    var params = CompleteParams(
       prompt: prompt,
       stop: stop ?? ["</s>",
                      "\n\(Message.USER_SPEAKER_ID):",
@@ -166,6 +169,7 @@ actor LlamaServer {
                      "USER:"
       ]
     )
+    if let t = temperature { params.temperature = t }
 
     let url = URL(string: "http://127.0.0.1:\(port)/completion")!
     var request = URLRequest(url: url)
@@ -175,6 +179,8 @@ actor LlamaServer {
     request.setValue("text/event-stream", forHTTPHeaderField: "Accept")
     request.setValue("keep-alive", forHTTPHeaderField: "Connection")
     request.httpBody = params.toJSON().data(using: .utf8)
+
+    print("temp temp", params.temperature)
 
     // Use EventSource to receive server sent events
     eventSource = EventSource(request: request)
@@ -313,13 +319,13 @@ actor LlamaServer {
     var stream = true
     var n_threads = 6
 
-    var n_predict = 1000
-    var temperature = 0.9
-    var repeat_last_n = 512 // 0 = disable penalty, -1 = context size
+    var n_predict = -1
+    var temperature = Agent.DEFAULT_TEMP
+    var repeat_last_n = 128 // 0 = disable penalty, -1 = context size
     var repeat_penalty = 1.18 // 1.0 = disabled
-    var top_k = 20 // <= 0 to use vocab size
-    var top_p = 0.18 // 1.0 = disabled
-    var tfs_z = 0.95 // 1.0 = disabled
+    var top_k = 40 // <= 0 to use vocab size
+    var top_p = 0.95 // 1.0 = disabled
+    var tfs_z = 1.0 // 1.0 = disabled
     var typical_p = 1.0 // 1.0 = disabled
     var presence_penalty = 0.0 // 0.0 = disabled
     var frequency_penalty = 0.0 // 0.0 = disabled

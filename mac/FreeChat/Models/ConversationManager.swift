@@ -16,9 +16,9 @@ class ConversationManager: ObservableObject {
   var summonRegistered = false
 
   @AppStorage("systemPrompt") private var systemPrompt: String = Agent.DEFAULT_SYSTEM_PROMPT
-  @AppStorage("selectedModelId") private var selectedModelId: String = Model.unsetModelId
+  @AppStorage("contextLength") private var contextLength: Int = Agent.DEFAULT_CONTEXT_LENGTH
 
-  @Published var agent: Agent = Agent(id: "Llama", prompt: "", systemPrompt: "", modelPath: "")
+  @Published var agent: Agent = Agent(id: "Llama", prompt: "", systemPrompt: "", modelPath: "", contextLength: Agent.DEFAULT_CONTEXT_LENGTH)
   @Published var loadingModelId: String?
 
   private static var dummyConversation: Conversation = {
@@ -82,18 +82,10 @@ class ConversationManager: ObservableObject {
 
       let messages = currentConversation.orderedMessages.map { $0.text ?? "" }
       let convoPrompt = model.template.run(systemPrompt: systemPrompt, messages: messages)
-      agent = Agent(id: "Llama", prompt: convoPrompt, systemPrompt: systemPrompt, modelPath: url.path)
+      agent = Agent(id: "Llama", prompt: convoPrompt, systemPrompt: systemPrompt, modelPath: url.path, contextLength: contextLength)
       loadingModelId = model.id?.uuidString ?? Model.unsetModelId
 
-//      do {
-        model.error = nil
-//        try await agent.warmup()
-//      } catch LlamaServerError.modelError {
-//        selectedModelId = Model.unsetModelId
-//        model.error = "Error loading model"
-//      } catch (let error) {
-//        print("agent warmup threw unexpected error", error.localizedDescription)
-//      }
+      model.error = nil
 
       loadingModelId = nil
       try? viewContext.save()

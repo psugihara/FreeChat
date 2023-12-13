@@ -15,7 +15,9 @@ struct ConversationView: View, Sendable {
 
   @AppStorage("selectedModelId") private var selectedModelId: String = Model.unsetModelId
   @AppStorage("systemPrompt") private var systemPrompt: String = Agent.DEFAULT_SYSTEM_PROMPT
+  @AppStorage("contextLength") private var contextLength: Int = Agent.DEFAULT_CONTEXT_LENGTH
   @AppStorage("playSoundEffects") private var playSoundEffects = true
+  @AppStorage("temperature") private var temperature: Double?
 
   @FetchRequest(
     sortDescriptors: [NSSortDescriptor(keyPath: \Model.size, ascending: true)],
@@ -151,7 +153,7 @@ struct ConversationView: View, Sendable {
         let modelPath = model.url?.path(percentEncoded: false),
         modelPath != llamaPath {
         await agent.llama.stopServer()
-        agent.llama = LlamaServer(modelPath: modelPath)
+        agent.llama = LlamaServer(modelPath: modelPath, contextLength: contextLength)
 //        try? await agent.warmup(template: model.template)
       } else if agent.status == .cold {
 //        try? await agent.warmup()
@@ -266,7 +268,7 @@ struct ConversationView: View, Sendable {
     Task {
       var response: LlamaServer.CompleteResponse
       do {
-        response = try await agent.listenThinkRespond(speakerId: Message.USER_SPEAKER_ID, messages: messageTexts, template: model.template)
+        response = try await agent.listenThinkRespond(speakerId: Message.USER_SPEAKER_ID, messages: messageTexts, template: model.template, temperature: temperature)
       } catch let error as LlamaServerError {
         handleResponseError(error)
         return
@@ -319,7 +321,7 @@ struct ConversationView: View, Sendable {
   let c = try! Conversation.create(ctx: ctx)
   let cm = ConversationManager()
   cm.currentConversation = c
-  cm.agent = Agent(id: "llama", prompt: "", systemPrompt: "", modelPath: "")
+  cm.agent = Agent(id: "llama", prompt: "", systemPrompt: "", modelPath: "", contextLength: Agent.DEFAULT_CONTEXT_LENGTH)
 
   let question = Message(context: ctx)
   question.conversation = c
@@ -354,7 +356,7 @@ struct ConversationView: View, Sendable {
   let c = try! Conversation.create(ctx: ctx)
   let cm = ConversationManager()
   cm.currentConversation = c
-  cm.agent = Agent(id: "llama", prompt: "", systemPrompt: "", modelPath: "")
+  cm.agent = Agent(id: "llama", prompt: "", systemPrompt: "", modelPath: "", contextLength: Agent.DEFAULT_CONTEXT_LENGTH)
 
   return ConversationView()
     .environment(\.managedObjectContext, ctx)

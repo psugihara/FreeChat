@@ -14,7 +14,6 @@ struct ContentView: View {
   @Environment(\.managedObjectContext) private var viewContext
   @Environment(\.openWindow) private var openWindow
 
-  @AppStorage("selectedModelId") private var selectedModelId: String?
   @AppStorage("systemPrompt") private var systemPrompt: String = Agent.DEFAULT_SYSTEM_PROMPT
   @AppStorage("firstLaunchComplete") private var firstLaunchComplete = false
 
