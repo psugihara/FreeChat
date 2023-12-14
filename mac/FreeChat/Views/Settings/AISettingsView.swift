@@ -106,6 +106,7 @@ struct AISettingsView: View {
         .foregroundColor(Color(NSColor.secondaryLabelColor))
         .lineLimit(5)
         .fixedSize(horizontal: false, vertical: true)
+        .padding(.top, 0.5)
 
       if let model = selectedModel {
         HStack {
@@ -115,6 +116,7 @@ struct AISettingsView: View {
           Button("Edit") {
             editFormat = true
           }.buttonStyle(.link).font(.caption)
+            .offset(x: -4)
         }
           .sheet(isPresented: $editFormat, content: {
           EditFormat(model: model)
@@ -125,44 +127,59 @@ struct AISettingsView: View {
 
   var body: some View {
     Form {
-      systemPromptEditor
-      modelPicker
+      Section {
+        systemPromptEditor
+        modelPicker
+      }
+      Section {
+        DisclosureGroup(isExpanded: $revealAdvanced, content: {
+          VStack(alignment: .leading) {
+            HStack {
+              Text("Configure llama.cpp based on the model you're using.")
+                .foregroundColor(Color(NSColor.secondaryLabelColor))
+              Button("Restore defaults") {
+                contextLength = Agent.DEFAULT_CONTEXT_LENGTH
+                temperature = Agent.DEFAULT_TEMP
+              }.buttonStyle(.link)
+                .offset(x: -5.5)
+            }.font(.callout)
+              .padding(.top, 2.5)
+              .padding(.bottom, 4)
 
-      DisclosureGroup(isExpanded: $revealAdvanced, content: {
-        VStack(alignment: .leading) {
-          HStack {
-            Text("Configure llama.cpp based on the model you're using.")
-              .foregroundColor(Color(NSColor.secondaryLabelColor))
-            Button("Restore defaults") {
-              contextLength = Agent.DEFAULT_CONTEXT_LENGTH
-              temperature = Agent.DEFAULT_TEMP
-            }.buttonStyle(.link)
-          }.font(.callout)
-            .padding(.top, 6)
+            Divider()
 
+            HStack {
+              Text("Context Length")
+              TextField("", value: $contextLength, formatter: contextLengthFormatter)
+                .padding(.vertical, -8)
+                .padding(.trailing, -10)
+            }
+            .padding(.top, 0.5)
 
-          TextField("Context Length", value: $contextLength, formatter: contextLengthFormatter)
-          Slider(value: $temperature, in: 0...2, step: 0.1) {
-            Text("Temperature \(temperatureFormatter.string(from: temperature as NSNumber) ?? "")")
-          } minimumValueLabel: {
-            Text("0")
-          } maximumValueLabel: {
-            Text("2")
-          }.padding(.leading, 10)
-        }
-      }, label: {
-        Button() {
-          withAnimation {
-            revealAdvanced.toggle()
+            Divider()
+
+            HStack {
+              Text("Temperature")
+              Slider(value: $temperature, in: 0...2, step: 0.1).offset(y: 1)
+              Text("\(temperatureFormatter.string(from: temperature as NSNumber) ?? "")")
+                .foregroundStyle(.secondary)
+                .padding(.leading, 4)
+                .frame(width: 24, alignment: .trailing)
+            }.padding(.top, 1)
           }
-        } label: {
-          Text("Advanced Options")
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .background(.white.opacity(0.0001))
-        }
+        }, label: {
+          Button() {
+            withAnimation {
+              revealAdvanced.toggle()
+            }
+          } label: {
+            Text("Advanced Options")
+              .frame(maxWidth: .infinity, alignment: .leading)
+              .background(.white.opacity(0.0001))
+          }
           .buttonStyle(.plain)
-      })
-
+        })
+      }
     }
       .formStyle(.grouped)
       .sheet(isPresented: $customizeModels) {
