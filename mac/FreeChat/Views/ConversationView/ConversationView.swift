@@ -284,14 +284,8 @@ struct ConversationView: View, Sendable {
         m.nPredicted = Int64(response.nPredicted ?? -1)
         m.modelName = response.modelName
         m.updatedAt = Date()
-        if m.text == "" {
-          if m == pendingMessage {
-            pendingMessage = nil
-          }
-          viewContext.delete(m)
-        } else {
-          playReceiveSound()
-        }
+
+        playReceiveSound()
         do {
           try viewContext.save()
         } catch {

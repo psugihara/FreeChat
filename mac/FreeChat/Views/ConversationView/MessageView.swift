@@ -12,6 +12,7 @@ import Splash
 
 struct MessageView: View {
   @Environment(\.colorScheme) private var colorScheme
+  @EnvironmentObject private var conversationManager: ConversationManager
 
   @ObservedObject var m: Message
   let overrideText: String // for streaming replies
@@ -88,10 +89,20 @@ struct MessageView: View {
   }
 
   var infoLine: some View {
-    let showButtons = (isHover && overrideText.isEmpty && agentStatus != .processing && agentStatus != .coldProcessing)
+    let processing = !(overrideText.isEmpty && agentStatus != .processing && agentStatus != .coldProcessing)
+    let showButtons = isHover && !processing
 
     return HStack(alignment: .center, spacing: 4) {
       infoText
+      if processing {
+        Button(action: {
+          Task {
+            await conversationManager.agent.interrupt()
+          }
+        }, label: {
+          Image(systemName: "stop.circle").help("Stop generating text")
+        }).buttonStyle(.plain)
+      }
       Menu(content: {
         menuContent
       }, label: {
