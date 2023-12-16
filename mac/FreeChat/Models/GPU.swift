@@ -22,8 +22,7 @@ final class GPU: ObservableObject {
     let retVal = uname(&sysInfo)
     var finalString: String? = nil
 
-    if retVal == EXIT_SUCCESS
-    {
+    if retVal == EXIT_SUCCESS {
       let bytes = Data(bytes: &sysInfo.machine, count: Int(_SYS_NAMELEN))
       finalString = String(data: bytes, encoding: .utf8)
     }
