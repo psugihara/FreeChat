@@ -1,5 +1,6 @@
 @preconcurrency import EventSource
 import Foundation
+import SwiftUI
 import os.lock
 
 func removeUnmatchedTrailingQuote(_ inputString: String) -> String {
@@ -7,9 +8,11 @@ func removeUnmatchedTrailingQuote(_ inputString: String) -> String {
   if inputString.last != "\"" { return outputString }
 
   // Count the number of quotes in the string
-  let countOfQuotes = outputString.reduce(0, { (count, character) -> Int in
-    return character == "\"" ? count + 1 : count
-  })
+  let countOfQuotes = outputString.reduce(
+    0,
+    { (count, character) -> Int in
+      return character == "\"" ? count + 1 : count
+    })
 
   // If there is an odd number of quotes, remove the last one
   if countOfQuotes % 2 != 0 {
@@ -21,26 +24,14 @@ func removeUnmatchedTrailingQuote(_ inputString: String) -> String {
   return outputString
 }
 
-func getMachineHardwareName() -> String? {
-  var sysInfo = utsname()
-  let retVal = uname(&sysInfo)
-  var finalString: String? = nil
-
-  if retVal == EXIT_SUCCESS
-  {
-    let bytes = Data(bytes: &sysInfo.machine, count: Int(_SYS_NAMELEN))
-    finalString = String(data: bytes, encoding: .utf8)
-  }
-
-  // _SYS_NAMELEN will include a billion null-terminators. Clear those out so string comparisons work as you expect.
-  return finalString?.trimmingCharacters(in: CharacterSet(charactersIn: "\0"))
-}
-
 actor LlamaServer {
 
   var modelPath: String
   var contextLength: Int
 
+  @AppStorage("useGPU") private var useGPU: Bool = Agent.DEFAULT_USE_GPU
+
+  private let gpu = GPU.shared
   private var process = Process()
   private var outputPipe = Pipe()
   private var serverUp = false
@@ -63,7 +54,9 @@ actor LlamaServer {
     monitor.arguments = [String(serverPID)]
 
     #if DEBUG
-      print("starting \(monitor.executableURL!.absoluteString) \(monitor.arguments!.joined(separator: " "))")
+      print(
+        "starting \(monitor.executableURL!.absoluteString) \(monitor.arguments!.joined(separator: " "))"
+      )
     #endif
 
     let hearbeat = Pipe()
@@ -96,7 +89,6 @@ actor LlamaServer {
 
     let startTime = DispatchTime.now()
 
-
     process.executableURL = Bundle.main.url(forAuxiliaryExecutable: "freechat-server")
     let processes = ProcessInfo.processInfo.activeProcessorCount
     process.arguments = [
@@ -104,8 +96,7 @@ actor LlamaServer {
       "--threads", "\(max(1, ceil(Double(processes) / 3.0 * 2.0)))",
       "--ctx-size", "\(contextLength)",
       "--port", port,
-      // llama crashes on intel macs when gpu-layers != 0, not sure why
-      "--n-gpu-layers", getMachineHardwareName() == "arm64" ? "4" : "0"
+      "--n-gpu-layers", gpu.available && useGPU ? "4" : "0",
     ]
 
     print("starting llama.cpp server \(process.arguments!.joined(separator: " "))")
@@ -119,12 +110,11 @@ actor LlamaServer {
     process.standardError = outputPipe
 
     guard
-    outputPipe.fileHandleForWriting.fileDescriptor != -1,
+      outputPipe.fileHandleForWriting.fileDescriptor != -1,
       outputPipe.fileHandleForReading.fileDescriptor != -1
-      else {
+    else {
       throw LlamaServerError.pipeFail
     }
-
 
     try process.run()
 
@@ -149,7 +139,10 @@ actor LlamaServer {
     }
   }
 
-  func complete(prompt: String, stop: [String]?, temperature: Double?, progressHandler: (@Sendable (String) -> Void)? = nil) async throws -> CompleteResponse {
+  func complete(
+    prompt: String, stop: [String]?, temperature: Double?,
+    progressHandler: (@Sendable (String) -> Void)? = nil
+  ) async throws -> CompleteResponse {
     dispatchPrecondition(condition: .notOnQueue(.main))
     #if DEBUG
       print("START PROMPT\n \(prompt) \nEND PROMPT\n\n")
@@ -161,12 +154,13 @@ actor LlamaServer {
     // hit localhost for completion
     var params = CompleteParams(
       prompt: prompt,
-      stop: stop ?? ["</s>",
-                     "\n\(Message.USER_SPEAKER_ID):",
-                     "\n\(Message.USER_SPEAKER_ID.lowercased()):",
-                     "[/INST]",
-                     "[INST]",
-                     "USER:"
+      stop: stop ?? [
+        "</s>",
+        "\n\(Message.USER_SPEAKER_ID):",
+        "\n\(Message.USER_SPEAKER_ID.lowercased()):",
+        "[/INST]",
+        "[INST]",
+        "USER:",
       ]
     )
     if let t = temperature { params.temperature = t }
@@ -214,9 +208,11 @@ actor LlamaServer {
               } catch {
                 print("error decoding stopResponse", error as Any, data)
               }
-#if DEBUG
-              print("server.cpp stopResponse", NSString(data: data, encoding: String.Encoding.utf8.rawValue) ?? "missing")
-#endif
+              #if DEBUG
+                print(
+                  "server.cpp stopResponse",
+                  NSString(data: data, encoding: String.Encoding.utf8.rawValue) ?? "missing")
+              #endif
               break listenLoop
             }
           } catch {
@@ -236,7 +232,8 @@ actor LlamaServer {
     }
 
     // adding a trailing quote or space is a common mistake with the smaller model output
-    let cleanText = removeUnmatchedTrailingQuote(response).trimmingCharacters(in: .whitespacesAndNewlines)
+    let cleanText = removeUnmatchedTrailingQuote(response).trimmingCharacters(
+      in: .whitespacesAndNewlines)
 
     let modelName = stopResponse?.model.split(separator: "/").last?.map { String($0) }.joined()
     return CompleteResponse(
@@ -273,7 +270,8 @@ actor LlamaServer {
       }
     }
 
-    let modelName = modelPath.split(separator: "/").last?.map { String($0) }.joined() ?? "Unknown model name"
+    let modelName =
+      modelPath.split(separator: "/").last?.map { String($0) }.joined() ?? "Unknown model name"
 
     var timeout = 60
     let tick = 1
@@ -325,17 +323,17 @@ actor LlamaServer {
 
     var n_predict = -1
     var temperature = Agent.DEFAULT_TEMP
-    var repeat_last_n = 128 // 0 = disable penalty, -1 = context size
-    var repeat_penalty = 1.18 // 1.0 = disabled
-    var top_k = 40 // <= 0 to use vocab size
-    var top_p = 0.95 // 1.0 = disabled
-    var tfs_z = 1.0 // 1.0 = disabled
-    var typical_p = 1.0 // 1.0 = disabled
-    var presence_penalty = 0.0 // 0.0 = disabled
-    var frequency_penalty = 0.0 // 0.0 = disabled
-    var mirostat = 0 // 0/1/2
-    var mirostat_tau = 5 // target entropy
-    var mirostat_eta = 0.1 // learning rate
+    var repeat_last_n = 128  // 0 = disable penalty, -1 = context size
+    var repeat_penalty = 1.18  // 1.0 = disabled
+    var top_k = 40  // <= 0 to use vocab size
+    var top_p = 0.95  // 1.0 = disabled
+    var tfs_z = 1.0  // 1.0 = disabled
+    var typical_p = 1.0  // 1.0 = disabled
+    var presence_penalty = 0.0  // 0.0 = disabled
+    var frequency_penalty = 0.0  // 0.0 = disabled
+    var mirostat = 0  // 0/1/2
+    var mirostat_tau = 5  // target entropy
+    var mirostat_eta = 0.1  // learning rate
     var cache_prompt = true
 
     func toJSON() -> String {

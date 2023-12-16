@@ -7,11 +7,12 @@ class Agent: ObservableObject {
     """
   static let DEFAULT_CONTEXT_LENGTH = 4096
   static let DEFAULT_TEMP = 0.8
+  static let DEFAULT_USE_GPU = true
 
   enum Status {
     case cold
     case coldProcessing
-    case ready // warmed up
+    case ready  // warmed up
     case processing
   }
 
@@ -38,7 +39,9 @@ class Agent: ObservableObject {
   // this is the main loop of the agent
   // listen -> respond -> update mental model and save checkpoint
   // we respond before updating to avoid a long delay after user input
-  func listenThinkRespond(speakerId: String, messages: [String], template: Template, temperature: Double?) async throws -> LlamaServer.CompleteResponse {
+  func listenThinkRespond(
+    speakerId: String, messages: [String], template: Template, temperature: Double?
+  ) async throws -> LlamaServer.CompleteResponse {
     if status == .cold {
       status = .coldProcessing
     } else {
@@ -49,7 +52,9 @@ class Agent: ObservableObject {
 
     pendingMessage = ""
 
-    let response = try! await llama.complete(prompt: prompt, stop: template.stopWords, temperature: temperature) { partialResponse in
+    let response = try! await llama.complete(
+      prompt: prompt, stop: template.stopWords, temperature: temperature
+    ) { partialResponse in
       DispatchQueue.main.async {
         self.handleCompletionProgress(partialResponse: partialResponse)
       }

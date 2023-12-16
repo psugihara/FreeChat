@@ -24,12 +24,15 @@ struct AISettingsView: View {
   @AppStorage("systemPrompt") private var systemPrompt = Agent.DEFAULT_SYSTEM_PROMPT
   @AppStorage("contextLength") private var contextLength = Agent.DEFAULT_CONTEXT_LENGTH
   @AppStorage("temperature") private var temperature: Double = Agent.DEFAULT_TEMP
+  @AppStorage("useGPU") private var useGPU = Agent.DEFAULT_USE_GPU
 
   @State var pickedModel: String = Model.unsetModelId
   @State var customizeModels = false
   @State var editSystemPrompt = false
   @State var editFormat = false
   @State var revealAdvanced = false
+
+  @StateObject var gpu = GPU.shared
 
   let contextLengthFormatter: NumberFormatter = {
     let formatter = NumberFormatter()
@@ -166,6 +169,12 @@ struct AISettingsView: View {
                 .padding(.leading, 4)
                 .frame(width: 24, alignment: .trailing)
             }.padding(.top, 1)
+
+            if gpu.available {
+              Divider()
+
+              Toggle("Use GPU Acceleration", isOn: $useGPU).padding(.top, 1)
+            }
           }
         }, label: {
           Button() {
@@ -183,37 +192,45 @@ struct AISettingsView: View {
     }
       .formStyle(.grouped)
       .sheet(isPresented: $customizeModels) {
-      EditModels(selectedModelId: $selectedModelId)
-    }
+        EditModels(selectedModelId: $selectedModelId)
+      }
       .sheet(isPresented: $editSystemPrompt) {
-      EditSystemPrompt()
-    }
+        EditSystemPrompt()
+      }
       .navigationTitle(AISettingsView.title)
       .onAppear {
-      pickedModel = selectedModelId
-    }
+        pickedModel = selectedModelId
+      }
       .onChange(of: selectedModelId) { newModelId in
-      pickedModel = newModelId
-      var model: Model?
-      if newModelId == Model.unsetModelId {
-        model = models.first
-      } else {
-        model = models.first { i in i.id?.uuidString == newModelId }
-      }
-      guard let model else {
-        return
-      }
+        pickedModel = newModelId
+        var model: Model?
+        if newModelId == Model.unsetModelId {
+          model = models.first
+        } else {
+          model = models.first { i in i.id?.uuidString == newModelId }
+        }
+        guard let model else {
+          return
+        }
 
-      conversationManager.rebootAgent(systemPrompt: self.systemPrompt, model: model, viewContext: viewContext)
-    }
+        conversationManager.rebootAgent(systemPrompt: self.systemPrompt, model: model, viewContext: viewContext)
+      }
       .onChange(of: systemPrompt) { nextPrompt in
-      let model: Model? = selectedModel
-      guard let model else {
-        return
-      }
+        let model: Model? = selectedModel
+        guard let model else {
+          return
+        }
 
-      conversationManager.rebootAgent(systemPrompt: self.systemPrompt, model: model, viewContext: viewContext)
-    }
+        conversationManager.rebootAgent(systemPrompt: nextPrompt, model: model, viewContext: viewContext)
+      }
+      .onChange(of: useGPU) { nextUseGPU in
+        let model: Model? = selectedModel
+        guard let model else {
+          return
+        }
+
+        conversationManager.rebootAgent(systemPrompt: self.systemPrompt, model: model, viewContext: viewContext)
+      }
       .frame(minWidth: 300, maxWidth: 600, minHeight: 184, idealHeight: 195, maxHeight: 400, alignment: .center)
   }
 }
