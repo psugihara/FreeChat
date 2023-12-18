@@ -5,10 +5,10 @@
 //  Created by Peter Sugihara on 7/31/23.
 //
 
-import SwiftUI
+import AppKit
 import CoreData
 import KeyboardShortcuts
-import AppKit
+import SwiftUI
 
 struct ContentView: View {
   @Environment(\.managedObjectContext) private var viewContext
@@ -27,10 +27,10 @@ struct ContentView: View {
   )
   private var conversations: FetchedResults<Conversation>
 
-
   @State private var selection: Set<Conversation> = Set()
   @State private var showDeleteConfirmation = false
   @State private var showWelcome = false
+  @State private var setInitialSelection = false
 
   var agent: Agent? {
     conversationManager.agent
@@ -40,8 +40,10 @@ struct ContentView: View {
 
   var body: some View {
     NavigationSplitView {
-      NavList(selection: $selection, showDeleteConfirmation: $showDeleteConfirmation)
-        .navigationSplitViewColumnWidth(min: 160, ideal: 160)
+      if setInitialSelection {
+        NavList(selection: $selection, showDeleteConfirmation: $showDeleteConfirmation)
+          .navigationSplitViewColumnWidth(min: 160, ideal: 160)
+      }
     } detail: {
       if selection.count > 1 {
         Text("\(selection.count) conversations selected")
@@ -53,28 +55,34 @@ struct ContentView: View {
         Text("Select a conversation")
       }
     }
-      .onReceive(NotificationCenter.default.publisher(for: NSApplication.willTerminateNotification), perform: { output in
-      Task {
-        await agent?.llama.stopServer()
+    .onReceive(
+      NotificationCenter.default.publisher(for: NSApplication.willTerminateNotification),
+      perform: { output in
+        Task {
+          await agent?.llama.stopServer()
+        }
       }
-    })
-      .onDeleteCommand { showDeleteConfirmation = true }
-      .onAppear(perform: initializeFirstLaunchData)
-      .onChange(of: selection) { nextSelection in
+    )
+    .onDeleteCommand { showDeleteConfirmation = true }
+    .onAppear(perform: initializeFirstLaunchData)
+    .onChange(of: selection) { nextSelection in
       if nextSelection.count == 1,
-        let first = nextSelection.first {
-        conversationManager.currentConversation = first
+        let first = nextSelection.first
+      {
+        if first != conversationManager.currentConversation {
+          conversationManager.currentConversation = first
+        }
       } else {
         conversationManager.unsetConversation()
       }
     }
-      .onChange(of: conversationManager.currentConversation) { nextCurrent in
+    .onChange(of: conversationManager.currentConversation) { nextCurrent in
       if conversationManager.showConversation(), !selection.contains(nextCurrent) {
         selection = Set([nextCurrent])
       }
     }
-      .onChange(of: models.count, perform: handleModelCountChange)
-      .sheet(isPresented: $showWelcome) {
+    .onChange(of: models.count, perform: handleModelCountChange)
+    .sheet(isPresented: $showWelcome) {
       WelcomeSheet(isPresented: $showWelcome)
     }
   }
@@ -84,6 +92,11 @@ struct ContentView: View {
   }
 
   private func initializeFirstLaunchData() {
+    if let c = conversations.last {
+      selection = Set([c])
+    }
+    setInitialSelection = true
+
     if !conversationManager.summonRegistered {
       KeyboardShortcuts.onKeyUp(for: .summonFreeChat) {
         NSApp.activate(ignoringOtherApps: true)
