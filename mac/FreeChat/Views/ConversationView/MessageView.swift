@@ -194,12 +194,18 @@ struct MessageView: View {
 
       VStack(alignment: .leading, spacing: 1) {
         infoLine
-        Markdown(messageText)
-          .markdownTheme(.freeChat)
-          .markdownCodeSyntaxHighlighter(.splash(theme: self.theme))
-          .textSelection(.enabled)
-          .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
-          .transition(.identity)
+        Group {
+          if m.fromId == Message.USER_SPEAKER_ID {
+            Text(messageText)
+          } else {
+            Markdown(messageText)
+              .markdownTheme(.freeChat)
+              .markdownCodeSyntaxHighlighter(.splash(theme: self.theme))
+          }
+        }
+        .textSelection(.enabled)
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
+        .transition(.identity)
       }
         .padding(.top, 3)
         .padding(.bottom, 8)
@@ -247,7 +253,7 @@ struct MessageView_Previews: PreviewProvider {
       inContext: ctx
     )
     let m2 = try! Message.create(
-      text: "Doing pretty well, can you write me some code?",
+      text: "Doing pretty well, can *you* write me some code?",
       fromId: Message.USER_SPEAKER_ID,
       conversation: c,
       systemPrompt: "you are a system prompt",
