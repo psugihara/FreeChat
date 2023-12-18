@@ -57,27 +57,25 @@ struct AISettingsView: View {
   }
 
   var systemPromptEditor: some View {
-    LabeledContent("System prompt") {
-      ZStack(alignment: .topTrailing) {
-        HStack {
-          Text(systemPrompt)
-            .font(.callout)
-            .multilineTextAlignment(.leading)
-            .lineLimit(6, reservesSpace: false)
-            .fixedSize(horizontal: false, vertical: true)
-            .foregroundColor(Color(NSColor.secondaryLabelColor))
-            .padding(.top, 3)
-        }
-          .frame(maxWidth: .infinity, alignment: .leading)
-
+    VStack {
+      HStack {
+        Text("System prompt")
+        Spacer()
         Button(action: {
           editSystemPrompt.toggle()
         }, label: {
           Text("Customize")
         })
-          .padding(.leading, 10)
-          .padding(.top, -22.0)
-      }.frame(maxWidth: .infinity)
+        .padding(.leading, 10)
+      }
+      Text(systemPrompt)
+        .font(.callout)
+        .multilineTextAlignment(.leading)
+        .lineLimit(6, reservesSpace: false)
+        .fixedSize(horizontal: false, vertical: true)
+        .foregroundColor(Color(NSColor.secondaryLabelColor))
+        .padding(.top, 0.5)
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
   }
 
