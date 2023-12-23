@@ -18,8 +18,6 @@
 		A12FAAEC2AC5E0C0006ACC43 /* WelcomeSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = A12FAAEB2AC5E0C0006ACC43 /* WelcomeSheet.swift */; };
 		A12FAAF02AC638DE006ACC43 /* DownloadManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A12FAAEF2AC638DE006ACC43 /* DownloadManager.swift */; };
 		A137A37C2AB3D26C00BE1AE0 /* ObservableScrollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A137A37B2AB3D26C00BE1AE0 /* ObservableScrollView.swift */; };
-		A137A3842AB4FDAD00BE1AE0 /* freechat-server in Embed helper tools */ = {isa = PBXBuildFile; fileRef = A137A3822AB4FD4800BE1AE0 /* freechat-server */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		A137A3892AB502E500BE1AE0 /* ggml-metal.metal in Copy Metal */ = {isa = PBXBuildFile; fileRef = A137A3872AB502DB00BE1AE0 /* ggml-metal.metal */; };
 		A137A38C2AB6B2F800BE1AE0 /* KeyboardShortcuts in Frameworks */ = {isa = PBXBuildFile; productRef = A137A38B2AB6B2F800BE1AE0 /* KeyboardShortcuts */; };
 		A137A38E2AB6B52400BE1AE0 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = A137A38D2AB6B52400BE1AE0 /* Constants.swift */; };
 		A13C8C5A2A8FEEE400EC18D8 /* SplashCodeSyntaxHighlighter.swift in Sources */ = {isa = PBXBuildFile; fileRef = A13C8C592A8FEEE400EC18D8 /* SplashCodeSyntaxHighlighter.swift */; };
@@ -42,9 +40,13 @@
 		A18A8BB52B24FC0F00D2197C /* UISettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A18A8BB42B24FC0F00D2197C /* UISettingsView.swift */; };
 		A19AA5222AA667BE009D9573 /* QuickPromptButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = A19AA5212AA667BE009D9573 /* QuickPromptButton.swift */; };
 		A1A286E82A7D8A7D0004967A /* MessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1A286E72A7D8A7D0004967A /* MessageView.swift */; };
-		A1A286F52A7E17750004967A /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1A286F42A7E17750004967A /* main.swift */; };
-		A1A286FD2A7E1E460004967A /* server-watchdog in Embed helper tools */ = {isa = PBXBuildFile; fileRef = A1A286F22A7E17750004967A /* server-watchdog */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		A1CA32442AAF877600F9D488 /* ConversationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1CA32432AAF877600F9D488 /* ConversationManager.swift */; };
+		A1DD83F02B3646790091E420 /* llama.cpp.swift in Resources */ = {isa = PBXBuildFile; fileRef = A1DD83ED2B3646790091E420 /* llama.cpp.swift */; };
+		A1DD83F22B3646AC0091E420 /* LlamaState.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1DD83F12B3646AC0091E420 /* LlamaState.swift */; };
+		A1DD84052B364A3A0091E420 /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A1DD84042B364A3A0091E420 /* Accelerate.framework */; };
+		A1DD84072B364A420091E420 /* Metal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A1DD84062B364A420091E420 /* Metal.framework */; };
+		A1DD84182B3745120091E420 /* LibLlama.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1DD84172B3745120091E420 /* LibLlama.swift */; };
+		A1DD84212B3747F00091E420 /* llama in Frameworks */ = {isa = PBXBuildFile; productRef = A1DD84202B3747F00091E420 /* llama */; };
 		A1E4A6942A82B41F00BF9D34 /* Model+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1E4A6932A82B41F00BF9D34 /* Model+Extensions.swift */; };
 		A1F617262A782AA100F2048C /* FreeChat.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1F617252A782AA100F2048C /* FreeChat.swift */; };
 		A1F617282A782AA100F2048C /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1F617272A782AA100F2048C /* ContentView.swift */; };
@@ -60,13 +62,6 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		A1A286FA2A7E1ACD0004967A /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = A1F6171A2A782AA100F2048C /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = A1A286F12A7E17750004967A;
-			remoteInfo = "server-watchdog";
-		};
 		A1F617392A782AA200F2048C /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = A1F6171A2A782AA100F2048C /* Project object */;
@@ -84,34 +79,12 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		A19AFCC02A8D631900F96A4D /* Copy Metal */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 7;
-			files = (
-				A137A3892AB502E500BE1AE0 /* ggml-metal.metal in Copy Metal */,
-			);
-			name = "Copy Metal";
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		A1A286F02A7E17750004967A /* CopyFiles */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = /usr/share/man/man1/;
-			dstSubfolderSpec = 0;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 1;
-		};
 		A1A286FC2A7E1E2D0004967A /* Embed helper tools */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "";
 			dstSubfolderSpec = 6;
 			files = (
-				A137A3842AB4FDAD00BE1AE0 /* freechat-server in Embed helper tools */,
-				A1A286FD2A7E1E460004967A /* server-watchdog in Embed helper tools */,
 			);
 			name = "Embed helper tools";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -129,8 +102,6 @@
 		A12FAAEB2AC5E0C0006ACC43 /* WelcomeSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeSheet.swift; sourceTree = "<group>"; };
 		A12FAAEF2AC638DE006ACC43 /* DownloadManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownloadManager.swift; sourceTree = "<group>"; };
 		A137A37B2AB3D26C00BE1AE0 /* ObservableScrollView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObservableScrollView.swift; sourceTree = "<group>"; };
-		A137A3822AB4FD4800BE1AE0 /* freechat-server */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = "freechat-server"; sourceTree = "<group>"; };
-		A137A3872AB502DB00BE1AE0 /* ggml-metal.metal */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.metal; path = "ggml-metal.metal"; sourceTree = "<group>"; };
 		A137A38D2AB6B52400BE1AE0 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		A13C8C592A8FEEE400EC18D8 /* SplashCodeSyntaxHighlighter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashCodeSyntaxHighlighter.swift; sourceTree = "<group>"; };
 		A13C8C5F2A8FF03800EC18D8 /* TextOutputFormat.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextOutputFormat.swift; sourceTree = "<group>"; };
@@ -151,11 +122,14 @@
 		A18A8BB42B24FC0F00D2197C /* UISettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UISettingsView.swift; sourceTree = "<group>"; };
 		A19AA5212AA667BE009D9573 /* QuickPromptButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickPromptButton.swift; sourceTree = "<group>"; };
 		A1A286E72A7D8A7D0004967A /* MessageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageView.swift; sourceTree = "<group>"; };
-		A1A286F22A7E17750004967A /* server-watchdog */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "server-watchdog"; sourceTree = BUILT_PRODUCTS_DIR; };
-		A1A286F42A7E17750004967A /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		A1A286F92A7E197F0004967A /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		A1A286FE2A7E9F280004967A /* server-watchdog.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "server-watchdog.entitlements"; sourceTree = "<group>"; };
 		A1CA32432AAF877600F9D488 /* ConversationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationManager.swift; sourceTree = "<group>"; };
+		A1DD83ED2B3646790091E420 /* llama.cpp.swift */ = {isa = PBXFileReference; lastKnownFileType = folder; path = llama.cpp.swift; sourceTree = "<group>"; };
+		A1DD83F12B3646AC0091E420 /* LlamaState.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LlamaState.swift; sourceTree = "<group>"; };
+		A1DD84042B364A3A0091E420 /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
+		A1DD84062B364A420091E420 /* Metal.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Metal.framework; path = System/Library/Frameworks/Metal.framework; sourceTree = SDKROOT; };
+		A1DD84172B3745120091E420 /* LibLlama.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = LibLlama.swift; path = FreeChat/Models/llama.cpp.swift/LibLlama.swift; sourceTree = "<group>"; };
 		A1E4A6932A82B41F00BF9D34 /* Model+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Model+Extensions.swift"; sourceTree = "<group>"; };
 		A1F617222A782AA100F2048C /* FreeChat.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FreeChat.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A1F617252A782AA100F2048C /* FreeChat.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FreeChat.swift; sourceTree = "<group>"; };
@@ -175,17 +149,13 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		A1A286EF2A7E17750004967A /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		A1F6171F2A782AA100F2048C /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A1DD84072B364A420091E420 /* Metal.framework in Frameworks */,
+				A1DD84212B3747F00091E420 /* llama in Frameworks */,
+				A1DD84052B364A3A0091E420 /* Accelerate.framework in Frameworks */,
 				A17A2E1F2A79A075006CDD90 /* EventSource in Frameworks */,
 				A137A38C2AB6B2F800BE1AE0 /* KeyboardShortcuts in Frameworks */,
 				A117219C2A7D7B70003B0358 /* MarkdownUI in Frameworks */,
@@ -249,12 +219,10 @@
 		A17A2E1B2A79A00D006CDD90 /* NPC */ = {
 			isa = PBXGroup;
 			children = (
+				A1DD83F12B3646AC0091E420 /* LlamaState.swift */,
 				A1156D322AD1F5C700081313 /* PromptTemplates */,
-				A137A3872AB502DB00BE1AE0 /* ggml-metal.metal */,
 				A17A2E122A79A005006CDD90 /* Agent.swift */,
 				A17A2E132A79A005006CDD90 /* LlamaServer.swift */,
-				A137A3822AB4FD4800BE1AE0 /* freechat-server */,
-				A1A286F32A7E17750004967A /* server-watchdog */,
 				A1A286F92A7E197F0004967A /* README.md */,
 			);
 			path = NPC;
@@ -286,22 +254,25 @@
 			path = Settings;
 			sourceTree = "<group>";
 		};
-		A1A286F32A7E17750004967A /* server-watchdog */ = {
+		A1DD84032B364A3A0091E420 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				A1A286F42A7E17750004967A /* main.swift */,
+				A1DD84062B364A420091E420 /* Metal.framework */,
+				A1DD84042B364A3A0091E420 /* Accelerate.framework */,
 			);
-			path = "server-watchdog";
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 		A1F617192A782AA100F2048C = {
 			isa = PBXGroup;
 			children = (
+				A1DD84172B3745120091E420 /* LibLlama.swift */,
 				A1A286FE2A7E9F280004967A /* server-watchdog.entitlements */,
 				A1F617242A782AA100F2048C /* FreeChat */,
 				A1F6173B2A782AA200F2048C /* FreeChatTests */,
 				A1F617452A782AA200F2048C /* FreeChatUITests */,
 				A1F617232A782AA100F2048C /* Products */,
+				A1DD84032B364A3A0091E420 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -311,7 +282,6 @@
 				A1F617222A782AA100F2048C /* FreeChat.app */,
 				A1F617382A782AA200F2048C /* FreeChatTests.xctest */,
 				A1F617422A782AA200F2048C /* FreeChatUITests.xctest */,
-				A1A286F22A7E17750004967A /* server-watchdog */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -361,6 +331,7 @@
 		A1F617592A7838DB00F2048C /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				A1DD83ED2B3646790091E420 /* llama.cpp.swift */,
 				A17A2E1B2A79A00D006CDD90 /* NPC */,
 				A1F617572A7836AE00F2048C /* Message+Extensions.swift */,
 				A1F6175A2A7838F700F2048C /* Conversation+Extensions.swift */,
@@ -376,23 +347,6 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		A1A286F12A7E17750004967A /* server-watchdog */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = A1A286F62A7E17750004967A /* Build configuration list for PBXNativeTarget "server-watchdog" */;
-			buildPhases = (
-				A1A286EE2A7E17750004967A /* Sources */,
-				A1A286EF2A7E17750004967A /* Frameworks */,
-				A1A286F02A7E17750004967A /* CopyFiles */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-			);
-			name = "server-watchdog";
-			productName = "server-watchdog";
-			productReference = A1A286F22A7E17750004967A /* server-watchdog */;
-			productType = "com.apple.product-type.tool";
-		};
 		A1F617212A782AA100F2048C /* FreeChat */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = A1F6174C2A782AA200F2048C /* Build configuration list for PBXNativeTarget "FreeChat" */;
@@ -401,12 +355,10 @@
 				A1F6171F2A782AA100F2048C /* Frameworks */,
 				A1F617202A782AA100F2048C /* Resources */,
 				A1A286FC2A7E1E2D0004967A /* Embed helper tools */,
-				A19AFCC02A8D631900F96A4D /* Copy Metal */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				A1A286FB2A7E1ACD0004967A /* PBXTargetDependency */,
 				A17A2E082A798F4C006CDD90 /* PBXTargetDependency */,
 			);
 			name = FreeChat;
@@ -415,6 +367,7 @@
 				A117219B2A7D7B70003B0358 /* MarkdownUI */,
 				A13C8C5C2A8FEF0600EC18D8 /* Splash */,
 				A137A38B2AB6B2F800BE1AE0 /* KeyboardShortcuts */,
+				A1DD84202B3747F00091E420 /* llama */,
 			);
 			productName = Mantras;
 			productReference = A1F617222A782AA100F2048C /* FreeChat.app */;
@@ -466,9 +419,6 @@
 				LastSwiftUpdateCheck = 1430;
 				LastUpgradeCheck = 1500;
 				TargetAttributes = {
-					A1A286F12A7E17750004967A = {
-						CreatedOnToolsVersion = 14.3.1;
-					};
 					A1F617212A782AA100F2048C = {
 						CreatedOnToolsVersion = 14.3.1;
 					};
@@ -496,6 +446,7 @@
 				A117219A2A7D7B70003B0358 /* XCRemoteSwiftPackageReference "swift-markdown-ui" */,
 				A13C8C5B2A8FEF0600EC18D8 /* XCRemoteSwiftPackageReference "Splash" */,
 				A137A38A2AB6B2F800BE1AE0 /* XCRemoteSwiftPackageReference "KeyboardShortcuts" */,
+				A1DD841F2B3747F00091E420 /* XCRemoteSwiftPackageReference "llama.cpp" */,
 			);
 			productRefGroup = A1F617232A782AA100F2048C /* Products */;
 			projectDirPath = "";
@@ -504,7 +455,6 @@
 				A1F617212A782AA100F2048C /* FreeChat */,
 				A1F617372A782AA200F2048C /* FreeChatTests */,
 				A1F617412A782AA200F2048C /* FreeChatUITests */,
-				A1A286F12A7E17750004967A /* server-watchdog */,
 			);
 		};
 /* End PBXProject section */
@@ -515,6 +465,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				A1F6172D2A782AA200F2048C /* Preview Assets.xcassets in Resources */,
+				A1DD83F02B3646790091E420 /* llama.cpp.swift in Resources */,
 				A1F6172A2A782AA200F2048C /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -536,14 +487,6 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		A1A286EE2A7E17750004967A /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				A1A286F52A7E17750004967A /* main.swift in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		A1F6171E2A782AA100F2048C /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -571,8 +514,10 @@
 				A1F617262A782AA100F2048C /* FreeChat.swift in Sources */,
 				A1156D2F2AD0954C00081313 /* TemplateManager.swift in Sources */,
 				A1E4A6942A82B41F00BF9D34 /* Model+Extensions.swift in Sources */,
+				A1DD83F22B3646AC0091E420 /* LlamaState.swift in Sources */,
 				A12B52DE2AA5228100658707 /* EditModels.swift in Sources */,
 				A17AB1C22ABB4B5E00CD3100 /* CircleMenuStyle.swift in Sources */,
+				A1DD84182B3745120091E420 /* LibLlama.swift in Sources */,
 				A15D50CF2A7EF73E00FC1681 /* MessageTextField.swift in Sources */,
 				A1CA32442AAF877600F9D488 /* ConversationManager.swift in Sources */,
 				A13C8C662A9027A200EC18D8 /* CopyButton.swift in Sources */,
@@ -612,11 +557,6 @@
 			isa = PBXTargetDependency;
 			productRef = A17A2E072A798F4C006CDD90 /* NPC */;
 		};
-		A1A286FB2A7E1ACD0004967A /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = A1A286F12A7E17750004967A /* server-watchdog */;
-			targetProxy = A1A286FA2A7E1ACD0004967A /* PBXContainerItemProxy */;
-		};
 		A1F6173A2A782AA200F2048C /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = A1F617212A782AA100F2048C /* FreeChat */;
@@ -630,38 +570,6 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		A1A286F72A7E17750004967A /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CODE_SIGN_ENTITLEMENTS = "server-watchdog.entitlements";
-				CODE_SIGN_INJECT_BASE_ENTITLEMENTS = NO;
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 6577JALN5F;
-				ENABLE_HARDENED_RUNTIME = YES;
-				OTHER_CODE_SIGN_FLAGS = "$(inherited) -i $(PRODUCT_BUNDLE_IDENTIFIER)";
-				PRODUCT_BUNDLE_IDENTIFIER = "com.npc-pet.Chats.watchdog";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SKIP_INSTALL = YES;
-				SWIFT_VERSION = 5.0;
-			};
-			name = Debug;
-		};
-		A1A286F82A7E17750004967A /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CODE_SIGN_ENTITLEMENTS = "server-watchdog.entitlements";
-				CODE_SIGN_INJECT_BASE_ENTITLEMENTS = NO;
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 6577JALN5F;
-				ENABLE_HARDENED_RUNTIME = YES;
-				OTHER_CODE_SIGN_FLAGS = "$(inherited) -i $(PRODUCT_BUNDLE_IDENTIFIER)";
-				PRODUCT_BUNDLE_IDENTIFIER = "com.npc-pet.Chats.watchdog";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SKIP_INSTALL = YES;
-				SWIFT_VERSION = 5.0;
-			};
-			name = Release;
-		};
 		A1F6174A2A782AA200F2048C /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -715,6 +623,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = "";
 				MACOSX_DEPLOYMENT_TARGET = 13.3;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
@@ -772,6 +681,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = "";
 				MACOSX_DEPLOYMENT_TARGET = 13.3;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
@@ -798,6 +708,7 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				HEADER_SEARCH_PATHS = "";
 				INFOPLIST_FILE = FreeChat/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = FreeChat;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
@@ -813,6 +724,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "FreeChat/Models/llama.cpp.swift/bridging-header.h";
 				SWIFT_STRICT_CONCURRENCY = targeted;
 				SWIFT_VERSION = 5.0;
 			};
@@ -835,6 +747,7 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				HEADER_SEARCH_PATHS = "";
 				INFOPLIST_FILE = FreeChat/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = FreeChat;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
@@ -850,6 +763,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "FreeChat/Models/llama.cpp.swift/bridging-header.h";
 				SWIFT_STRICT_CONCURRENCY = targeted;
 				SWIFT_VERSION = 5.0;
 			};
@@ -938,15 +852,6 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		A1A286F62A7E17750004967A /* Build configuration list for PBXNativeTarget "server-watchdog" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				A1A286F72A7E17750004967A /* Debug */,
-				A1A286F82A7E17750004967A /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
 		A1F6171D2A782AA100F2048C /* Build configuration list for PBXProject "FreeChat" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -1018,6 +923,14 @@
 				minimumVersion = 0.0.5;
 			};
 		};
+		A1DD841F2B3747F00091E420 /* XCRemoteSwiftPackageReference "llama.cpp" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/ggerganov/llama.cpp.git";
+			requirement = {
+				branch = master;
+				kind = branch;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -1044,6 +957,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = A17A2E1D2A79A075006CDD90 /* XCRemoteSwiftPackageReference "EventSource" */;
 			productName = EventSource;
+		};
+		A1DD84202B3747F00091E420 /* llama */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A1DD841F2B3747F00091E420 /* XCRemoteSwiftPackageReference "llama.cpp" */;
+			productName = llama;
 		};
 /* End XCSwiftPackageProductDependency section */
 

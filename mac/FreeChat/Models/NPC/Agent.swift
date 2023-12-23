@@ -27,13 +27,13 @@ class Agent: ObservableObject {
   @Published var status: Status = .cold
 
   // each agent runs their own server
-  var llama: LlamaServer
+  var llama: LlamaState
 
   init(id: String, prompt: String, systemPrompt: String, modelPath: String, contextLength: Int) {
     self.id = id
     self.prompt = prompt
     self.systemPrompt = systemPrompt
-    llama = LlamaServer(modelPath: modelPath, contextLength: contextLength)
+    llama = LlamaState(modelPath: modelPath, contextLength: contextLength)
   }
 
   // this is the main loop of the agent

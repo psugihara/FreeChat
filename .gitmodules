@@ -1,0 +1,3 @@
+[submodule "mac/llama.cpp"]
+	path = mac/llama.cpp
+	url = git@github.com:psugihara/llama.cpp.git
