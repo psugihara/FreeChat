@@ -52,7 +52,8 @@ class Agent: ObservableObject {
 
     pendingMessage = ""
 
-    let response = try await llama.complete(
+    await llama.clear()
+    await llama.complete(
       prompt: prompt, stop: template.stopWords, temperature: temperature
     ) { partialResponse in
       DispatchQueue.main.async {
@@ -60,7 +61,7 @@ class Agent: ObservableObject {
       }
     }
 
-    pendingMessage = response.text
+    pendingMessage = llama.messageLog
     status = .ready
 
     return response

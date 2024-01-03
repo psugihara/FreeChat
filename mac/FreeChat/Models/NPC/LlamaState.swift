@@ -3,7 +3,6 @@ import Foundation
 @MainActor
 class LlamaState: ObservableObject {
   @Published var messageLog = ""
-  @Published var cacheCleared = false
 
   var modelPath: String
   var contextLength: Int
@@ -28,14 +27,18 @@ class LlamaState: ObservableObject {
   func loadModel(modelUrl: URL?) throws {
     messageLog += "Loading model...\n"
     if let modelUrl {
-      llamaContext = try LlamaContext.create_context(path: modelUrl.path(), n_ctx: UInt32(contextLength))
+      llamaContext = try LlamaContext.create_context(
+        path: modelUrl.path(), n_ctx: UInt32(contextLength))
       messageLog += "Loaded model \(modelUrl.lastPathComponent)\n"
     } else {
       messageLog += "Could not locate model\n"
     }
   }
 
-  func complete(prompt: String, stop: [String], temperature: Double?) async {
+  func complete(
+    prompt: String, stop: [String]?, temperature: Double?,
+    progressHandler: (@Sendable (String) -> Void)? = nil
+  ) async {
     guard let llamaContext else {
       return
     }
@@ -51,35 +54,6 @@ class LlamaState: ObservableObject {
     messageLog += "\n\ndone\n"
   }
 
-  func bench() async {
-    guard let llamaContext else {
-      return
-    }
-
-    messageLog += "\n"
-    messageLog += "Running benchmark...\n"
-    messageLog += "Model info: "
-    messageLog += await llamaContext.model_info() + "\n"
-
-    let t_start = DispatchTime.now().uptimeNanoseconds
-    await llamaContext.bench(pp: 8, tg: 4, pl: 1)  // heat up
-    let t_end = DispatchTime.now().uptimeNanoseconds
-
-    let t_heat = Double(t_end - t_start) / 1_000_000_000.0
-    messageLog += "Heat up time: \(t_heat) seconds, please wait...\n"
-
-    // if more than 5 seconds, then we're probably running on a slow device
-    if t_heat > 5.0 {
-      messageLog += "Heat up time is too long, aborting benchmark\n"
-      return
-    }
-
-    let result = await llamaContext.bench(pp: 512, tg: 128, pl: 1, nr: 3)
-
-    messageLog += "\(result)"
-    messageLog += "\n"
-  }
-
   func clear() async {
     guard let llamaContext else {
       return
@@ -87,5 +61,9 @@ class LlamaState: ObservableObject {
 
     await llamaContext.clear()
     messageLog = ""
+  }
+
+  func interrupt() async {
+    print("SHOULD INTERRUPT")
   }
 }
