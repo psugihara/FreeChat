@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import UniformTypeIdentifiers.UTType
 
 struct EditModels: View {
   @Environment(\.colorScheme) var colorScheme
@@ -46,7 +47,8 @@ struct EditModels: View {
           .background(Color.white.opacity(0.0001))
           .fileImporter(
           isPresented: $showFileImporter,
-          allowedContentTypes: [.data],
+          allowedContentTypes: [UTType("com.npc-pet.Chats.gguf") ?? .data],
+          allowsMultipleSelection: true,
           onCompletion: importModel
         )
 
@@ -171,25 +173,14 @@ struct EditModels: View {
     editingModelId = nil
   }
 
-  private func importModel(result: Result<URL, Error>) {
+  private func importModel(result: Result<[URL], Error>) {
     errorText = ""
 
     switch result {
-    case .success(let fileURL):
-      // if model has already been added, select it and return
-      let existingModel = items.first(where: { m in m.url == fileURL })
-      if existingModel != nil {
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-          selectedModelId = existingModel!.id?.uuidString ?? selectedModelId
-        }
-        return
-      }
-
+    case .success(let fileURLs):
       do {
-        let model = try Model.create(context: viewContext, fileURL: fileURL)
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-          selectedModelId = model.id!.uuidString
-        }
+          try insertModels(from: fileURLs)
+          selectedModelId = items.first?.id?.uuidString ?? selectedModelId
       } catch let error as ModelCreateError {
         errorText = error.localizedDescription
       } catch (let err) {
@@ -199,6 +190,13 @@ struct EditModels: View {
       // handle error
       print(error)
     }
+  }
+
+  private func insertModels(from fileURLs: [URL]) throws {
+    for fileURL in fileURLs {
+      guard nil == items.first(where: { m in m.url == fileURL }) else { continue }
+      let _ = try Model.create(context: viewContext, fileURL: fileURL)
+      }
   }
 }
 
