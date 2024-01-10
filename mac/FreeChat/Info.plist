@@ -2,6 +2,24 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>UTImportedTypeDeclarations</key>
+	<array>
+		<dict>
+			<key>UTTypeConformsTo</key>
+			<array>
+				<string>public.data</string>
+			</array>
+			<key>UTTypeIdentifier</key>
+			<string>com.npc-pet.Chats.gguf</string>
+			<key>UTTypeTagSpecification</key>
+			<dict>
+				<key>public.filename-extension</key>
+				<array>
+					<string>gguf</string>
+				</array>
+			</dict>
+		</dict>
+	</array>
 	<key>UTExportedTypeDeclarations</key>
 	<array>
 		<dict>
@@ -31,13 +49,13 @@
 			<string>Viewer</string>
 			<key>LSItemContentTypes</key>
 			<array>
-				<string>gguf</string>
+				<string>public.data</string>
 			</array>
 			<key>UTTypeIdentifier</key>
 			<string>com.npc-pet.Chats.gguf</string>
 			<key>CFBundleTypeExtensions</key>
 			<array>
-				<string>.gguf</string>
+				<string>gguf</string>
 			</array>
 		</dict>
 	</array>
