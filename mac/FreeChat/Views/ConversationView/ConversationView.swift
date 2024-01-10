@@ -5,9 +5,9 @@
 //  Created by Peter Sugihara on 7/31/23.
 //
 
-import SwiftUI
-import MarkdownUI
 import Foundation
+import MarkdownUI
+import SwiftUI
 
 struct ConversationView: View, Sendable {
   @Environment(\.managedObjectContext) private var viewContext
@@ -25,7 +25,8 @@ struct ConversationView: View, Sendable {
     animation: .default)
   private var models: FetchedResults<Model>
 
-  private static let SEND = NSDataAsset(name: "ESM_Perfect_App_Button_2_Organic_Simple_Classic_Game_Click")
+  private static let SEND = NSDataAsset(
+    name: "ESM_Perfect_App_Button_2_Organic_Simple_Classic_Game_Click")
   private static let PING = NSDataAsset(name: "ESM_POWER_ON_SYNTH")
   let sendSound = NSSound(data: SEND!.data)
   let receiveSound = NSSound(data: PING!.data)
@@ -50,76 +51,50 @@ struct ConversationView: View, Sendable {
 
   @State var messages: [Message] = []
 
+  @State var userText = ""
+
   @State var showUserMessage = true
   @State var showResponse = true
   @State private var scrollPositions = [String: CGFloat]()
   @State var pendingMessageText = ""
 
-  @State var scrollOffset = CGFloat.zero
-  @State var scrollHeight = CGFloat.zero
-  @State var autoScrollOffset = CGFloat.zero
-  @State var autoScrollHeight = CGFloat.zero
-
   @State var llamaError: LlamaServerError? = nil
   @State var showErrorAlert = false
 
   var body: some View {
-    ObservableScrollView(scrollOffset: $scrollOffset, scrollHeight: $scrollHeight) { proxy in
-      VStack(alignment: .leading) {
-        ForEach(messages) { m in
-          if m == messages.last! {
-            if m == pendingMessage {
-              MessageView(pendingMessage!, overrideText: pendingMessageText, agentStatus: agent.status)
-                .onAppear {
-                scrollToLastIfRecent(proxy)
-              }
-                .opacity(showResponse ? 1 : 0)
-                .animation(.interpolatingSpring(stiffness: 170, damping: 20), value: showResponse)
-                .id("\(m.id)\(m.updatedAt as Date?)")
-            } else {
-              MessageView(m, agentStatus: nil)
-                .id("\(m.id)\(m.updatedAt as Date?)")
-                .opacity(showUserMessage ? 1 : 0)
-                .animation(.interpolatingSpring(stiffness: 170, damping: 20), value: showUserMessage)
-            }
-          } else {
-            MessageView(m, agentStatus: nil).transition(.identity).id("\(m.id)\(m.updatedAt as Date?)")
-          }
-        }
-      }
-        .padding(.vertical, 12)
-        .onReceive(
-        agent.$pendingMessage.throttle(for: .seconds(0.1), scheduler: RunLoop.main, latest: true)
-      ) { text in
-        pendingMessageText = text
-      }
-        .onReceive(
-        agent.$pendingMessage.throttle(for: .seconds(0.2), scheduler: RunLoop.main, latest: true)
-      ) { _ in
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-          autoScroll(proxy)
-        }
+    HStack(alignment: .top) {
+      TextEditor(text: $userText)
+        .padding()
+      Text(userText)
+        .frame(minWidth: 100, maxHeight: .infinity, alignment: .topLeading)
+        .background(.ultraThinMaterial)
+        .padding()
+    }
+    .onReceive(
+      agent.$pendingMessage.throttle(for: .seconds(0.1), scheduler: RunLoop.main, latest: true)
+    ) { text in
+      pendingMessageText = text
+    }
+    .onReceive(
+      agent.$pendingMessage.throttle(for: .seconds(0.2), scheduler: RunLoop.main, latest: true)
+    ) { _ in
+      DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
       }
     }
-      .textSelection(.enabled)
-      .safeAreaInset(edge: .bottom, spacing: 0) {
-      MessageTextField { s in
-        submit(s)
-      }
-    }
-      .frame(maxWidth: .infinity)
-      .onAppear { showConversation(conversation) }
-      .onChange(of: conversation) { nextConvo in showConversation(nextConvo) }
-      .onChange(of: selectedModelId) { showConversation(conversation, modelId: $0) }
-      .navigationTitle(conversation.titleWithDefault)
-      .alert(isPresented: $showErrorAlert, error: llamaError) { _ in
+    .textSelection(.enabled)
+    .frame(maxWidth: .infinity, maxHeight: .infinity)
+    .onAppear { showConversation(conversation) }
+    .alert(isPresented: $showErrorAlert, error: llamaError) { _ in
       Button("OK") {
         llamaError = nil
       }
     } message: { error in
       Text(error.recoverySuggestion ?? "")
     }
-      .background(Color.textBackground)
+    .background(Color.textBackground)
+    .onChange(userText) {
+      submit(<#T##input: String##String#>)
+    }
   }
 
   private func playSendSound() {
@@ -152,40 +127,15 @@ struct ConversationView: View, Sendable {
       if let models = try? viewContext.fetch(req),
         let model = models.first,
         let modelPath = model.url?.path(percentEncoded: false),
-        modelPath != llamaPath {
-          await agent.llama.stopServer()
+        modelPath != llamaPath
+      {
+        await agent.llama.stopServer()
         agent.llama = LlamaServer(modelPath: modelPath, contextLength: contextLength)
-  //        try? await agent.warmup(template: model.template)
+        //        try? await agent.warmup(template: model.template)
       } else if agent.status == .cold {
-//        try? await agent.warmup()
+        //        try? await agent.warmup()
       }
     }
-  }
-
-  private func scrollToLastIfRecent(_ proxy: ScrollViewProxy) {
-    let fiveSecondsAgo = Date() - TimeInterval(5) // 5 seconds ago
-    let last = messages.last
-    if last?.updatedAt != nil, last!.updatedAt! >= fiveSecondsAgo {
-      proxy.scrollTo(last!.id, anchor: .bottom)
-    }
-  }
-
-  // autoscroll to the bottom if the user is near the bottom
-  private func autoScroll(_ proxy: ScrollViewProxy) {
-    let last = messages.last
-    if last != nil, shouldAutoScroll() {
-      proxy.scrollTo(last!.id, anchor: .bottom)
-      engageAutoScroll()
-    }
-  }
-
-  private func shouldAutoScroll() -> Bool {
-    scrollOffset >= autoScrollOffset - 40 && scrollHeight > autoScrollHeight
-  }
-
-  private func engageAutoScroll() {
-    autoScrollOffset = scrollOffset
-    autoScrollHeight = scrollHeight
   }
 
   @MainActor
@@ -203,7 +153,7 @@ struct ConversationView: View, Sendable {
   func submit(_ input: String) {
     dispatchPrecondition(condition: .onQueue(.main))
 
-    if (agent.status == .processing || agent.status == .coldProcessing) {
+    if agent.status == .processing || agent.status == .coldProcessing {
       Task {
         await agent.interrupt()
 
@@ -222,11 +172,12 @@ struct ConversationView: View, Sendable {
     }
 
     showUserMessage = false
-    engageAutoScroll()
 
     // Create user's message
     do {
-      _ = try Message.create(text: input, fromId: Message.USER_SPEAKER_ID, conversation: conversation, systemPrompt: systemPrompt, inContext: viewContext)
+      _ = try Message.create(
+        text: input, fromId: Message.USER_SPEAKER_ID, conversation: conversation,
+        systemPrompt: systemPrompt, inContext: viewContext)
     } catch (let error) {
       print("Error creating message", error.localizedDescription)
     }
@@ -254,7 +205,8 @@ struct ConversationView: View, Sendable {
     DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
       guard agentConversation == conversation,
         !m.isDeleted,
-        m.managedObjectContext == agentConversation.managedObjectContext else {
+        m.managedObjectContext == agentConversation.managedObjectContext
+      else {
         return
       }
 
@@ -269,7 +221,9 @@ struct ConversationView: View, Sendable {
     Task {
       var response: LlamaServer.CompleteResponse
       do {
-        response = try await agent.listenThinkRespond(speakerId: Message.USER_SPEAKER_ID, messages: messageTexts, template: model.template, temperature: temperature)
+        response = try await agent.listenThinkRespond(
+          speakerId: Message.USER_SPEAKER_ID, messages: messageTexts, template: model.template,
+          temperature: temperature)
       } catch let error as LlamaServerError {
         handleResponseError(error)
         return
@@ -296,7 +250,8 @@ struct ConversationView: View, Sendable {
         if pendingMessage?.text != nil,
           !pendingMessage!.text!.isEmpty,
           response.text.hasPrefix(agent.pendingMessage),
-          m == pendingMessage {
+          m == pendingMessage
+        {
           pendingMessage = nil
           agent.pendingMessage = ""
         }
@@ -311,12 +266,14 @@ struct ConversationView: View, Sendable {
   }
 }
 
-#Preview {
+#Preview{
   let ctx = PersistenceController.preview.container.viewContext
   let c = try! Conversation.create(ctx: ctx)
   let cm = ConversationManager()
   cm.currentConversation = c
-  cm.agent = Agent(id: "llama", prompt: "", systemPrompt: "", modelPath: "", contextLength: Agent.DEFAULT_CONTEXT_LENGTH)
+  cm.agent = Agent(
+    id: "llama", prompt: "", systemPrompt: "", modelPath: "",
+    contextLength: Agent.DEFAULT_CONTEXT_LENGTH)
 
   let question = Message(context: ctx)
   question.conversation = c
@@ -326,35 +283,35 @@ struct ConversationView: View, Sendable {
   response.conversation = c
   response.fromId = "llama"
   response.text = """
-      Hi! You can use `FileManager` to get information about files, including their sizes. Here's an example of getting the size of a text file:
-      ```swift
-      let path = "path/to/file"
-      do {
-          let attributes = try FileManager.default.attributesOfItem(atPath: path)
-          if let fileSize = attributes[FileAttributeKey.size] as? UInt64 {
-              print("The file is \\(ByteCountFormatter().string(fromByteCount: Int64(fileSize)))")
-          }
-      } catch {
-          // Handle any errors
-      }
-      ```
-      """
-
+    Hi! You can use `FileManager` to get information about files, including their sizes. Here's an example of getting the size of a text file:
+    ```swift
+    let path = "path/to/file"
+    do {
+        let attributes = try FileManager.default.attributesOfItem(atPath: path)
+        if let fileSize = attributes[FileAttributeKey.size] as? UInt64 {
+            print("The file is \\(ByteCountFormatter().string(fromByteCount: Int64(fileSize)))")
+        }
+    } catch {
+        // Handle any errors
+    }
+    ```
+    """
 
   return ConversationView()
     .environment(\.managedObjectContext, ctx)
     .environmentObject(cm)
 }
 
-#Preview("null state") {
+#Preview("null state"){
   let ctx = PersistenceController.preview.container.viewContext
   let c = try! Conversation.create(ctx: ctx)
   let cm = ConversationManager()
   cm.currentConversation = c
-  cm.agent = Agent(id: "llama", prompt: "", systemPrompt: "", modelPath: "", contextLength: Agent.DEFAULT_CONTEXT_LENGTH)
+  cm.agent = Agent(
+    id: "llama", prompt: "", systemPrompt: "", modelPath: "",
+    contextLength: Agent.DEFAULT_CONTEXT_LENGTH)
 
   return ConversationView()
     .environment(\.managedObjectContext, ctx)
     .environmentObject(cm)
 }
-
