@@ -10,13 +10,14 @@ import KeyboardShortcuts
 
 @main
 struct FreeChatApp: App {
+  @NSApplicationDelegateAdaptor(FreeChatAppDelegate.self) private var appDelegate
   @Environment(\.openWindow) var openWindow
   @StateObject var conversationManager = ConversationManager.shared
 
   let persistenceController = PersistenceController.shared
-  
+
   var body: some Scene {
-    WindowGroup(id: "main") {
+    Window(Text("FreeChat"), id: "main") {
       ContentView()
         .environment(\.managedObjectContext, persistenceController.container.viewContext)
         .environmentObject(conversationManager)
@@ -39,7 +40,7 @@ struct FreeChatApp: App {
       })
     }
 
-    
+
 #if os(macOS)
     Settings {
       SettingsView()
