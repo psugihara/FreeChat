@@ -13,7 +13,7 @@ class FreeChatAppDelegate: NSObject, NSApplicationDelegate, ObservableObject {
     let viewContext = PersistenceController.shared.container.viewContext
     do {
       let req = Model.fetchRequest()
-      req.predicate = NSPredicate(format: "name IN %@", urls.map({ $0.absoluteString }))
+      req.predicate = NSPredicate(format: "name IN %@", urls.map({ $0.lastPathComponent }))
       let existingModels = try viewContext.fetch(req).compactMap({ $0.url })
 
       for url in urls {
