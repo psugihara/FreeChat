@@ -63,6 +63,9 @@ struct ContentView: View {
         }
       }
     )
+    .onReceive(NotificationCenter.default.publisher(for: NSNotification.Name("needStartNewConversation"))) { _ in
+      conversationManager.newConversation(viewContext: viewContext, openWindow: openWindow)
+    }
     .onDeleteCommand { showDeleteConfirmation = true }
     .onAppear(perform: initializeFirstLaunchData)
     .onChange(of: selection) { nextSelection in

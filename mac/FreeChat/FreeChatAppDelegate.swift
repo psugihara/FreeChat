@@ -6,7 +6,6 @@
 import SwiftUI
 
 class FreeChatAppDelegate: NSObject, NSApplicationDelegate, ObservableObject {
-  @Environment(\.openWindow) var openWindow
   @AppStorage("selectedModelId") private var selectedModelId: String?
 
   func application(_ application: NSApplication, open urls: [URL]) {
@@ -21,8 +20,9 @@ class FreeChatAppDelegate: NSObject, NSApplicationDelegate, ObservableObject {
         let insertedModel = try Model.create(context: viewContext, fileURL: url)
         selectedModelId = insertedModel.id?.uuidString
       }
-
-      ConversationManager.shared.newConversation(viewContext: viewContext, openWindow: openWindow)
+      
+      NotificationCenter.default.post(name: NSNotification.Name("selectedModelDidChange"), object: selectedModelId)
+      NotificationCenter.default.post(name: NSNotification.Name("needStartNewConversation"), object: selectedModelId)
     } catch {
       print("error saving model:", error)
     }
