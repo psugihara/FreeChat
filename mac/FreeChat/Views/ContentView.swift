@@ -114,7 +114,6 @@ struct ContentView: View {
   }
 
   private func fetchModelsSyncLocalFiles() throws {
-    debugPrint(#function, "lookup \(models.count) models")
     for model in models {
       if try model.url?.checkResourceIsReachable() != true {
         viewContext.delete(model)

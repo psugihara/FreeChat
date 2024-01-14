@@ -83,7 +83,7 @@ class ConversationManager: ObservableObject {
       let messages = currentConversation.orderedMessages.map { $0.text ?? "" }
       let convoPrompt = model.template.run(systemPrompt: systemPrompt, messages: messages)
       agent = Agent(id: "Llama", prompt: convoPrompt, systemPrompt: systemPrompt, modelPath: url.path, contextLength: contextLength)
-      loadingModelId = model.id?.uuidString ?? Model.unsetModelId
+      loadingModelId = model.id?.uuidString 
 
       model.error = nil
 

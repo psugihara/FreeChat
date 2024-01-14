@@ -14,10 +14,10 @@ struct EditModels: View {
   @Environment(\.dismiss) var dismiss
   @EnvironmentObject var conversationManager: ConversationManager
 
-  @Binding var selectedModelId: String
+  @Binding var selectedModelId: String?
 
   // list state
-  @State var editingModelId: String?
+  @State var editingModelId: String? // Highlight selection in the list
   @State var hoveredModelId: String?
 
   @FetchRequest(
@@ -58,7 +58,7 @@ struct EditModels: View {
         }
           .frame(maxHeight: .infinity)
           .buttonStyle(.borderless)
-          .disabled(editingModelId == Model.unsetModelId)
+          .disabled(editingModelId == nil)
 
         Spacer()
         if !errorText.isEmpty {
@@ -114,10 +114,11 @@ struct EditModels: View {
   }
 
   func hoverSelect(_ modelId: String, loading: Bool = false) -> some View {
-    return Button("Select") {
+    Button("Select") {
       selectedModelId = modelId
-    }.opacity(hoveredModelId == modelId && selectedModelId != modelId ? 1 : 0)
-      .disabled(hoveredModelId != modelId || loading || selectedModelId == modelId)
+    }
+    .opacity(hoveredModelId == modelId && selectedModelId != modelId ? 1 : 0)
+    .disabled(hoveredModelId != modelId || loading || selectedModelId == modelId)
   }
 
   var modelList: some View {
@@ -166,11 +167,15 @@ struct EditModels: View {
   private func deleteModel(_ model: Model) {
     errorText = ""
     viewContext.delete(model)
-    try? viewContext.save()
-    if editingModelId == selectedModelId {
-      selectedModelId = items.first?.id?.uuidString ?? Model.unsetModelId
+    do {
+      try viewContext.save()
+      if editingModelId == selectedModelId {
+        selectedModelId = items.first?.id?.uuidString
+      }
+      editingModelId = nil
+    } catch {
+      print("error deleting model \(model)", error)
     }
-    editingModelId = nil
   }
 
   private func importModel(result: Result<[URL], Error>) {
@@ -201,7 +206,7 @@ struct EditModels: View {
 }
 
 struct EditModels_Previews_Container: View {
-  @State var selectedModelId = Model.unsetModelId
+  @State var selectedModelId: String?
   var body: some View {
     EditModels(selectedModelId: $selectedModelId)
     EditModels(selectedModelId: $selectedModelId, errorText: ModelCreateError.unknownFormat.localizedDescription)

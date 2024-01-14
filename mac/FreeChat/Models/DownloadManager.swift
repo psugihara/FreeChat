@@ -95,7 +95,7 @@ extension DownloadManager: URLSessionDelegate, URLSessionDownloadDelegate {
       do {
         let m = try Model.create(context: ctx, fileURL: destinationURL)
         os_log("DownloadManager created model %@", type: .info, m.id?.uuidString ?? "missing id")
-        selectedModelId = m.id?.uuidString ?? Model.unsetModelId
+        selectedModelId = m.id?.uuidString
       } catch {
         os_log("Error creating model on main thread: %@", type: .error, error.localizedDescription)
       }
