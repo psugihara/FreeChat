@@ -228,6 +228,11 @@ struct AISettingsView: View {
         guard let model: Model = selectedModel else { return }
         conversationManager.rebootAgent(systemPrompt: self.systemPrompt, model: model, viewContext: viewContext)
       }
+      .onReceive(NotificationCenter.default.publisher(for: NSNotification.Name("selectedModelDidChange"))) { output in
+        if let updatedId: String = output.object as? String {
+          selectedModelId = updatedId
+        }
+      }
       .frame(minWidth: 300, maxWidth: 600, minHeight: 184, idealHeight: 195, maxHeight: 400, alignment: .center)
   }
 }

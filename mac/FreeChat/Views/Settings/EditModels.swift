@@ -184,8 +184,8 @@ struct EditModels: View {
     switch result {
     case .success(let fileURLs):
       do {
-          try insertModels(from: fileURLs)
-          selectedModelId = items.first?.id?.uuidString ?? selectedModelId
+        let insertedModels = try insertModels(from: fileURLs)
+        selectedModelId = insertedModels.first?.id?.uuidString ?? selectedModelId
       } catch let error as ModelCreateError {
         errorText = error.localizedDescription
       } catch (let err) {
@@ -197,11 +197,14 @@ struct EditModels: View {
     }
   }
 
-  private func insertModels(from fileURLs: [URL]) throws {
+  private func insertModels(from fileURLs: [URL]) throws -> [Model] {
+    var insertedModels = [Model]()
     for fileURL in fileURLs {
-      guard nil == items.first(where: { m in m.url == fileURL }) else { continue }
-      let _ = try Model.create(context: viewContext, fileURL: fileURL)
-      }
+      guard nil == items.first(where: { $0.url == fileURL }) else { continue }
+      insertedModels.append(try Model.create(context: viewContext, fileURL: fileURL))
+    }
+
+    return insertedModels
   }
 }
 

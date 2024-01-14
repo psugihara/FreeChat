@@ -57,6 +57,7 @@
 		A1F617562A782E4F00F2048C /* ConversationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1F617552A782E4F00F2048C /* ConversationView.swift */; };
 		A1F617582A7836AE00F2048C /* Message+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1F617572A7836AE00F2048C /* Message+Extensions.swift */; };
 		A1F6175B2A7838F700F2048C /* Conversation+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1F6175A2A7838F700F2048C /* Conversation+Extensions.swift */; };
+		DEA8CF572B51938B007A4CE7 /* FreeChatAppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEA8CF562B51938B007A4CE7 /* FreeChatAppDelegate.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -172,6 +173,7 @@
 		A1F617552A782E4F00F2048C /* ConversationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationView.swift; sourceTree = "<group>"; };
 		A1F617572A7836AE00F2048C /* Message+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Message+Extensions.swift"; sourceTree = "<group>"; };
 		A1F6175A2A7838F700F2048C /* Conversation+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Conversation+Extensions.swift"; sourceTree = "<group>"; };
+		DEA8CF562B51938B007A4CE7 /* FreeChatAppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FreeChatAppDelegate.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -322,6 +324,7 @@
 				A17AB1BE2AB8FC4300CD3100 /* Info.plist */,
 				A15D50D02A7F49CD00FC1681 /* Views */,
 				A1F617252A782AA100F2048C /* FreeChat.swift */,
+				DEA8CF562B51938B007A4CE7 /* FreeChatAppDelegate.swift */,
 				A1F617292A782AA200F2048C /* Assets.xcassets */,
 				A1F6172E2A782AA200F2048C /* Persistence.swift */,
 				A1F617332A782AA200F2048C /* FreeChat.entitlements */,
@@ -552,6 +555,7 @@
 				A18A8BB52B24FC0F00D2197C /* UISettingsView.swift in Sources */,
 				A13C8C602A8FF03800EC18D8 /* TextOutputFormat.swift in Sources */,
 				A1F6175B2A7838F700F2048C /* Conversation+Extensions.swift in Sources */,
+				DEA8CF572B51938B007A4CE7 /* FreeChatAppDelegate.swift in Sources */,
 				A1156D362AD5AB8700081313 /* EditFormat.swift in Sources */,
 				A13C8C622A8FF27000EC18D8 /* Theme+FreeChat.swift in Sources */,
 				A1F6172F2A782AA200F2048C /* Persistence.swift in Sources */,
