@@ -17,8 +17,8 @@ struct WelcomeSheet: View {
   @State var showModels = false
   
   @Environment(\.managedObjectContext) private var viewContext
-  @AppStorage("selectedModelId") private var selectedModelId: String = Model.unsetModelId
-  
+  @AppStorage("selectedModelId") private var selectedModelId: String?
+
   @StateObject var downloadManager = DownloadManager.shared
   
   

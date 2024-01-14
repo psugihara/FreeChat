@@ -105,11 +105,22 @@ struct ContentView: View {
       conversationManager.summonRegistered = true
     }
 
+    try? fetchModelsSyncLocalFiles()
     handleModelCountChange(models.count)
 
     if firstLaunchComplete { return }
     conversationManager.newConversation(viewContext: viewContext, openWindow: openWindow)
     firstLaunchComplete = true
+  }
+
+  private func fetchModelsSyncLocalFiles() throws {
+    for model in models {
+      if try model.url?.checkResourceIsReachable() != true {
+        viewContext.delete(model)
+      }
+    }
+    
+    try viewContext.save()
   }
 }
 

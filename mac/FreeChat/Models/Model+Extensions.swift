@@ -24,6 +24,7 @@ enum ModelCreateError: LocalizedError {
 }
 
 extension Model {
+  @available(*, deprecated, message: "use nil instead")
   static let unsetModelId = "unset"
   static let defaultModelUrl = URL(string: "https://huggingface.co/TheBloke/SynthIA-7B-v1.5-GGUF/resolve/main/synthia-7b-v1.5.Q3_K_M.gguf")!
 //  static let defaultModelUrl = URL(string: "http://localhost:8080/synthia-7b-v1.5.Q3_K_M.gguf")!
