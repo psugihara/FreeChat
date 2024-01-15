@@ -13,7 +13,7 @@ struct ConversationView: View, Sendable {
   @Environment(\.managedObjectContext) private var viewContext
   @EnvironmentObject private var conversationManager: ConversationManager
 
-  @AppStorage("selectedModelId") private var selectedModelId: String = Model.unsetModelId
+  @AppStorage("selectedModelId") private var selectedModelId: String?
   @AppStorage("systemPrompt") private var systemPrompt: String = Agent.DEFAULT_SYSTEM_PROMPT
   @AppStorage("contextLength") private var contextLength: Int = Agent.DEFAULT_CONTEXT_LENGTH
   @AppStorage("playSoundEffects") private var playSoundEffects = true
@@ -40,10 +40,10 @@ struct ConversationView: View, Sendable {
   }
 
   var selectedModel: Model? {
-    if selectedModelId == Model.unsetModelId {
-      models.first
+    if let selectedModelId = self.selectedModelId {
+      models.first(where: { $0.id?.uuidString == selectedModelId })
     } else {
-      models.first { i in i.id?.uuidString == selectedModelId }
+      models.first
     }
   }
 
@@ -110,17 +110,17 @@ struct ConversationView: View, Sendable {
   }
 
   private func showConversation(_ c: Conversation, modelId: String? = nil) {
-    let selectedModelId = modelId ?? self.selectedModelId
-    guard !selectedModelId.isEmpty, selectedModelId != Model.unsetModelId else {
-      return
-    }
+    guard
+      let selectedModelId = modelId ?? self.selectedModelId,
+      !selectedModelId.isEmpty
+    else { return }
 
     messages = c.orderedMessages
 
     // warmup the agent if it's cold or model has changed
     Task {
-      let req = Model.fetchRequest()
       guard let id = UUID(uuidString: selectedModelId) else { return }
+      let req = Model.fetchRequest()
       req.predicate = NSPredicate(format: "id == %@", id as CVarArg)
       let llamaPath = await agent.llama.modelPath
 

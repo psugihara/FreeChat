@@ -20,14 +20,14 @@ struct AISettingsView: View {
     animation: .default)
   private var models: FetchedResults<Model>
 
-  @AppStorage("selectedModelId") private var selectedModelId: String = Model.unsetModelId
+  @AppStorage("selectedModelId") private var selectedModelId: String?
   @AppStorage("systemPrompt") private var systemPrompt = Agent.DEFAULT_SYSTEM_PROMPT
   @AppStorage("contextLength") private var contextLength = Agent.DEFAULT_CONTEXT_LENGTH
   @AppStorage("temperature") private var temperature: Double = Agent.DEFAULT_TEMP
   @AppStorage("useGPU") private var useGPU = Agent.DEFAULT_USE_GPU
 
-  @State var pickedModel: String = Model.unsetModelId
-  @State var customizeModels = false
+  @State var pickedModel: String? // Picker selection
+  @State var customizeModels = false // Show add remove models
   @State var editSystemPrompt = false
   @State var editFormat = false
   @State var revealAdvanced = false
@@ -49,10 +49,10 @@ struct AISettingsView: View {
 
 
   var selectedModel: Model? {
-    if selectedModelId == Model.unsetModelId {
-      models.first
+    if let selectedModelId = self.selectedModelId {
+      models.first(where: { $0.id?.uuidString == selectedModelId })
     } else {
-      models.first { i in i.id?.uuidString == selectedModelId }
+      models.first
     }
   }
 
@@ -78,29 +78,36 @@ struct AISettingsView: View {
         .frame(maxWidth: .infinity, alignment: .leading)
     }
   }
-
+    
   var modelPicker: some View {
     VStack(alignment: .leading) {
       Picker("Model", selection: $pickedModel) {
         ForEach(models) { i in
           if let url = i.url {
             Text(i.name ?? url.lastPathComponent)
-              .tag(i.id?.uuidString ?? "")
+              .tag(i.id?.uuidString)
               .help(url.path)
           }
         }
 
-        Divider().tag(Model.unsetModelId)
-        Text("Add or remove models...").tag(AISettingsView.customizeModelsId)
+        Divider().tag(nil as String?)
+        Text("Add or remove models...") .tag(AISettingsView.customizeModelsId as String?)
       }.onReceive(Just(pickedModel)) { _ in
         if pickedModel == AISettingsView.customizeModelsId {
           customizeModels = true
           pickedModel = selectedModelId
-        } else if pickedModel != Model.unsetModelId {
+        } else if pickedModel != nil {
           selectedModelId = pickedModel
         }
       }
-
+      .onChange(of: pickedModel) { newValue in
+        if pickedModel == AISettingsView.customizeModelsId {
+          customizeModels = true
+          pickedModel = selectedModelId
+        } else if pickedModel != nil {
+          selectedModelId = pickedModel
+        }
+      }
 
       Text("The default model is general purpose, small, and works on most computers. Larger models are slower but wiser. Some models specialize in certain tasks like coding Python. FreeChat is compatible with most models in GGUF format. [Find new models](https://huggingface.co/models?search=GGUF)")
         .font(.callout)
@@ -197,37 +204,34 @@ struct AISettingsView: View {
       }
       .navigationTitle(AISettingsView.title)
       .onAppear {
+        let selectedModelExists = models
+          .compactMap({ $0.id?.uuidString })
+          .contains(selectedModelId)
+        if !selectedModelExists {
+          selectedModelId = models.first?.id?.uuidString
+        }
         pickedModel = selectedModelId
       }
       .onChange(of: selectedModelId) { newModelId in
         pickedModel = newModelId
-        var model: Model?
-        if newModelId == Model.unsetModelId {
-          model = models.first
-        } else {
-          model = models.first { i in i.id?.uuidString == newModelId }
-        }
-        guard let model else {
-          return
-        }
+        guard
+          let model = models.first(where: { $0.id?.uuidString == newModelId }) ?? models.first
+        else { return }
 
         conversationManager.rebootAgent(systemPrompt: self.systemPrompt, model: model, viewContext: viewContext)
       }
       .onChange(of: systemPrompt) { nextPrompt in
-        let model: Model? = selectedModel
-        guard let model else {
-          return
-        }
-
+        guard let model: Model = selectedModel else { return }
         conversationManager.rebootAgent(systemPrompt: nextPrompt, model: model, viewContext: viewContext)
       }
       .onChange(of: useGPU) { nextUseGPU in
-        let model: Model? = selectedModel
-        guard let model else {
-          return
-        }
-
+        guard let model: Model = selectedModel else { return }
         conversationManager.rebootAgent(systemPrompt: self.systemPrompt, model: model, viewContext: viewContext)
+      }
+      .onReceive(NotificationCenter.default.publisher(for: NSNotification.Name("selectedModelDidChange"))) { output in
+        if let updatedId: String = output.object as? String {
+          selectedModelId = updatedId
+        }
       }
       .frame(minWidth: 300, maxWidth: 600, minHeight: 184, idealHeight: 195, maxHeight: 400, alignment: .center)
   }
