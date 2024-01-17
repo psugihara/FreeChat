@@ -18,13 +18,13 @@ struct SettingsView: View {
     TabView {
       UISettingsView()
         .tabItem {
-        Label("General", systemImage: "gear")
-      }
+          Label("General", systemImage: "gear")
+        }
         .tag(Tabs.ui)
       AISettingsView()
         .tabItem {
-        Label("Intelligence", systemImage: "hands.and.sparkles.fill")
-      }
+          Label("Intelligence", systemImage: "hands.and.sparkles.fill")
+        }
         .tag(Tabs.ai)
     }
       .frame(minWidth: 300, maxWidth: 600, minHeight: 184, idealHeight: 195, maxHeight: 400, alignment: .center)

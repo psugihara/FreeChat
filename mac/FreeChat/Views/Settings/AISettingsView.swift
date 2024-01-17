@@ -12,6 +12,8 @@ struct AISettingsView: View {
   static let title = "Intelligence"
   private static let customizeModelsId = "customizeModels"
 
+  private let serverHealthTimer = Timer.publish(every: 3, on: .main, in: .common).autoconnect()
+
   @Environment(\.managedObjectContext) private var viewContext
   @EnvironmentObject var conversationManager: ConversationManager
 
@@ -25,12 +27,19 @@ struct AISettingsView: View {
   @AppStorage("contextLength") private var contextLength = Agent.DEFAULT_CONTEXT_LENGTH
   @AppStorage("temperature") private var temperature: Double = Agent.DEFAULT_TEMP
   @AppStorage("useGPU") private var useGPU = Agent.DEFAULT_USE_GPU
+  @AppStorage("serverTLS") private var serverTLS: Bool = false
+  @AppStorage("serverHost") private var serverHost: String?
+  @AppStorage("serverPort") private var serverPort: String?
 
   @State var pickedModel: String? // Picker selection
   @State var customizeModels = false // Show add remove models
   @State var editSystemPrompt = false
   @State var editFormat = false
   @State var revealAdvanced = false
+  @State var inputServerTLS: Bool = false
+  @State var inputServerHost: String = ""
+  @State var inputServerPort: String = ""
+  @State var serverHealthScore: Double = -1
 
   @StateObject var gpu = GPU.shared
 
@@ -133,11 +142,38 @@ struct AISettingsView: View {
     }
   }
 
+
+  
+  var indicatorColor: Color {
+    switch serverHealthScore {
+    case 0..<0.25:
+      Color(red: 1, green: 0, blue: 0)
+    case 0.25..<0.5:
+      Color(red: 1, green: 0.5, blue: 0)
+    case 0.5..<0.75:
+      Color(red: 0.45, green: 0.55, blue: 0)
+    case 0.75..<0.95:
+      Color(red: 0.1, green: 0.9, blue: 0)
+    case 0.95...1:
+      Color(red: 0, green: 1, blue: 0)
+    default:
+      Color(red: 0.5, green: 0.5, blue: 0.5)
+    }
+  }
+
+  var serverHealthIndicator: some View {
+    Circle()
+      .frame(width: 12, height: 12)
+      .foregroundColor(indicatorColor)
+  }
+
   var body: some View {
     Form {
       Section {
         systemPromptEditor
         modelPicker
+        // TODO: Show indicator of health, precentage
+        // using stats from last n responses
       }
       Section {
         DisclosureGroup(isExpanded: $revealAdvanced, content: {
@@ -194,6 +230,41 @@ struct AISettingsView: View {
           .buttonStyle(.plain)
         })
       }
+      Section {
+        HStack {
+          TextField("Server Host", text: $inputServerHost)
+            .font(.callout)
+            .foregroundColor(Color(NSColor.secondaryLabelColor))
+            .lineLimit(5)
+            .fixedSize(horizontal: false, vertical: true)
+          Spacer()
+          TextField("Server Port", text: $inputServerPort)
+            .font(.callout)
+            .foregroundColor(Color(NSColor.secondaryLabelColor))
+            .lineLimit(5)
+            .fixedSize(horizontal: false, vertical: true)
+          Spacer()
+        }
+        Toggle(isOn: $inputServerTLS) {
+          Text("Enable HTTPS")
+            .font(.callout)
+            .foregroundColor(Color(NSColor.secondaryLabelColor))
+            .lineLimit(5)
+        }
+        .toggleStyle(CheckboxToggleStyle())
+        HStack {
+          serverHealthIndicator
+          Text("Server health")
+          Text(String(serverHealthScore))
+        }
+        .onReceive(serverHealthTimer) { _ in
+          Task {
+            await ServerHealth.shared.check()
+            let score = await ServerHealth.shared.score
+            serverHealthScore = score
+          }
+        }
+      }
     }
       .formStyle(.grouped)
       .sheet(isPresented: $customizeModels) {
@@ -202,6 +273,7 @@ struct AISettingsView: View {
       .sheet(isPresented: $editSystemPrompt) {
         EditSystemPrompt()
       }
+      .onSubmit(saveFormRemoteServer)
       .navigationTitle(AISettingsView.title)
       .onAppear {
         let selectedModelExists = models
@@ -211,6 +283,11 @@ struct AISettingsView: View {
           selectedModelId = models.first?.id?.uuidString
         }
         pickedModel = selectedModelId
+        
+        inputServerTLS = serverTLS
+        inputServerHost = serverHost ?? ""
+        inputServerPort = serverPort ?? ""
+        updateRemoteServerURL()
       }
       .onChange(of: selectedModelId) { newModelId in
         pickedModel = newModelId
@@ -234,6 +311,26 @@ struct AISettingsView: View {
         }
       }
       .frame(minWidth: 300, maxWidth: 600, minHeight: 184, idealHeight: 195, maxHeight: 400, alignment: .center)
+  }
+
+  private func saveFormRemoteServer() {
+    // TODO: Validate input
+    serverTLS = inputServerTLS
+    serverHost = inputServerHost
+    serverPort = inputServerPort
+    serverHealthScore = -1
+    // TODO: Display errors or success √
+    updateRemoteServerURL()
+  }
+
+  private func updateRemoteServerURL() {
+    let scheme = inputServerTLS ? "https" : "http"
+    guard let url = URL(string: "\(scheme)://\(inputServerHost):\(inputServerPort)/health")
+    else { return }
+    Task {
+      await ServerHealth.shared.updateURL(url)
+      await ServerHealth.shared.check()
+    }
   }
 }
 

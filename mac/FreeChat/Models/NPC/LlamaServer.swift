@@ -37,14 +37,19 @@ actor LlamaServer {
   private var serverUp = false
   private var serverErrorMessage = ""
   private var eventSource: EventSource?
-  private let port = "8690"
+  private let host: String
+  private let port: String
+  // TODO: Use URL initializer
+  //private let scheme: String = "http"
   private var interrupted = false
 
   private var monitor = Process()
 
-  init(modelPath: String, contextLength: Int) {
+  init(modelPath: String, contextLength: Int, host: String?, port: String?) {
     self.modelPath = modelPath
     self.contextLength = contextLength
+    self.host = host ?? "127.0.0.1"
+    self.port = port ?? "8690"
   }
 
   // Start a monitor process that will terminate the server when our app dies.
@@ -165,7 +170,7 @@ actor LlamaServer {
     )
     if let t = temperature { params.temperature = t }
 
-    let url = URL(string: "http://127.0.0.1:\(port)/completion")!
+    let url = URL(string: "http://\(host):\(port)/completion")!
     var request = URLRequest(url: url)
 
     request.httpMethod = "POST"

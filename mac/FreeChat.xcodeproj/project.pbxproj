@@ -58,6 +58,7 @@
 		A1F617582A7836AE00F2048C /* Message+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1F617572A7836AE00F2048C /* Message+Extensions.swift */; };
 		A1F6175B2A7838F700F2048C /* Conversation+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1F6175A2A7838F700F2048C /* Conversation+Extensions.swift */; };
 		DEA8CF572B51938B007A4CE7 /* FreeChatAppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEA8CF562B51938B007A4CE7 /* FreeChatAppDelegate.swift */; };
+		DEEA39CC2B586F3800992592 /* ServerHealth.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEEA39CB2B586F3800992592 /* ServerHealth.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -174,6 +175,7 @@
 		A1F617572A7836AE00F2048C /* Message+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Message+Extensions.swift"; sourceTree = "<group>"; };
 		A1F6175A2A7838F700F2048C /* Conversation+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Conversation+Extensions.swift"; sourceTree = "<group>"; };
 		DEA8CF562B51938B007A4CE7 /* FreeChatAppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FreeChatAppDelegate.swift; sourceTree = "<group>"; };
+		DEEA39CB2B586F3800992592 /* ServerHealth.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerHealth.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -255,6 +257,8 @@
 				A137A3872AB502DB00BE1AE0 /* ggml-metal.metal */,
 				A17A2E122A79A005006CDD90 /* Agent.swift */,
 				A17A2E132A79A005006CDD90 /* LlamaServer.swift */,
+				DEEA39C92B586DEA00992592 /* LlamaServerProvider.swift */,
+				DEEA39CB2B586F3800992592 /* RemoteServer.swift */,
 				A137A3822AB4FD4800BE1AE0 /* freechat-server */,
 				A1A286F32A7E17750004967A /* server-watchdog */,
 				A1A286F92A7E197F0004967A /* README.md */,
@@ -564,6 +568,7 @@
 				A1506D742B0026B4002194F2 /* FeedbackButton.swift in Sources */,
 				A12FAAF02AC638DE006ACC43 /* DownloadManager.swift in Sources */,
 				A18A8BAF2B155FC000D2197C /* Network.swift in Sources */,
+				DEEA39CA2B586DEA00992592 /* LlamaServerProvider.swift in Sources */,
 				A1F617282A782AA100F2048C /* ContentView.swift in Sources */,
 				A1F617322A782AA200F2048C /* Chats.xcdatamodeld in Sources */,
 				A1A286E82A7D8A7D0004967A /* MessageView.swift in Sources */,
@@ -582,6 +587,7 @@
 				A13C8C662A9027A200EC18D8 /* CopyButton.swift in Sources */,
 				A17A2E182A79A006006CDD90 /* Agent.swift in Sources */,
 				A12FAAEC2AC5E0C0006ACC43 /* WelcomeSheet.swift in Sources */,
+				DEEA39CC2B586F3800992592 /* RemoteServer.swift in Sources */,
 				A1156D382AD5E75A00081313 /* EnumMap.swift in Sources */,
 				A137A37C2AB3D26C00BE1AE0 /* ObservableScrollView.swift in Sources */,
 				A16FFF8B2B2E35D200E6AAE2 /* GPU.swift in Sources */,
@@ -638,6 +644,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = "server-watchdog.entitlements";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_INJECT_BASE_ENTITLEMENTS = NO;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 6577JALN5F;

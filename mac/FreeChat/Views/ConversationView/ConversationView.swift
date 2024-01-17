@@ -19,6 +19,8 @@ struct ConversationView: View, Sendable {
   @AppStorage("playSoundEffects") private var playSoundEffects = true
   @AppStorage("temperature") private var temperature: Double?
   @AppStorage("useGPU") private var useGPU: Bool = Agent.DEFAULT_USE_GPU
+  @AppStorage("serverHost") private var serverHost: String?
+  @AppStorage("serverPort") private var serverPort: String?
 
   @FetchRequest(
     sortDescriptors: [NSSortDescriptor(keyPath: \Model.size, ascending: true)],
@@ -153,8 +155,8 @@ struct ConversationView: View, Sendable {
         let model = models.first,
         let modelPath = model.url?.path(percentEncoded: false),
         modelPath != llamaPath {
-          await agent.llama.stopServer()
-        agent.llama = LlamaServer(modelPath: modelPath, contextLength: contextLength)
+        await agent.llama.stopServer()
+        agent.llama = LlamaServer(modelPath: modelPath, contextLength: contextLength, host: serverHost, port: serverPort)
   //        try? await agent.warmup(template: model.template)
       } else if agent.status == .cold {
 //        try? await agent.warmup()
