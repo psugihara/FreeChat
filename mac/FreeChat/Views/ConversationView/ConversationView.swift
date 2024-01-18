@@ -47,11 +47,10 @@ struct ConversationView: View, Sendable {
     }
   }
 
+  @StateObject var calcState = CalcState.init()
   @State var pendingMessage: Message?
 
   @State var messages: [Message] = []
-
-  @State var userText = ""
 
   @State var showUserMessage = true
   @State var showResponse = true
@@ -63,12 +62,21 @@ struct ConversationView: View, Sendable {
 
   var body: some View {
     HStack(alignment: .top) {
-      TextEditor(text: $userText)
-        .padding()
-      Text(userText)
-        .frame(minWidth: 100, maxHeight: .infinity, alignment: .topLeading)
-        .background(.ultraThinMaterial)
-        .padding()
+      TextEditor(text: $calcState.userText)
+        .padding(.vertical)
+        .padding(.leading)
+      Divider()
+      ZStack(alignment: .bottomTrailing) {
+        TextEditor(text: $calcState.output)
+          .padding(.vertical)
+          .padding(.trailing)
+          .padding(.leading, 5)
+        ProgressView()
+          .controlSize(.mini)
+          .opacity(calcState.outputPending ? 1 : 0)
+          .padding(.vertical, 4)
+          .padding(.trailing, 2)
+      }
     }
     .onReceive(
       agent.$pendingMessage.throttle(for: .seconds(0.1), scheduler: RunLoop.main, latest: true)
@@ -81,6 +89,15 @@ struct ConversationView: View, Sendable {
       DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
       }
     }
+    .onReceive(
+      calcState.$userText.debounce(for: .milliseconds(500), scheduler: RunLoop.main),
+      perform: { _ in
+        submit(calcState.userText)
+      }
+    )
+    .onChange(of: calcState.userText) { _ in
+      calcState.calculateOutput()
+    }
     .textSelection(.enabled)
     .frame(maxWidth: .infinity, maxHeight: .infinity)
     .onAppear { showConversation(conversation) }
@@ -92,9 +109,6 @@ struct ConversationView: View, Sendable {
       Text(error.recoverySuggestion ?? "")
     }
     .background(Color.textBackground)
-    .onChange(userText) {
-      submit(<#T##input: String##String#>)
-    }
   }
 
   private func playSendSound() {
@@ -141,9 +155,9 @@ struct ConversationView: View, Sendable {
   @MainActor
   func handleResponseError(_ e: LlamaServerError) {
     print("handle response error", e.localizedDescription)
-    if let m = pendingMessage {
-      viewContext.delete(m)
-    }
+    //    if let m = pendingMessage {
+    //      viewContext.delete(m)
+    //    }
     llamaError = e
     showResponse = false
     showErrorAlert = true
@@ -151,116 +165,128 @@ struct ConversationView: View, Sendable {
 
   @MainActor
   func submit(_ input: String) {
-    dispatchPrecondition(condition: .onQueue(.main))
-
-    if agent.status == .processing || agent.status == .coldProcessing {
-      Task {
-        await agent.interrupt()
-
-        Task.detached(priority: .userInitiated) {
-          try? await Task.sleep(for: .seconds(1))
-          await submit(input)
-        }
+    // # figure out which line was edited
+    // get line
+    for lineText in calcState.linesTexts() {
+      let lineKey = String(lineText)
+      if calcState.lines.index(forKey: lineKey) != nil {
+        continue
       }
-      return
-    }
+      // submit edited lines to the llm
+      // store response in calcState
 
-    playSendSound()
+      dispatchPrecondition(condition: .onQueue(.main))
 
-    guard let model = selectedModel else {
-      return
-    }
+      //    if agent.status == .processing || agent.status == .coldProcessing {
+      //      Task {
+      //        await agent.interrupt()
+      //
+      //        Task.detached(priority: .userInitiated) {
+      //          try? await Task.sleep(for: .seconds(1))
+      //          await submit(input)
+      //        }
+      //      }
+      //      return
+      //    }
 
-    showUserMessage = false
+      playSendSound()
 
-    // Create user's message
-    do {
-      _ = try Message.create(
-        text: input, fromId: Message.USER_SPEAKER_ID, conversation: conversation,
-        systemPrompt: systemPrompt, inContext: viewContext)
-    } catch (let error) {
-      print("Error creating message", error.localizedDescription)
-    }
-    showResponse = false
-
-    let agentConversation = conversation
-    messages = agentConversation.orderedMessages
-    withAnimation {
-      showUserMessage = true
-    }
-
-    let messageTexts = messages.map { $0.text ?? "" }
-
-    // Pending message for bot's reply
-    let m = Message(context: viewContext)
-    m.fromId = agent.id
-    m.createdAt = Date()
-    m.updatedAt = m.createdAt
-    m.systemPrompt = systemPrompt
-    m.text = ""
-    pendingMessage = m
-
-    agent.systemPrompt = systemPrompt
-
-    DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
-      guard agentConversation == conversation,
-        !m.isDeleted,
-        m.managedObjectContext == agentConversation.managedObjectContext
-      else {
+      guard let model = selectedModel else {
         return
       }
 
-      m.conversation = agentConversation
+      showUserMessage = false
+
+      // Create user's message
+      //    guard let userMessage = try? Message.create(
+      //      text: input, fromId: Message.USER_SPEAKER_ID, conversation: conversation,
+      //      systemPrompt: systemPrompt, inContext: ephemeralContext) else {
+      //      print("Error creating user message")
+      //      return
+      //    }
+      //    showResponse = false
+
+      let agentConversation = conversation
       messages = agentConversation.orderedMessages
+      //    withAnimation {
+      //      showUserMessage = true
+      //    }
 
-      withAnimation {
-        showResponse = true
-      }
-    }
+      let messageTexts = [lineText]
 
-    Task {
-      var response: LlamaServer.CompleteResponse
-      do {
-        response = try await agent.listenThinkRespond(
-          speakerId: Message.USER_SPEAKER_ID, messages: messageTexts, template: model.template,
-          temperature: temperature)
-      } catch let error as LlamaServerError {
-        handleResponseError(error)
-        return
-      } catch {
-        print("agent listen threw unexpected error", error as Any)
-        return
-      }
+      // Pending message for bot's reply
+      //    let m = Message(context: ephemeralContext)
+      //    m.fromId = agent.id
+      //    m.createdAt = Date()
+      //    m.updatedAt = m.createdAt
+      //    m.systemPrompt = systemPrompt
+      //    m.text = ""
+      //    pendingMessage = m
 
-      await MainActor.run {
-        m.text = response.text
-        m.predictedPerSecond = response.predictedPerSecond ?? -1
-        m.responseStartSeconds = response.responseStartSeconds
-        m.nPredicted = Int64(response.nPredicted ?? -1)
-        m.modelName = response.modelName
-        m.updatedAt = Date()
+      agent.systemPrompt = systemPrompt
 
-        playReceiveSound()
+      //    DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
+      //      guard agentConversation == conversation,
+      //        !m.isDeleted,
+      //        m.managedObjectContext == agentConversation.managedObjectContext
+      //      else {
+      //        return
+      //      }
+      //
+      //      m.conversation = agentConversation
+      //      messages = agentConversation.orderedMessages
+      //
+      //      withAnimation {
+      //        showResponse = true
+      //      }
+      //    }
+
+      Task {
+        var response: LlamaServer.CompleteResponse
         do {
-          try viewContext.save()
+          response = try await agent.listenThinkRespond(
+            speakerId: Message.USER_SPEAKER_ID, messages: messageTexts, template: model.template,
+            temperature: temperature)
+        } catch let error as LlamaServerError {
+          handleResponseError(error)
+          return
         } catch {
-          print("error creating message", error.localizedDescription)
-        }
-
-        if pendingMessage?.text != nil,
-          !pendingMessage!.text!.isEmpty,
-          response.text.hasPrefix(agent.pendingMessage),
-          m == pendingMessage
-        {
-          pendingMessage = nil
-          agent.pendingMessage = ""
-        }
-
-        if conversation != agentConversation {
+          print("agent listen threw unexpected error", error as Any)
           return
         }
 
-        messages = agentConversation.orderedMessages
+        await MainActor.run {
+          //        m.text = response.text
+          //        m.predictedPerSecond = response.predictedPerSecond ?? -1
+          //        m.responseStartSeconds = response.responseStartSeconds
+          //        m.nPredicted = Int64(response.nPredicted ?? -1)
+          //        m.modelName = response.modelName
+          //        m.updatedAt = Date()
+
+          playReceiveSound()
+          //        do {
+          //          try viewContext.save()
+          //        } catch {
+          //          print("error creating message", error.localizedDescription)
+          //        }
+
+          //        if pendingMessage?.text != nil,
+          //          !pendingMessage!.text!.isEmpty,
+          //          response.text.hasPrefix(agent.pendingMessage),
+          //          m == pendingMessage
+          //        {
+          //          pendingMessage = nil
+          //          agent.pendingMessage = ""
+          //        }
+
+          if conversation != agentConversation {
+            return
+          }
+
+          // flush text to lines
+          //        calcState.lines = reponse.text
+          calcState.addLine(key: lineKey, response: response.text)
+        }
       }
     }
   }

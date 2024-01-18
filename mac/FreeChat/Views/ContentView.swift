@@ -39,22 +39,7 @@ struct ContentView: View {
   @EnvironmentObject var conversationManager: ConversationManager
 
   var body: some View {
-    NavigationSplitView {
-      if setInitialSelection {
-        NavList(selection: $selection, showDeleteConfirmation: $showDeleteConfirmation)
-          .navigationSplitViewColumnWidth(min: 160, ideal: 160)
-      }
-    } detail: {
-      if selection.count > 1 {
-        Text("\(selection.count) conversations selected")
-      } else if conversationManager.showConversation() {
-        ConversationView()
-      } else if conversations.count == 0 {
-        Text("Hit ⌘N to start a conversation")
-      } else {
-        Text("Select a conversation")
-      }
-    }
+    ConversationView()
     .onReceive(
       NotificationCenter.default.publisher(for: NSApplication.willTerminateNotification),
       perform: { output in

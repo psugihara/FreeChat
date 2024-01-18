@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		A1148B8A2B55E4890058480D /* CalcState.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1148B892B55E4890058480D /* CalcState.swift */; };
 		A1156D2F2AD0954C00081313 /* TemplateManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1156D2E2AD0954C00081313 /* TemplateManager.swift */; };
 		A1156D312AD09FDD00081313 /* PromptTemplateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1156D302AD09FDD00081313 /* PromptTemplateTests.swift */; };
 		A1156D342AD1F5EF00081313 /* Templates.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1156D332AD1F5EF00081313 /* Templates.swift */; };
@@ -120,6 +121,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		A1148B892B55E4890058480D /* CalcState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalcState.swift; sourceTree = "<group>"; };
 		A1156D2E2AD0954C00081313 /* TemplateManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TemplateManager.swift; sourceTree = "<group>"; };
 		A1156D302AD09FDD00081313 /* PromptTemplateTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PromptTemplateTests.swift; sourceTree = "<group>"; };
 		A1156D332AD1F5EF00081313 /* Templates.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Templates.swift; sourceTree = "<group>"; };
@@ -372,6 +374,7 @@
 				A12FAAEF2AC638DE006ACC43 /* DownloadManager.swift */,
 				A18A8BAE2B155FC000D2197C /* Network.swift */,
 				A16FFF8A2B2E35D200E6AAE2 /* GPU.swift */,
+				A1148B892B55E4890058480D /* CalcState.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -573,6 +576,7 @@
 				A15D50D22A7F539800FC1681 /* NavList.swift in Sources */,
 				A1156D342AD1F5EF00081313 /* Templates.swift in Sources */,
 				A1F617262A782AA100F2048C /* FreeChat.swift in Sources */,
+				A1148B8A2B55E4890058480D /* CalcState.swift in Sources */,
 				A1156D2F2AD0954C00081313 /* TemplateManager.swift in Sources */,
 				A1E4A6942A82B41F00BF9D34 /* Model+Extensions.swift in Sources */,
 				A12B52DE2AA5228100658707 /* EditModels.swift in Sources */,

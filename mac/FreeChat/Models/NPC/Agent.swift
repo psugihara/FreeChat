@@ -73,7 +73,7 @@ class Agent: ObservableObject {
 
   func interrupt() async {
     if status != .processing, status != .coldProcessing { return }
-    await llama.interrupt()
+//    await llama.interrupt()
   }
 
   func warmup() async throws {

@@ -36,7 +36,6 @@ actor LlamaServer {
   private var outputPipe = Pipe()
   private var serverUp = false
   private var serverErrorMessage = ""
-  private var eventSource: EventSource?
   private let port = "8690"
   private var interrupted = false
 
@@ -175,13 +174,13 @@ actor LlamaServer {
     request.httpBody = params.toJSON().data(using: .utf8)
 
     // Use EventSource to receive server sent events
-    eventSource = EventSource(request: request)
-    eventSource!.connect()
+    let eventSource = EventSource(request: request)
+    eventSource.connect()
 
     var response = ""
     var responseDiff = 0.0
     var stopResponse: StopResponse?
-    listenLoop: for await event in eventSource!.events {
+    listenLoop: for await event in eventSource.events {
       switch event {
       case .open:
         continue
@@ -245,12 +244,12 @@ actor LlamaServer {
     )
   }
 
-  func interrupt() async {
-    if let eventSource, eventSource.readyState != .closed {
-      await eventSource.close()
-    }
-    interrupted = true
-  }
+//  func interrupt() async {
+//    if let eventSource, eventSource.readyState != .closed {
+//      await eventSource.close()
+//    }
+//    interrupted = true
+//  }
 
   private func waitForServer() async throws {
     if !process.isRunning { return }

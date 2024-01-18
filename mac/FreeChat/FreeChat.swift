@@ -17,7 +17,7 @@ struct FreeChatApp: App {
   let persistenceController = PersistenceController.shared
 
   var body: some Scene {
-    Window(Text("FreeChat"), id: "main") {
+    Window(Text("Essence"), id: "main") {
       ContentView()
         .environment(\.managedObjectContext, persistenceController.container.viewContext)
         .environmentObject(conversationManager)
