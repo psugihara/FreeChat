@@ -11,6 +11,7 @@ import Combine
 struct AISettingsView: View {
   static let title = "Intelligence"
   private static let customizeModelsId = "customizeModels"
+  static let remoteModelOption = "remoteModelOption"
 
   private let serverHealthTimer = Timer.publish(every: 3, on: .main, in: .common).autoconnect()
 
@@ -33,6 +34,7 @@ struct AISettingsView: View {
 
   @State var pickedModel: String? // Picker selection
   @State var customizeModels = false // Show add remove models
+  @State var editRemoteModel = false // Show remote model server
   @State var editSystemPrompt = false
   @State var editFormat = false
   @State var revealAdvanced = false
@@ -100,22 +102,43 @@ struct AISettingsView: View {
         }
 
         Divider().tag(nil as String?)
-        Text("Add or remove models...") .tag(AISettingsView.customizeModelsId as String?)
+        Text("Remote Model (Advanced)") .tag(AISettingsView.remoteModelOption as String?)
+        Text("Add or Remove Models...") .tag(AISettingsView.customizeModelsId as String?)
       }.onReceive(Just(pickedModel)) { _ in
-        if pickedModel == AISettingsView.customizeModelsId {
+        switch pickedModel {
+        case AISettingsView.customizeModelsId:
           customizeModels = true
+          editRemoteModel = false
           pickedModel = selectedModelId
-        } else if pickedModel != nil {
-          selectedModelId = pickedModel
+        case AISettingsView.remoteModelOption:
+          customizeModels = false
+          editRemoteModel = true
+          selectedModelId = AISettingsView.remoteModelOption
+        case .some(let pickedModelValue):
+          customizeModels = false
+          editRemoteModel = false
+          selectedModelId = pickedModelValue
+        default: break
         }
       }
       .onChange(of: pickedModel) { newValue in
-        if pickedModel == AISettingsView.customizeModelsId {
+        switch pickedModel {
+        case AISettingsView.customizeModelsId:
           customizeModels = true
+          editRemoteModel = false
           pickedModel = selectedModelId
-        } else if pickedModel != nil {
-          selectedModelId = pickedModel
+        case AISettingsView.remoteModelOption:
+          customizeModels = false
+          editRemoteModel = true
+          selectedModelId = AISettingsView.remoteModelOption
+
+        case .some(let pickedModelValue):
+          customizeModels = false
+          editRemoteModel = false
+          selectedModelId = pickedModelValue
+        default: break
         }
+ 
       }
 
       Text("The default model is general purpose, small, and works on most computers. Larger models are slower but wiser. Some models specialize in certain tasks like coding Python. FreeChat is compatible with most models in GGUF format. [Find new models](https://huggingface.co/models?search=GGUF)")
@@ -163,8 +186,55 @@ struct AISettingsView: View {
 
   var serverHealthIndicator: some View {
     Circle()
-      .frame(width: 12, height: 12)
+      .frame(width: 9, height: 9)
       .foregroundColor(indicatorColor)
+  }
+
+  var sectionRemoteModel: some View {
+    VStack(alignment: .leading) {
+      Text("If you have access to a powerful server, you may want to run your model there. Enter the host and port to connect to a remote llama.cpp server. Instructions for running the server can be found [here](https://github.com/ggerganov/llama.cpp/blob/master/examples/server/README.md)")
+        .font(.callout)
+        .foregroundColor(Color(NSColor.secondaryLabelColor))
+        .lineLimit(5)
+        .fixedSize(horizontal: false, vertical: true)
+        .padding(.top, 0.5)
+      HStack {
+        TextField("Server Host", text: $inputServerHost)
+          .font(.callout)
+          .lineLimit(5)
+          .fixedSize(horizontal: false, vertical: true)
+        Spacer()
+        TextField("Server Port", text: $inputServerPort)
+          .font(.callout)
+          .lineLimit(5)
+          .fixedSize(horizontal: false, vertical: true)
+        Spacer()
+      }
+      Toggle(isOn: $inputServerTLS) {
+        Text("Enable HTTPS")
+          .font(.callout)
+          .foregroundColor(Color(NSColor.secondaryLabelColor))
+          .lineLimit(5)
+      }
+      .toggleStyle(CheckboxToggleStyle())
+      HStack {
+        HStack {
+          serverHealthIndicator
+          Text("Server health")
+            .font(.callout)
+            .foregroundColor(Color(NSColor.secondaryLabelColor))
+        }
+        .onReceive(serverHealthTimer) { _ in
+          Task {
+            await ServerHealth.shared.check()
+            let score = await ServerHealth.shared.score
+            serverHealthScore = score
+          }
+        }
+        Spacer()
+        Button("Check Server", action: saveFormRemoteServer)
+      }
+    }
   }
 
   var body: some View {
@@ -172,8 +242,9 @@ struct AISettingsView: View {
       Section {
         systemPromptEditor
         modelPicker
-        // TODO: Show indicator of health, precentage
-        // using stats from last n responses
+        if editRemoteModel {
+          sectionRemoteModel
+        }
       }
       Section {
         DisclosureGroup(isExpanded: $revealAdvanced, content: {
@@ -230,87 +301,54 @@ struct AISettingsView: View {
           .buttonStyle(.plain)
         })
       }
-      Section {
-        HStack {
-          TextField("Server Host", text: $inputServerHost)
-            .font(.callout)
-            .foregroundColor(Color(NSColor.secondaryLabelColor))
-            .lineLimit(5)
-            .fixedSize(horizontal: false, vertical: true)
-          Spacer()
-          TextField("Server Port", text: $inputServerPort)
-            .font(.callout)
-            .foregroundColor(Color(NSColor.secondaryLabelColor))
-            .lineLimit(5)
-            .fixedSize(horizontal: false, vertical: true)
-          Spacer()
-        }
-        Toggle(isOn: $inputServerTLS) {
-          Text("Enable HTTPS")
-            .font(.callout)
-            .foregroundColor(Color(NSColor.secondaryLabelColor))
-            .lineLimit(5)
-        }
-        .toggleStyle(CheckboxToggleStyle())
-        HStack {
-          serverHealthIndicator
-          Text("Server health")
-          Text(String(serverHealthScore))
-        }
-        .onReceive(serverHealthTimer) { _ in
-          Task {
-            await ServerHealth.shared.check()
-            let score = await ServerHealth.shared.score
-            serverHealthScore = score
-          }
-        }
-      }
     }
-      .formStyle(.grouped)
-      .sheet(isPresented: $customizeModels) {
-        EditModels(selectedModelId: $selectedModelId)
-      }
-      .sheet(isPresented: $editSystemPrompt) {
-        EditSystemPrompt()
-      }
-      .onSubmit(saveFormRemoteServer)
-      .navigationTitle(AISettingsView.title)
-      .onAppear {
+    .formStyle(.grouped)
+    .sheet(isPresented: $customizeModels) {
+      EditModels(selectedModelId: $selectedModelId)
+    }
+    .sheet(isPresented: $editSystemPrompt) {
+      EditSystemPrompt()
+    }
+    .onSubmit(saveFormRemoteServer)
+    .navigationTitle(AISettingsView.title)
+    .onAppear {
+      if selectedModelId != AISettingsView.remoteModelOption {
         let selectedModelExists = models
           .compactMap({ $0.id?.uuidString })
           .contains(selectedModelId)
         if !selectedModelExists {
           selectedModelId = models.first?.id?.uuidString
         }
-        pickedModel = selectedModelId
-        
-        inputServerTLS = serverTLS
-        inputServerHost = serverHost ?? ""
-        inputServerPort = serverPort ?? ""
-        updateRemoteServerURL()
       }
-      .onChange(of: selectedModelId) { newModelId in
-        pickedModel = newModelId
-        guard
-          let model = models.first(where: { $0.id?.uuidString == newModelId }) ?? models.first
-        else { return }
+      pickedModel = selectedModelId
 
-        conversationManager.rebootAgent(systemPrompt: self.systemPrompt, model: model, viewContext: viewContext)
+      inputServerTLS = serverTLS
+      inputServerHost = serverHost ?? ""
+      inputServerPort = serverPort ?? ""
+      updateRemoteServerURL()
+    }
+    .onChange(of: selectedModelId) { newModelId in
+      pickedModel = newModelId
+      guard
+        let model = models.first(where: { $0.id?.uuidString == newModelId }) ?? models.first
+      else { return }
+
+      conversationManager.rebootAgent(systemPrompt: self.systemPrompt, model: model, viewContext: viewContext)
+    }
+    .onChange(of: systemPrompt) { nextPrompt in
+      guard let model: Model = selectedModel else { return }
+      conversationManager.rebootAgent(systemPrompt: nextPrompt, model: model, viewContext: viewContext)
+    }
+    .onChange(of: useGPU) { nextUseGPU in
+      guard let model: Model = selectedModel else { return }
+      conversationManager.rebootAgent(systemPrompt: self.systemPrompt, model: model, viewContext: viewContext)
+    }
+    .onReceive(NotificationCenter.default.publisher(for: NSNotification.Name("selectedModelDidChange"))) { output in
+      if let updatedId: String = output.object as? String {
+        selectedModelId = updatedId
       }
-      .onChange(of: systemPrompt) { nextPrompt in
-        guard let model: Model = selectedModel else { return }
-        conversationManager.rebootAgent(systemPrompt: nextPrompt, model: model, viewContext: viewContext)
-      }
-      .onChange(of: useGPU) { nextUseGPU in
-        guard let model: Model = selectedModel else { return }
-        conversationManager.rebootAgent(systemPrompt: self.systemPrompt, model: model, viewContext: viewContext)
-      }
-      .onReceive(NotificationCenter.default.publisher(for: NSNotification.Name("selectedModelDidChange"))) { output in
-        if let updatedId: String = output.object as? String {
-          selectedModelId = updatedId
-        }
-      }
-      .frame(minWidth: 300, maxWidth: 600, minHeight: 184, idealHeight: 195, maxHeight: 400, alignment: .center)
+    }
+    .frame(minWidth: 300, maxWidth: 600, minHeight: 184, idealHeight: 195, maxHeight: 400, alignment: .center)
   }
 
   private func saveFormRemoteServer() {
@@ -321,6 +359,8 @@ struct AISettingsView: View {
     serverHealthScore = -1
     // TODO: Display errors or success √
     updateRemoteServerURL()
+
+    selectedModelId = AISettingsView.remoteModelOption
   }
 
   private func updateRemoteServerURL() {

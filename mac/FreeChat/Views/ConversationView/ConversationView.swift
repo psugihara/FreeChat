@@ -21,6 +21,7 @@ struct ConversationView: View, Sendable {
   @AppStorage("useGPU") private var useGPU: Bool = Agent.DEFAULT_USE_GPU
   @AppStorage("serverHost") private var serverHost: String?
   @AppStorage("serverPort") private var serverPort: String?
+  @AppStorage("serverTLS") private var serverTLS: Bool?
 
   @FetchRequest(
     sortDescriptors: [NSSortDescriptor(keyPath: \Model.size, ascending: true)],
@@ -41,7 +42,9 @@ struct ConversationView: View, Sendable {
   }
 
   var selectedModel: Model? {
-    if let selectedModelId = self.selectedModelId {
+    // TODO: Refactor
+    if let selectedModelId = self.selectedModelId,
+       selectedModelId != AISettingsView.remoteModelOption {
       models.first(where: { $0.id?.uuidString == selectedModelId })
     } else {
       models.first
@@ -143,6 +146,14 @@ struct ConversationView: View, Sendable {
     else { return }
 
     messages = c.orderedMessages
+        
+    // TODO: Refactor
+    if selectedModelId == AISettingsView.remoteModelOption {
+      Task {
+        await agent.llama.stopServer()
+        agent.llama = LlamaServer(modelPath: "", contextLength: contextLength, tls: serverTLS ?? false, host: serverHost, port: serverPort)
+      }
+    }
 
     // warmup the agent if it's cold or model has changed
     Task {
@@ -156,7 +167,7 @@ struct ConversationView: View, Sendable {
         let modelPath = model.url?.path(percentEncoded: false),
         modelPath != llamaPath {
         await agent.llama.stopServer()
-        agent.llama = LlamaServer(modelPath: modelPath, contextLength: contextLength, host: serverHost, port: serverPort)
+        agent.llama = LlamaServer(modelPath: modelPath, contextLength: contextLength, tls: serverTLS ?? false, host: serverHost, port: serverPort)
   //        try? await agent.warmup(template: model.template)
       } else if agent.status == .cold {
 //        try? await agent.warmup()
@@ -219,9 +230,7 @@ struct ConversationView: View, Sendable {
 
     playSendSound()
 
-    guard let model = selectedModel else {
-      return
-    }
+    guard let model = selectedModel else { return }
 
     showUserMessage = false
     engageAutoScroll()

@@ -28,6 +28,12 @@ fileprivate struct ServerHealthRequest {
   }
 }
 
+fileprivate struct ServerHealthResponse {
+  let ok: Bool
+  let ms: Double?
+  let score: Double
+}
+
 @globalActor
 actor ServerHealth {
 
@@ -35,18 +41,18 @@ actor ServerHealth {
 
   private var url: URL?
   private var healthRequest = ServerHealthRequest()
-  private var bucket: [Double?] = Array(repeating: nil, count: 15) // last responses
+  private var bucket: [ServerHealthResponse?] = Array(repeating: nil, count: 10) // last responses
   private var bucketIndex = 0
-  private let thresholdMilli = 0.3 // with serialization
-  private var bucketValues: [Double] { bucket.compactMap({ $0 }) }
-  var score: Double {
-    bucketValues.reduce(0, +) / Double(bucketValues.count)
-  }
+  private let thresholdSeconds = 0.3
+  private var bucketScores: [Double] { bucket.compactMap({ $0?.score }).reversed() }
+  private var bucketMillis: [Double] { bucket.compactMap({ $0?.ms }) }
+  var score: Double { bucketScores.reduce(0, +) / Double(bucketScores.count) }
+  var responseMilli: Double { bucketMillis.reduce(0, +) / Double(bucketMillis.count) }
 
   func updateURL(_ newURL: URL?) {
     self.url = newURL
     self.bucket.removeAll(keepingCapacity: true)
-    self.bucket = Array(repeating: nil, count: 15)
+    self.bucket = Array(repeating: nil, count: 10)
   }
 
   func check() async {
@@ -55,18 +61,18 @@ actor ServerHealth {
     do {
       let resOK = try await healthRequest.checkOK(url: url)
       let delta = CFAbsoluteTimeGetCurrent() - startTime
-      let deltaV = (1 - (delta - thresholdMilli) / thresholdMilli)
+      let deltaV = (1 - (delta - thresholdSeconds) / thresholdSeconds)
       let deltaW = (deltaV > 1 ? 1 : deltaV) * 0.25
       let resW = (resOK ? 1 : 0) * 0.75
-      putScore(resW + deltaW)
+      putResponse(ServerHealthResponse(ok: resOK, ms: delta, score: resW + deltaW))
     } catch {
       print("error requesting url \(url.absoluteString): ", error)
-      putScore(0)
+      putResponse(ServerHealthResponse(ok: false, ms: nil, score: 0))
     }
   }
 
-  private func putScore(_ newScore: Double) {
-    bucket[bucketIndex] = newScore
+  private func putResponse(_ newObservation: ServerHealthResponse) {
+    bucket[bucketIndex] = newObservation
     bucketIndex = (bucketIndex + 1) % bucket.count
   }
 }

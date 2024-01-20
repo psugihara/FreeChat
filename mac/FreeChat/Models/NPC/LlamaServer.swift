@@ -39,15 +39,15 @@ actor LlamaServer {
   private var eventSource: EventSource?
   private let host: String
   private let port: String
-  // TODO: Use URL initializer
-  //private let scheme: String = "http"
+  private let scheme: String
   private var interrupted = false
 
   private var monitor = Process()
 
-  init(modelPath: String, contextLength: Int, host: String?, port: String?) {
+  init(modelPath: String, contextLength: Int, tls: Bool, host: String?, port: String?) {
     self.modelPath = modelPath
     self.contextLength = contextLength
+    self.scheme = tls ? "https" : "http"
     self.host = host ?? "127.0.0.1"
     self.port = port ?? "8690"
   }
@@ -170,7 +170,7 @@ actor LlamaServer {
     )
     if let t = temperature { params.temperature = t }
 
-    let url = URL(string: "http://\(host):\(port)/completion")!
+    let url = URL(string: "\(scheme)://\(host):\(port)/completion")!
     var request = URLRequest(url: url)
 
     request.httpMethod = "POST"
