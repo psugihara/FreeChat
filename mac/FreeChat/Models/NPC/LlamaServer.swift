@@ -26,7 +26,7 @@ func removeUnmatchedTrailingQuote(_ inputString: String) -> String {
 
 actor LlamaServer {
 
-  var modelPath: String
+  var modelPath: String?
   var contextLength: Int
 
   @AppStorage("useGPU") private var useGPU: Bool = Agent.DEFAULT_USE_GPU
@@ -44,12 +44,19 @@ actor LlamaServer {
 
   private var monitor = Process()
 
-  init(modelPath: String, contextLength: Int, tls: Bool, host: String?, port: String?) {
+  init(modelPath: String, contextLength: Int) {
     self.modelPath = modelPath
     self.contextLength = contextLength
+    self.scheme = "http"
+    self.host = "127.0.0.1"
+    self.port = "8690"
+  }
+
+  init(contextLength: Int, tls: Bool, host: String, port: String) {
+    self.contextLength = contextLength
     self.scheme = tls ? "https" : "http"
-    self.host = host ?? "127.0.0.1"
-    self.port = port ?? "8690"
+    self.host = host
+    self.port = port
   }
 
   // Start a monitor process that will terminate the server when our app dies.
@@ -89,7 +96,7 @@ actor LlamaServer {
   }
 
   private func startServer() async throws {
-    if process.isRunning { return }
+    guard !process.isRunning, let modelPath = self.modelPath else { return }
     process = Process()
 
     let startTime = DispatchTime.now()
@@ -258,7 +265,7 @@ actor LlamaServer {
   }
 
   private func waitForServer() async throws {
-    if !process.isRunning { return }
+    guard process.isRunning else { return }
     interrupted = false
     serverErrorMessage = ""
 
@@ -275,6 +282,7 @@ actor LlamaServer {
       }
     }
 
+    guard let modelPath = self.modelPath else { return }
     let modelName =
       modelPath.split(separator: "/").last?.map { String($0) }.joined() ?? "Unknown model name"
 

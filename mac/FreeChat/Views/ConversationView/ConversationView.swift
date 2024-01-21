@@ -42,9 +42,8 @@ struct ConversationView: View, Sendable {
   }
 
   var selectedModel: Model? {
-    // TODO: Refactor
-    if let selectedModelId = self.selectedModelId,
-       selectedModelId != AISettingsView.remoteModelOption {
+    if selectedModelId != AISettingsView.remoteModelOption,
+      let selectedModelId = self.selectedModelId {
       models.first(where: { $0.id?.uuidString == selectedModelId })
     } else {
       models.first
@@ -147,32 +146,39 @@ struct ConversationView: View, Sendable {
 
     messages = c.orderedMessages
         
-    // TODO: Refactor
-    if selectedModelId == AISettingsView.remoteModelOption {
-      Task {
-        await agent.llama.stopServer()
-        agent.llama = LlamaServer(modelPath: "", contextLength: contextLength, tls: serverTLS ?? false, host: serverHost, port: serverPort)
-      }
-    }
 
     // warmup the agent if it's cold or model has changed
     Task {
-      guard let id = UUID(uuidString: selectedModelId) else { return }
-      let req = Model.fetchRequest()
-      req.predicate = NSPredicate(format: "id == %@", id as CVarArg)
-      let llamaPath = await agent.llama.modelPath
-
-      if let models = try? viewContext.fetch(req),
-        let model = models.first,
-        let modelPath = model.url?.path(percentEncoded: false),
-        modelPath != llamaPath {
-        await agent.llama.stopServer()
-        agent.llama = LlamaServer(modelPath: modelPath, contextLength: contextLength, tls: serverTLS ?? false, host: serverHost, port: serverPort)
-  //        try? await agent.warmup(template: model.template)
-      } else if agent.status == .cold {
-//        try? await agent.warmup()
+      if selectedModelId == AISettingsView.remoteModelOption {
+        await initializeServerRemote()
+      } else {
+        await initializeServerLocal(modelId: selectedModelId)
       }
     }
+  }
+
+  private func initializeServerLocal(modelId: String) async {
+    guard let id = UUID(uuidString: modelId)
+    else { return }
+    
+    let llamaPath = await agent.llama.modelPath
+    let req = Model.fetchRequest()
+    req.predicate = NSPredicate(format: "id == %@", id as CVarArg)
+    if let model = try? viewContext.fetch(req).first,
+       let modelPath = model.url?.path(percentEncoded: false),
+       modelPath != llamaPath {
+      await agent.llama.stopServer()
+      agent.llama = LlamaServer(modelPath: modelPath, contextLength: contextLength)
+    }
+  }
+
+  private func initializeServerRemote() async {
+    guard let tls = serverTLS,
+          let host = serverHost,
+          let port = serverPort
+    else { return }
+    await agent.llama.stopServer()
+    agent.llama = LlamaServer(contextLength: contextLength, tls: tls, host: host, port: port)
   }
 
   private func scrollToLastIfRecent(_ proxy: ScrollViewProxy) {

@@ -33,7 +33,7 @@ class Agent: ObservableObject {
     self.id = id
     self.prompt = prompt
     self.systemPrompt = systemPrompt
-    llama = LlamaServer(modelPath: modelPath, contextLength: contextLength, tls: false, host: nil, port: nil)
+    llama = LlamaServer(modelPath: modelPath, contextLength: contextLength)
   }
 
   // this is the main loop of the agent
