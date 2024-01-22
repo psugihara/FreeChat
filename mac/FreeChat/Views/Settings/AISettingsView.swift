@@ -165,8 +165,12 @@ struct AISettingsView: View {
     }
   }
 
+  var hasRemoteServerInputChanged: Bool {
+    inputServerHost != serverHost ||
+    inputServerPort != serverPort ||
+    inputServerTLS != serverTLS
+  }
 
-  
   var indicatorColor: Color {
     switch serverHealthScore {
     case 0..<0.25:
@@ -184,14 +188,37 @@ struct AISettingsView: View {
     }
   }
 
-  var serverHealthIndicator: some View {
-    Circle()
-      .frame(width: 9, height: 9)
-      .foregroundColor(indicatorColor)
+  var serverHealthIndication: some View {
+    VStack {
+      HStack {
+        Circle()
+          .frame(width: 9, height: 9)
+          .foregroundColor(indicatorColor)
+        Group {
+          switch serverHealthScore {
+          case 0.75...1:
+            Text("Connected")
+          case 0..<0.75:
+            Text("Connection Error")
+          default:
+            Text("Not Connected")
+          }
+        }
+        .font(.callout)
+        .foregroundColor(Color(NSColor.secondaryLabelColor))
+      }
+      .onReceive(serverHealthTimer) { _ in
+        Task {
+          await ServerHealth.shared.check()
+          let score = await ServerHealth.shared.score
+          serverHealthScore = score
+        }
+      }
+    }
   }
 
   var sectionRemoteModel: some View {
-    VStack(alignment: .leading) {
+    Group {
       Text("If you have access to a powerful server, you may want to run your model there. Enter the host and port to connect to a remote llama.cpp server. Instructions for running the server can be found [here](https://github.com/ggerganov/llama.cpp/blob/master/examples/server/README.md)")
         .font(.callout)
         .foregroundColor(Color(NSColor.secondaryLabelColor))
@@ -200,39 +227,22 @@ struct AISettingsView: View {
         .padding(.top, 0.5)
       HStack {
         TextField("Server Host", text: $inputServerHost)
+          .textFieldStyle(.plain)
           .font(.callout)
-          .lineLimit(5)
-          .fixedSize(horizontal: false, vertical: true)
-        Spacer()
         TextField("Server Port", text: $inputServerPort)
+          .textFieldStyle(.plain)
           .font(.callout)
-          .lineLimit(5)
-          .fixedSize(horizontal: false, vertical: true)
-        Spacer()
+       Spacer()
       }
       Toggle(isOn: $inputServerTLS) {
-        Text("Enable HTTPS")
+        Text("Secure Connection (HTTPS)")
           .font(.callout)
-          .foregroundColor(Color(NSColor.secondaryLabelColor))
-          .lineLimit(5)
       }
-      .toggleStyle(CheckboxToggleStyle())
       HStack {
-        HStack {
-          serverHealthIndicator
-          Text("Server health")
-            .font(.callout)
-            .foregroundColor(Color(NSColor.secondaryLabelColor))
-        }
-        .onReceive(serverHealthTimer) { _ in
-          Task {
-            await ServerHealth.shared.check()
-            let score = await ServerHealth.shared.score
-            serverHealthScore = score
-          }
-        }
+        serverHealthIndication
         Spacer()
-        Button("Check Server", action: saveFormRemoteServer)
+        Button("Apply", action: saveFormRemoteServer)
+          .disabled(!hasRemoteServerInputChanged)
       }
     }
   }
@@ -246,7 +256,7 @@ struct AISettingsView: View {
           sectionRemoteModel
         }
       }
-      Section {
+     Section {
         DisclosureGroup(isExpanded: $revealAdvanced, content: {
           VStack(alignment: .leading) {
             HStack {
@@ -352,12 +362,10 @@ struct AISettingsView: View {
   }
 
   private func saveFormRemoteServer() {
-    // TODO: Validate input
     serverTLS = inputServerTLS
     serverHost = inputServerHost
     serverPort = inputServerPort
     serverHealthScore = -1
-    // TODO: Display errors or success √
     updateRemoteServerURL()
 
     selectedModelId = AISettingsView.remoteModelOption
@@ -375,5 +383,6 @@ struct AISettingsView: View {
 }
 
 #Preview {
-  AISettingsView().environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
+  AISettingsView(inputServerTLS: true)
+    .environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
 }
