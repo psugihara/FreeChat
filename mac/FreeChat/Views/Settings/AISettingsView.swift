@@ -142,13 +142,15 @@ struct AISettingsView: View {
  
       }
 
-      Text("The default model is general purpose, small, and works on most computers. Larger models are slower but wiser. Some models specialize in certain tasks like coding Python. FreeChat is compatible with most models in GGUF format. [Find new models](https://huggingface.co/models?search=GGUF)")
-        .font(.callout)
-        .foregroundColor(Color(NSColor.secondaryLabelColor))
-        .lineLimit(5)
-        .fixedSize(horizontal: false, vertical: true)
-        .padding(.top, 0.5)
-
+      if !editRemoteModel {
+        Text("The default model is general purpose, small, and works on most computers. Larger models are slower but wiser. Some models specialize in certain tasks like coding Python. FreeChat is compatible with most models in GGUF format. [Find new models](https://huggingface.co/models?search=GGUF)")
+          .font(.callout)
+          .foregroundColor(Color(NSColor.secondaryLabelColor))
+          .lineLimit(5)
+          .fixedSize(horizontal: false, vertical: true)
+          .padding(.top, 0.5)
+      }
+      
       HStack {
         if let model = selectedModel {
           Text("Prompt format: \(model.template.format.rawValue)")
@@ -236,16 +238,16 @@ struct AISettingsView: View {
         .fixedSize(horizontal: false, vertical: true)
         .padding(.top, 0.5)
       HStack {
-        TextField("Server Host", text: $inputServerHost)
+        TextField("Server host", text: $inputServerHost, prompt: Text("yourserver.net"))
           .textFieldStyle(.plain)
           .font(.callout)
-        TextField("Server Port", text: $inputServerPort)
+        TextField("Server port", text: $inputServerPort, prompt: Text("3000"))
           .textFieldStyle(.plain)
           .font(.callout)
        Spacer()
       }
       Toggle(isOn: $inputServerTLS) {
-        Text("Secure Connection (HTTPS)")
+        Text("Secure connection (HTTPS)")
           .font(.callout)
       }
       HStack {
@@ -281,15 +283,17 @@ struct AISettingsView: View {
               .padding(.top, 2.5)
               .padding(.bottom, 4)
 
-            Divider()
+            if !editRemoteModel {
+              Divider()
 
-            HStack {
-              Text("Context Length")
-              TextField("", value: $contextLength, formatter: contextLengthFormatter)
-                .padding(.vertical, -8)
-                .padding(.trailing, -10)
+              HStack {
+                Text("Context Length")
+                TextField("", value: $contextLength, formatter: contextLengthFormatter)
+                  .padding(.vertical, -8)
+                  .padding(.trailing, -10)
+              }
+              .padding(.top, 0.5)
             }
-            .padding(.top, 0.5)
 
             Divider()
 
@@ -302,7 +306,7 @@ struct AISettingsView: View {
                 .frame(width: 24, alignment: .trailing)
             }.padding(.top, 1)
 
-            if gpu.available {
+            if gpu.available && !editRemoteModel {
               Divider()
 
               Toggle("Use GPU Acceleration", isOn: $useGPU).padding(.top, 1)
