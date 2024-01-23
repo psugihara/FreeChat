@@ -31,6 +31,7 @@ struct AISettingsView: View {
   @AppStorage("serverTLS") private var serverTLS: Bool = false
   @AppStorage("serverHost") private var serverHost: String?
   @AppStorage("serverPort") private var serverPort: String?
+  @AppStorage("remoteModelTemplate") var remoteModelTemplate: String?
 
   @State var pickedModel: String? // Picker selection
   @State var customizeModels = false // Show add remove models
@@ -148,20 +149,29 @@ struct AISettingsView: View {
         .fixedSize(horizontal: false, vertical: true)
         .padding(.top, 0.5)
 
-      if let model = selectedModel {
-        HStack {
-          Text("Prompt format: \(TemplateManager.formatTitle(model.template.format))")
+      HStack {
+        if let model = selectedModel {
+          Text("Prompt format: \(model.template.format.rawValue)")
             .foregroundColor(Color(NSColor.secondaryLabelColor))
             .font(.caption)
-          Button("Edit") {
-            editFormat = true
-          }.buttonStyle(.link).font(.caption)
-            .offset(x: -4)
+        } else if editRemoteModel {
+          Text("Prompt format: \(remoteModelTemplate ?? TemplateFormat.vicuna.rawValue)")
+            .foregroundColor(Color(NSColor.secondaryLabelColor))
+            .font(.caption)
         }
-          .sheet(isPresented: $editFormat, content: {
-          EditFormat(model: model)
-        })
+        Button("Edit") {
+          editFormat = true
+        }
+        .buttonStyle(.link).font(.caption)
+          .offset(x: -4)
       }
+      .sheet(isPresented: $editFormat, content: {
+        if let model = selectedModel {
+          EditFormat(model: model)
+        } else if editRemoteModel {
+          EditFormat(modelName: "Remote")
+        }
+      })
     }
   }
 

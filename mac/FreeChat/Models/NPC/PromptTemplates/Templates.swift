@@ -8,10 +8,10 @@
 import Foundation
 
 enum TemplateFormat: String, CaseIterable {
-  case llama2
-  case chatML
-  case alpaca
-  case vicuna
+  case llama2 = "Llama 2"
+  case chatML = "ChatML"
+  case alpaca = "Alpaca"
+  case vicuna = "Vicuna"
 }
 
 protocol Template {
