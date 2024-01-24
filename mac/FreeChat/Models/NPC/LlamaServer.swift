@@ -26,7 +26,7 @@ func removeUnmatchedTrailingQuote(_ inputString: String) -> String {
 
 actor LlamaServer {
 
-  var modelPath: String
+  var modelPath: String?
   var contextLength: Int
 
   @AppStorage("useGPU") private var useGPU: Bool = Agent.DEFAULT_USE_GPU
@@ -37,7 +37,9 @@ actor LlamaServer {
   private var serverUp = false
   private var serverErrorMessage = ""
   private var eventSource: EventSource?
-  private let port = "8690"
+  private let host: String
+  private let port: String
+  private let scheme: String
   private var interrupted = false
 
   private var monitor = Process()
@@ -45,6 +47,16 @@ actor LlamaServer {
   init(modelPath: String, contextLength: Int) {
     self.modelPath = modelPath
     self.contextLength = contextLength
+    self.scheme = "http"
+    self.host = "127.0.0.1"
+    self.port = "8690"
+  }
+
+  init(contextLength: Int, tls: Bool, host: String, port: String) {
+    self.contextLength = contextLength
+    self.scheme = tls ? "https" : "http"
+    self.host = host
+    self.port = port
   }
 
   // Start a monitor process that will terminate the server when our app dies.
@@ -84,7 +96,7 @@ actor LlamaServer {
   }
 
   private func startServer() async throws {
-    if process.isRunning { return }
+    guard !process.isRunning, let modelPath = self.modelPath else { return }
     process = Process()
 
     let startTime = DispatchTime.now()
@@ -165,7 +177,7 @@ actor LlamaServer {
     )
     if let t = temperature { params.temperature = t }
 
-    let url = URL(string: "http://127.0.0.1:\(port)/completion")!
+    let url = URL(string: "\(scheme)://\(host):\(port)/completion")!
     var request = URLRequest(url: url)
 
     request.httpMethod = "POST"
@@ -253,7 +265,7 @@ actor LlamaServer {
   }
 
   private func waitForServer() async throws {
-    if !process.isRunning { return }
+    guard process.isRunning else { return }
     interrupted = false
     serverErrorMessage = ""
 
@@ -270,6 +282,7 @@ actor LlamaServer {
       }
     }
 
+    guard let modelPath = self.modelPath else { return }
     let modelName =
       modelPath.split(separator: "/").last?.map { String($0) }.joined() ?? "Unknown model name"
 

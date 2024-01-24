@@ -75,17 +75,4 @@ struct TemplateManager {
     
     return .vicuna
   }
-
-  static func formatTitle(_ format: TemplateFormat) -> String {
-    switch format {
-      case .alpaca:
-        "Alpaca"
-      case .chatML:
-        "ChatML"
-      case .llama2:
-        "Llama 2"
-      case .vicuna:
-        "Vicuna"
-    }
-  }
 }
