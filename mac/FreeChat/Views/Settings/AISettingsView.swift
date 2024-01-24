@@ -182,6 +182,9 @@ struct AISettingsView: View {
     inputServerPort != serverPort ||
     inputServerTLS != serverTLS
   }
+  var hasRemoteConnectionError: Bool {
+    serverHealthScore < 0.25 && serverHealthScore >= 0
+  }
 
   var indicatorColor: Color {
     switch serverHealthScore {
@@ -211,7 +214,7 @@ struct AISettingsView: View {
           case 0.75...1:
             Text("Connected")
           case 0..<0.75:
-            Text("Connection Error")
+            Text("Connection Error. Retrying...")
           default:
             Text("Not Connected")
           }
@@ -254,7 +257,7 @@ struct AISettingsView: View {
         serverHealthIndication
         Spacer()
         Button("Apply", action: saveFormRemoteServer)
-          .disabled(!hasRemoteServerInputChanged)
+          .disabled(!hasRemoteServerInputChanged && !hasRemoteConnectionError)
       }
     }
   }
