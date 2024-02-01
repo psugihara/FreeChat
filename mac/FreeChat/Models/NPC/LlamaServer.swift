@@ -105,7 +105,7 @@ actor LlamaServer {
     let processes = ProcessInfo.processInfo.activeProcessorCount
     process.arguments = [
       "--model", modelPath,
-      "--threads", "\(max(1, ceil(Double(processes) / 3.0 * 2.0)))",
+      "--threads", "\(max(1, Int(ceil(Double(processes) / 3.0 * 2.0))))",
       "--ctx-size", "\(contextLength)",
       "--port", port,
       "--n-gpu-layers", gpu.available && useGPU ? "4" : "0",
