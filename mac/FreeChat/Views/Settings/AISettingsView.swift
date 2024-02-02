@@ -5,8 +5,8 @@
 //  Created by Peter Sugihara on 12/9/23.
 //
 
-import SwiftUI
 import Combine
+import SwiftUI
 
 struct AISettingsView: View {
   static let title = "Intelligence"
@@ -33,9 +33,9 @@ struct AISettingsView: View {
   @AppStorage("serverPort") private var serverPort: String?
   @AppStorage("remoteModelTemplate") var remoteModelTemplate: String?
 
-  @State var pickedModel: String? // Picker selection
-  @State var customizeModels = false // Show add remove models
-  @State var editRemoteModel = false // Show remote model server
+  @State var pickedModel: String?  // Picker selection
+  @State var customizeModels = false  // Show add remove models
+  @State var editRemoteModel = false  // Show remote model server
   @State var editSystemPrompt = false
   @State var editFormat = false
   @State var revealAdvanced = false
@@ -59,7 +59,6 @@ struct AISettingsView: View {
     return formatter
   }()
 
-
   var selectedModel: Model? {
     if let selectedModelId = self.selectedModelId {
       models.first(where: { $0.id?.uuidString == selectedModelId })
@@ -73,11 +72,11 @@ struct AISettingsView: View {
       HStack {
         Text("System prompt")
         Spacer()
-        Button(action: {
+        Button {
           editSystemPrompt.toggle()
-        }, label: {
+        } label: {
           Text("Customize")
-        })
+        }
         .padding(.leading, 10)
       }
       Text(systemPrompt)
@@ -90,7 +89,7 @@ struct AISettingsView: View {
         .frame(maxWidth: .infinity, alignment: .leading)
     }
   }
-    
+
   var modelPicker: some View {
     VStack(alignment: .leading) {
       Picker("Model", selection: $pickedModel) {
@@ -103,14 +102,13 @@ struct AISettingsView: View {
         }
 
         Divider().tag(nil as String?)
-        Text("Remote Model (Advanced)") .tag(AISettingsView.remoteModelOption as String?)
-        Text("Add or Remove Models...") .tag(AISettingsView.customizeModelsId as String?)
+        Text("Remote Model (Advanced)").tag(AISettingsView.remoteModelOption as String?)
+        Text("Add or Remove Models...").tag(AISettingsView.customizeModelsId as String?)
       }.onReceive(Just(pickedModel)) { _ in
         switch pickedModel {
         case AISettingsView.customizeModelsId:
           customizeModels = true
           editRemoteModel = false
-          pickedModel = selectedModelId
         case AISettingsView.remoteModelOption:
           customizeModels = false
           editRemoteModel = true
@@ -127,30 +125,30 @@ struct AISettingsView: View {
         case AISettingsView.customizeModelsId:
           customizeModels = true
           editRemoteModel = false
-          pickedModel = selectedModelId
         case AISettingsView.remoteModelOption:
           customizeModels = false
           editRemoteModel = true
           selectedModelId = AISettingsView.remoteModelOption
-
         case .some(let pickedModelValue):
           customizeModels = false
           editRemoteModel = false
           selectedModelId = pickedModelValue
         default: break
         }
- 
+
       }
 
       if !editRemoteModel {
-        Text("The default model is general purpose, small, and works on most computers. Larger models are slower but wiser. Some models specialize in certain tasks like coding Python. FreeChat is compatible with most models in GGUF format. [Find new models](https://huggingface.co/models?search=GGUF)")
-          .font(.callout)
-          .foregroundColor(Color(NSColor.secondaryLabelColor))
-          .lineLimit(5)
-          .fixedSize(horizontal: false, vertical: true)
-          .padding(.top, 0.5)
+        Text(
+          "The default model is general purpose, small, and works on most computers. Larger models are slower but wiser. Some models specialize in certain tasks like coding Python. FreeChat is compatible with most models in GGUF format. [Find new models](https://huggingface.co/models?search=GGUF)"
+        )
+        .font(.callout)
+        .foregroundColor(Color(NSColor.secondaryLabelColor))
+        .lineLimit(5)
+        .fixedSize(horizontal: false, vertical: true)
+        .padding(.top, 0.5)
       }
-      
+
       HStack {
         if let model = selectedModel {
           Text("Prompt format: \(model.template.format.rawValue)")
@@ -165,22 +163,22 @@ struct AISettingsView: View {
           editFormat = true
         }
         .buttonStyle(.link).font(.caption)
-          .offset(x: -4)
+        .offset(x: -4)
       }
-      .sheet(isPresented: $editFormat, content: {
-        if let model = selectedModel {
-          EditFormat(model: model)
-        } else if editRemoteModel {
-          EditFormat(modelName: "Remote")
-        }
-      })
+      .sheet(
+        isPresented: $editFormat,
+        content: {
+          if let model = selectedModel {
+            EditFormat(model: model)
+          } else if editRemoteModel {
+            EditFormat(modelName: "Remote")
+          }
+        })
     }
   }
 
   var hasRemoteServerInputChanged: Bool {
-    inputServerHost != serverHost ||
-    inputServerPort != serverPort ||
-    inputServerTLS != serverTLS
+    inputServerHost != serverHost || inputServerPort != serverPort || inputServerTLS != serverTLS
   }
   var hasRemoteConnectionError: Bool {
     serverHealthScore < 0.25 && serverHealthScore >= 0
@@ -234,12 +232,14 @@ struct AISettingsView: View {
 
   var sectionRemoteModel: some View {
     Group {
-      Text("If you have access to a powerful server, you may want to run your model there. Enter the host and port to connect to a remote llama.cpp server. Instructions for running the server can be found [here](https://github.com/ggerganov/llama.cpp/blob/master/examples/server/README.md)")
-        .font(.callout)
-        .foregroundColor(Color(NSColor.secondaryLabelColor))
-        .lineLimit(5)
-        .fixedSize(horizontal: false, vertical: true)
-        .padding(.top, 0.5)
+      Text(
+        "If you have access to a powerful server, you may want to run your model there. Enter the host and port to connect to a remote llama.cpp server. Instructions for running the server can be found [here](https://github.com/ggerganov/llama.cpp/blob/master/examples/server/README.md)"
+      )
+      .font(.callout)
+      .foregroundColor(Color(NSColor.secondaryLabelColor))
+      .lineLimit(5)
+      .fixedSize(horizontal: false, vertical: true)
+      .padding(.top, 0.5)
       HStack {
         TextField("Server host", text: $inputServerHost, prompt: Text("yourserver.net"))
           .textFieldStyle(.plain)
@@ -247,7 +247,7 @@ struct AISettingsView: View {
         TextField("Server port", text: $inputServerPort, prompt: Text("3000"))
           .textFieldStyle(.plain)
           .font(.callout)
-       Spacer()
+        Spacer()
       }
       Toggle(isOn: $inputServerTLS) {
         Text("Secure connection (HTTPS)")
@@ -271,62 +271,65 @@ struct AISettingsView: View {
           sectionRemoteModel
         }
       }
-     Section {
-        DisclosureGroup(isExpanded: $revealAdvanced, content: {
-          VStack(alignment: .leading) {
-            HStack {
-              Text("Configure llama.cpp based on the model you're using.")
-                .foregroundColor(Color(NSColor.secondaryLabelColor))
-              Button("Restore defaults") {
-                contextLength = Agent.DEFAULT_CONTEXT_LENGTH
-                temperature = Agent.DEFAULT_TEMP
-              }.buttonStyle(.link)
-                .offset(x: -5.5)
-            }.font(.callout)
-              .padding(.top, 2.5)
-              .padding(.bottom, 4)
+      Section {
+        DisclosureGroup(
+          isExpanded: $revealAdvanced,
+          content: {
+            VStack(alignment: .leading) {
+              HStack {
+                Text("Configure llama.cpp based on the model you're using.")
+                  .foregroundColor(Color(NSColor.secondaryLabelColor))
+                Button("Restore defaults") {
+                  contextLength = Agent.DEFAULT_CONTEXT_LENGTH
+                  temperature = Agent.DEFAULT_TEMP
+                }.buttonStyle(.link)
+                  .offset(x: -5.5)
+              }.font(.callout)
+                .padding(.top, 2.5)
+                .padding(.bottom, 4)
 
-            if !editRemoteModel {
+              if !editRemoteModel {
+                Divider()
+
+                HStack {
+                  Text("Context Length")
+                  TextField("", value: $contextLength, formatter: contextLengthFormatter)
+                    .padding(.vertical, -8)
+                    .padding(.trailing, -10)
+                }
+                .padding(.top, 0.5)
+              }
+
               Divider()
 
               HStack {
-                Text("Context Length")
-                TextField("", value: $contextLength, formatter: contextLengthFormatter)
-                  .padding(.vertical, -8)
-                  .padding(.trailing, -10)
+                Text("Temperature")
+                Slider(value: $temperature, in: 0...2, step: 0.1).offset(y: 1)
+                Text("\(temperatureFormatter.string(from: temperature as NSNumber) ?? "")")
+                  .foregroundStyle(.secondary)
+                  .padding(.leading, 4)
+                  .frame(width: 24, alignment: .trailing)
+              }.padding(.top, 1)
+
+              if gpu.available && !editRemoteModel {
+                Divider()
+
+                Toggle("Use GPU Acceleration", isOn: $useGPU).padding(.top, 1)
               }
-              .padding(.top, 0.5)
             }
-
-            Divider()
-
-            HStack {
-              Text("Temperature")
-              Slider(value: $temperature, in: 0...2, step: 0.1).offset(y: 1)
-              Text("\(temperatureFormatter.string(from: temperature as NSNumber) ?? "")")
-                .foregroundStyle(.secondary)
-                .padding(.leading, 4)
-                .frame(width: 24, alignment: .trailing)
-            }.padding(.top, 1)
-
-            if gpu.available && !editRemoteModel {
-              Divider()
-
-              Toggle("Use GPU Acceleration", isOn: $useGPU).padding(.top, 1)
+          },
+          label: {
+            Button {
+              withAnimation {
+                revealAdvanced.toggle()
+              }
+            } label: {
+              Text("Advanced Options")
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .background(.white.opacity(0.0001))
             }
-          }
-        }, label: {
-          Button() {
-            withAnimation {
-              revealAdvanced.toggle()
-            }
-          } label: {
-            Text("Advanced Options")
-              .frame(maxWidth: .infinity, alignment: .leading)
-              .background(.white.opacity(0.0001))
-          }
-          .buttonStyle(.plain)
-        })
+            .buttonStyle(.plain)
+          })
       }
     }
     .formStyle(.grouped)
@@ -340,7 +343,8 @@ struct AISettingsView: View {
     .navigationTitle(AISettingsView.title)
     .onAppear {
       if selectedModelId != AISettingsView.remoteModelOption {
-        let selectedModelExists = models
+        let selectedModelExists =
+          models
           .compactMap({ $0.id?.uuidString })
           .contains(selectedModelId)
         if !selectedModelExists {
@@ -360,22 +364,29 @@ struct AISettingsView: View {
         let model = models.first(where: { $0.id?.uuidString == newModelId }) ?? models.first
       else { return }
 
-      conversationManager.rebootAgent(systemPrompt: self.systemPrompt, model: model, viewContext: viewContext)
+      conversationManager.rebootAgent(
+        systemPrompt: self.systemPrompt, model: model, viewContext: viewContext)
     }
     .onChange(of: systemPrompt) { nextPrompt in
       guard let model: Model = selectedModel else { return }
-      conversationManager.rebootAgent(systemPrompt: nextPrompt, model: model, viewContext: viewContext)
+      conversationManager.rebootAgent(
+        systemPrompt: nextPrompt, model: model, viewContext: viewContext)
     }
     .onChange(of: useGPU) { nextUseGPU in
       guard let model: Model = selectedModel else { return }
-      conversationManager.rebootAgent(systemPrompt: self.systemPrompt, model: model, viewContext: viewContext)
+      conversationManager.rebootAgent(
+        systemPrompt: self.systemPrompt, model: model, viewContext: viewContext)
     }
-    .onReceive(NotificationCenter.default.publisher(for: NSNotification.Name("selectedModelDidChange"))) { output in
+    .onReceive(
+      NotificationCenter.default.publisher(for: NSNotification.Name("selectedModelDidChange"))
+    ) { output in
       if let updatedId: String = output.object as? String {
         selectedModelId = updatedId
       }
     }
-    .frame(minWidth: 300, maxWidth: 600, minHeight: 184, idealHeight: 195, maxHeight: 400, alignment: .center)
+    .frame(
+      minWidth: 300, maxWidth: 600, minHeight: 184, idealHeight: 195, maxHeight: 400,
+      alignment: .center)
   }
 
   private func saveFormRemoteServer() {
@@ -399,7 +410,7 @@ struct AISettingsView: View {
   }
 }
 
-#Preview {
+#Preview{
   AISettingsView(inputServerTLS: true)
     .environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
 }
