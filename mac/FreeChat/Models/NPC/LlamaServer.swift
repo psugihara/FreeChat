@@ -302,7 +302,7 @@ actor LlamaServer {
   }
 
   private func handleServerOutput(_ lines: String) {
-    let successMessage = "llama server listening at"
+    let successMessage = "HTTP server listening"
 
     if !process.isRunning {
       serverUp = false
