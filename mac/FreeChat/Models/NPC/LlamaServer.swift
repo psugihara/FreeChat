@@ -33,7 +33,6 @@ actor LlamaServer {
 
   private let gpu = GPU.shared
   private var process = Process()
-  private var outputPipe = Pipe()
   private var serverUp = false
   private var serverErrorMessage = ""
   private var eventSource: EventSource?
@@ -118,20 +117,11 @@ actor LlamaServer {
 
     print("starting llama.cpp server \(process.arguments!.joined(separator: " "))")
 
-    outputPipe = Pipe()
-    process.standardInput = Pipe()
+    process.standardInput = FileHandle.nullDevice
 
     // To debug with server's output, comment these 2 lines to inherit stdout.
-    // N.B. this will make readUntilString hang
-    process.standardOutput = outputPipe
-    process.standardError = outputPipe
-
-    guard
-      outputPipe.fileHandleForWriting.fileDescriptor != -1,
-      outputPipe.fileHandleForReading.fileDescriptor != -1
-    else {
-      throw LlamaServerError.pipeFail
-    }
+    process.standardOutput =  FileHandle.nullDevice
+    process.standardError =  FileHandle.nullDevice
 
     try process.run()
 
