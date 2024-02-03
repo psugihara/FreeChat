@@ -53,7 +53,6 @@ actor ServerHealth {
     self.url = newURL
     self.bucket.removeAll(keepingCapacity: true)
     self.bucket = Array(repeating: nil, count: 10)
-    print("updating url", score, score > 0)
   }
 
   func check() async {
