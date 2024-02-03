@@ -59,6 +59,10 @@ actor LlamaServer {
     self.port = port
   }
 
+  private func url(_ path: String) -> URL {
+    URL(string: "\(scheme)://\(host):\(port)\(path)")!
+  }
+
   // Start a monitor process that will terminate the server when our app dies.
   private func startAppMonitor(serverPID: pid_t) throws {
     monitor = Process()
@@ -97,6 +101,7 @@ actor LlamaServer {
 
   private func startServer() async throws {
     guard !process.isRunning, let modelPath = self.modelPath else { return }
+    stopServer()
     process = Process()
 
     let startTime = DispatchTime.now()
@@ -177,8 +182,7 @@ actor LlamaServer {
     )
     if let t = temperature { params.temperature = t }
 
-    let url = URL(string: "\(scheme)://\(host):\(port)/completion")!
-    var request = URLRequest(url: url)
+    var request = URLRequest(url: url("/completion"))
 
     request.httpMethod = "POST"
     request.setValue("application/json", forHTTPHeaderField: "Content-Type")
@@ -196,10 +200,9 @@ actor LlamaServer {
     listenLoop: for await event in eventSource!.events {
       switch event {
       case .open:
-        continue
+        continue listenLoop
       case .error(let error):
         print("llama.cpp EventSource server error:", error.localizedDescription)
-        break listenLoop
       case .message(let message):
         // parse json in message.data string then print the data.content value and append it to response
         if let data = message.data?.data(using: .utf8) {
@@ -269,55 +272,31 @@ actor LlamaServer {
     interrupted = false
     serverErrorMessage = ""
 
-    outputPipe.fileHandleForReading.readabilityHandler = { handle in
-      let data = handle.availableData
-      let lines = String(decoding: data, as: UTF8.self)
-
-      #if DEBUG
-        print(lines)
-      #endif
-
-      Task {
-        await self.handleServerOutput(lines)
-      }
-    }
-
     guard let modelPath = self.modelPath else { return }
     let modelName =
       modelPath.split(separator: "/").last?.map { String($0) }.joined() ?? "Unknown model name"
 
+    let serverHealth = ServerHealth()
+    await serverHealth.updateURL(url("/health"))
+    await serverHealth.check()
+
     var timeout = 60
     let tick = 1
     while true {
-      if serverUp || interrupted { break }
+      await serverHealth.check()
+      let score = await serverHealth.score
+      if score >= 0.25 { break }
+      await serverHealth.check()
       if !process.isRunning {
         throw LlamaServerError.modelError(modelName: modelName)
       }
+
       try await Task.sleep(for: .seconds(tick))
       timeout -= tick
       if timeout <= 0 {
         throw LlamaServerError.modelError(modelName: modelName)
       }
     }
-  }
-
-  private func handleServerOutput(_ lines: String) {
-    let successMessage = "HTTP server listening"
-
-    if !process.isRunning {
-      serverUp = false
-    } else if interrupted {
-      serverUp = false
-    } else if lines.contains(successMessage) {
-      serverUp = true
-    } else if let r = try? Regex("error"), lines.contains(r) {
-      serverErrorMessage = lines
-    } else {
-      // wait for the next lines
-      return
-    }
-
-    outputPipe.fileHandleForReading.readabilityHandler = nil
   }
 
   struct CompleteResponse {
