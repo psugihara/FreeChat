@@ -150,7 +150,6 @@ actor LlamaServer {
     prompt: String, stop: [String]?, temperature: Double?,
     progressHandler: (@Sendable (String) -> Void)? = nil
   ) async throws -> CompleteResponse {
-    dispatchPrecondition(condition: .notOnQueue(.main))
     #if DEBUG
       print("START PROMPT\n \(prompt) \nEND PROMPT\n\n")
     #endif

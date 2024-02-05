@@ -5,6 +5,7 @@
 //  Created by Peter Sugihara on 11/11/23.
 //
 
+@preconcurrency import Foundation
 import SwiftUI
 
 struct FeedbackButton: View {

@@ -218,10 +218,7 @@ struct ConversationView: View, Sendable {
     showErrorAlert = true
   }
 
-  @MainActor
   func submit(_ input: String) {
-    dispatchPrecondition(condition: .onQueue(.main))
-
     if (agent.status == .processing || agent.status == .coldProcessing) {
       Task {
         await agent.interrupt()
