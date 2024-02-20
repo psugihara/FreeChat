@@ -20,8 +20,8 @@ fileprivate struct ServerHealthRequest {
           responseCode > 0
     else { throw ServerHealthError.invalidResponse }
 
-    guard let json = try JSONSerialization.jsonObject(with: data, options: []) as? [String: String],
-          let jsonStatus: String = json["status"]
+    guard let json = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
+          let jsonStatus: String = json["status"] as? String
     else { throw ServerHealthError.invalidResponse }
 
     return responseCode == 200 && jsonStatus == "ok"
