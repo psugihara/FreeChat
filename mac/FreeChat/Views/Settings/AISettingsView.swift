@@ -401,7 +401,7 @@ struct AISettingsView: View {
 
   private func updateRemoteServerURL() {
     let scheme = inputServerTLS ? "https" : "http"
-    guard let url = URL(string: "\(scheme)://\(inputServerHost):\(inputServerPort)/health")
+    guard let url = URL(string: "\(scheme)://\(inputServerHost):\(inputServerPort)")
     else { return }
     Task {
       await ServerHealth.shared.updateURL(url)
