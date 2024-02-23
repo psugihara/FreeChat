@@ -76,7 +76,7 @@ actor OllamaBackend {
             if let response = try await self.decodeCompletionMessage(message: message.data),
                let choice = response.choices.first {
               continuation.yield(choice.delta.content)
-              if choice.finishReason == "stop" { break L }
+              if choice.finishReason != nil { break L }
             }
           case .closed:
             print("ollama EventSource closed")
