@@ -179,6 +179,7 @@ struct ConversationView: View, Sendable {
     else { return }
     await agent.llama.stopServer()
     agent.llama = LlamaServer(contextLength: contextLength, tls: tls, host: host, port: port)
+    agent.backend = OllamaBackend(contextLength: contextLength, tls: tls, host: host, port: port)
   }
 
   private func scrollToLastIfRecent(_ proxy: ScrollViewProxy) {

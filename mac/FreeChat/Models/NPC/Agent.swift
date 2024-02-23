@@ -19,8 +19,10 @@ class Agent: ObservableObject {
   @Published var pendingMessage = ""
   @Published var status: Status = .cold
 
+  @available(*, deprecated, message: "use backend with a common interface")
   // each agent runs their own server
   var llama: LlamaServer
+  var backend: OllamaBackend?
 
   init(id: String, prompt: String, systemPrompt: String, modelPath: String, contextLength: Int) {
     self.id = id
@@ -41,6 +43,8 @@ class Agent: ObservableObject {
       status = .processing
     }
 
+    // TODO: Uncomment this block
+    /*
     prompt = template.run(systemPrompt: systemPrompt, messages: messages)
 
     pendingMessage = ""
@@ -57,6 +61,16 @@ class Agent: ObservableObject {
     status = .ready
 
     return response
+     */
+
+    pendingMessage = ""
+    for try await partialResponse in try await backend!.complete(messages: messages) {
+      self.pendingMessage += partialResponse
+      self.prompt = pendingMessage
+    }
+    status = .ready
+
+    return LlamaServer.CompleteResponse(text: pendingMessage, responseStartSeconds: 0)
   }
 
   func handleCompletionProgress(partialResponse: String) {
@@ -67,6 +81,7 @@ class Agent: ObservableObject {
   func interrupt() async {
     if status != .processing, status != .coldProcessing { return }
     await llama.interrupt()
+    await backend?.interrupt()
   }
 
   func warmup() async throws {
