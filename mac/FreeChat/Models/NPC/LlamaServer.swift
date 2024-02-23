@@ -146,6 +146,7 @@ actor LlamaServer {
     }
   }
 
+  @available(*, deprecated, message: "use complete(prompt:stop:temperature) instead")
   func complete(
     prompt: String, stop: [String]?, temperature: Double?,
     progressHandler: (@Sendable (String) -> Void)? = nil
@@ -157,27 +158,9 @@ actor LlamaServer {
     let start = CFAbsoluteTimeGetCurrent()
     try await startServer()
 
-    // hit localhost for completion
-    var params = CompleteParams(
-      prompt: prompt,
-      stop: stop ?? [
-        "</s>",
-        "\n\(Message.USER_SPEAKER_ID):",
-        "\n\(Message.USER_SPEAKER_ID.lowercased()):",
-        "[/INST]",
-        "[INST]",
-        "USER:",
-      ]
-    )
-    if let t = temperature { params.temperature = t }
-
-    var request = URLRequest(url: url("/completion"))
-
-    request.httpMethod = "POST"
-    request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-    request.setValue("text/event-stream", forHTTPHeaderField: "Accept")
-    request.setValue("keep-alive", forHTTPHeaderField: "Connection")
-    request.httpBody = params.toJSON().data(using: .utf8)
+    // hit server for completion
+    let params = CompleteParams(prompt: prompt, stop: stop, temperature: temperature)
+    let request = buildRequest(path: "/completion", completeParams: params)
 
     // Use EventSource to receive server sent events
     eventSource = EventSource(request: request)
@@ -249,6 +232,63 @@ actor LlamaServer {
     )
   }
 
+  func complete(prompt: String, stop: [String]?, temperature: Double?)
+  throws -> AsyncStream<String> {
+    let params = CompleteParams(prompt: prompt, stop: stop, temperature: temperature)
+    let request = buildRequest(path: "/completion", completeParams: params)
+
+    return AsyncStream<String> { continuation in
+      Task.detached {
+        let eventSource = EventSource(request: request)
+        eventSource.connect()
+
+        for await event in eventSource.events {
+          if await self.interrupted {
+            await eventSource.close()
+            continuation.finish()
+          }
+          switch event {
+          case .open: continue
+          case .error(let error): 
+            print("llama.cpp EventSource server error:", error.localizedDescription)
+            await eventSource.close()
+          case .message(let message):
+            if let response = try await self.decodeCompletionMessage(message: message.data) {
+              continuation.yield(response.content)
+              if response.stop {
+                await eventSource.close()
+                continuation.finish()
+              }
+            }
+          case .closed:
+            await eventSource.close()
+            continuation.finish()
+            print("llama.cpp EventSource closed")
+          }
+        }
+        await eventSource.close()
+        continuation.finish()
+      }
+    }
+  }
+
+  private func buildRequest(path: String, completeParams: CompleteParams) -> URLRequest {
+    var request = URLRequest(url: self.url(path))
+    request.httpMethod = "POST"
+    request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+    request.setValue("text/event-stream", forHTTPHeaderField: "Accept")
+    request.setValue("keep-alive", forHTTPHeaderField: "Connection")
+    request.httpBody = completeParams.toJSON().data(using: .utf8)
+
+    return request
+  }
+
+  private func decodeCompletionMessage(message: String?) throws -> Response? {
+    guard let data = message?.data(using: .utf8) else { return nil }
+    let decoder = JSONDecoder()
+    return try decoder.decode(Response.self, from: data)
+  }
+
   func interrupt() async {
     if let eventSource, eventSource.readyState != .closed {
       await eventSource.close()
@@ -316,6 +356,19 @@ actor LlamaServer {
     var mirostat_tau = 5  // target entropy
     var mirostat_eta = 0.1  // learning rate
     var cache_prompt = true
+
+    init(prompt: String, stop: [String]?, temperature: Double?) {
+      self.prompt = prompt
+      self.stop = stop ?? [
+        "</s>",
+        "\n\(Message.USER_SPEAKER_ID):",
+        "\n\(Message.USER_SPEAKER_ID.lowercased()):",
+        "[/INST]",
+        "[INST]",
+        "USER:",
+      ]
+      self.temperature = temperature ?? Agent.DEFAULT_TEMP
+    }
 
     func toJSON() -> String {
       let encoder = JSONEncoder()
