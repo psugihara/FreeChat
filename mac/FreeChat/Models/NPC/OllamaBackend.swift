@@ -37,6 +37,13 @@ actor OllamaBackend {
     let model: String
     let systemFingerprint: String
     let choices: [Choice]
+
+    static func from(data: Data?) throws -> Response? {
+      guard let data else { return nil }
+      let decoder = JSONDecoder()
+      decoder.keyDecodingStrategy = .convertFromSnakeCase
+      return try decoder.decode(Response.self, from: data)
+    }
   }
 
   private var interrupted = false
@@ -73,8 +80,8 @@ actor OllamaBackend {
             print("ollama EventSource server error:", error.localizedDescription)
             break L
           case .message(let message):
-            if let response = try await self.decodeCompletionMessage(message: message.data),
-               let choice = response.choices.first {
+            if let response = try Response.from(data: message.data?.data(using: .utf8)),
+            let choice = response.choices.first {
               continuation.yield(choice.delta.content)
               if choice.finishReason != nil { break L }
             }
@@ -104,10 +111,38 @@ actor OllamaBackend {
     return request
   }
 
-  private func decodeCompletionMessage(message: String?) throws -> Response? {
-    guard let data = message?.data(using: .utf8) else { return nil }
-    let decoder = JSONDecoder()
-    decoder.keyDecodingStrategy = .convertFromSnakeCase
-    return try decoder.decode(Response.self, from: data)
+  //  MARK: - List models
+
+  struct TagsResponse: Decodable {
+    struct Model: Decodable {
+      struct Details: Decodable {
+        let parentModel: String?
+        let format: String
+        let family: String
+        let families: [String]?
+        let parameterSize: String
+        let quantizationLevel: String
+      }
+      let name: String
+      let model: String
+      let modifiedAt: String
+      let size: Int
+      let digest: String
+      let details: Details
+    }
+    let models: [Model]
+
+    static func from(data: Data) throws -> TagsResponse {
+      let decoder = JSONDecoder()
+      decoder.keyDecodingStrategy = .convertFromSnakeCase
+      return try decoder.decode(TagsResponse.self, from: data)
+    }
+  }
+
+  nonisolated func fetchModels() async throws -> TagsResponse {
+    // TODO: Replace force-unwrap
+    let url = URL(string: "\(scheme)://\(host):\(port)/api/tags")!
+    let (data, _) = try await URLSession.shared.data(from: url)
+    return try TagsResponse.from(data: data)
   }
 }

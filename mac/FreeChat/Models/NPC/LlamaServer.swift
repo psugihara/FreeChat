@@ -242,30 +242,24 @@ actor LlamaServer {
         let eventSource = EventSource(request: request)
         eventSource.connect()
 
-        for await event in eventSource.events {
-          if await self.interrupted {
-            await eventSource.close()
-            continuation.finish()
-          }
+      L: for await event in eventSource.events {
+          guard await !self.interrupted else { break L }
           switch event {
           case .open: continue
           case .error(let error): 
             print("llama.cpp EventSource server error:", error.localizedDescription)
-            await eventSource.close()
+            break L
           case .message(let message):
-            if let response = try await self.decodeCompletionMessage(message: message.data) {
+            if let response = try Response.from(data: message.data?.data(using: .utf8)) {
               continuation.yield(response.content)
-              if response.stop {
-                await eventSource.close()
-                continuation.finish()
-              }
+              if response.stop { break L }
             }
           case .closed:
-            await eventSource.close()
-            continuation.finish()
             print("llama.cpp EventSource closed")
+            break L
           }
         }
+
         await eventSource.close()
         continuation.finish()
       }
@@ -281,12 +275,6 @@ actor LlamaServer {
     request.httpBody = completeParams.toJSON().data(using: .utf8)
 
     return request
-  }
-
-  private func decodeCompletionMessage(message: String?) throws -> Response? {
-    guard let data = message?.data(using: .utf8) else { return nil }
-    let decoder = JSONDecoder()
-    return try decoder.decode(Response.self, from: data)
   }
 
   func interrupt() async {
@@ -393,6 +381,12 @@ actor LlamaServer {
   struct Response: Codable {
     let content: String
     let stop: Bool
+
+    static func from(data: Data?) throws -> Response? {
+      guard let data else { return nil }
+      let decoder = JSONDecoder()
+      return try decoder.decode(Response.self, from: data)
+    }
   }
 
   struct StopResponse: Codable {
