@@ -14,12 +14,40 @@ actor OllamaBackend {
   }
   
   struct CompleteParams: Encodable {
+    struct OllamaOptions: Encodable {
+      enum Mirostat: Int, Encodable {
+        case disabled = 0
+        case v1 = 1
+        case v2 = 2
+      }
+      let mirostat: Mirostat
+      let mirostatETA: Float = 0.1
+      let mirostatTAU: Float = 5
+      let numCTX = 2048
+      let numGQA = 1
+      let numGPU: Int? = nil
+      let numThread: Int? = nil
+      let repeatLastN = 64
+      let repeatPenalty: Float = 1.1
+      let temperature: Float = 0.7
+      let seed: Int? = nil
+      let stop: String? = nil
+      let tfsZ: Float? = nil
+      let numPredict = 128
+      let topK = 40
+      let topP: Float = 0.9
+    }
     let messages: [RoleMessage]
     let model: String
+    let format: String? = nil
+    let options: OllamaOptions? = nil
+    let template: String? = nil
     let stream = true
+    let keepAlive = true
 
     func toJSON() -> String {
       let encoder = JSONEncoder()
+      encoder.keyEncodingStrategy = .convertToSnakeCase
       let jsonData = try? encoder.encode(self)
       return String(data: jsonData!, encoding: .utf8)!
     }
@@ -49,23 +77,20 @@ actor OllamaBackend {
   private var interrupted = false
 
   private let contextLength: Int
-  private let scheme: String
-  private let host: String
-  private let port: String
+  private let baseURL: URL
 
   init(contextLength: Int, tls: Bool, host: String, port: String) {
     self.contextLength = contextLength
-    self.scheme = tls ? "https" : "http"
-    self.host = host
-    self.port = port
+    self.baseURL = URL(string: "\(tls ? "https" : "http")://\(host):\(port)")!
   }
 
   func complete(messages: [String]) throws -> AsyncStream<String> {
     let messages = [RoleMessage(role: "system", content: "you know")]
       + messages.map({ RoleMessage(role: "user", content: $0) })
     let params = CompleteParams(messages: messages, model: "orca-mini")
-    let url = URL(string: "\(scheme)://\(host):\(port)/v1/chat/completions")!
+    let url = baseURL.appendingPathComponent("/v1/chat/completions")
     let request = buildRequest(url: url, params: params)
+    interrupted = false
 
     return AsyncStream<String> { continuation in
       Task.detached {
@@ -140,8 +165,7 @@ actor OllamaBackend {
   }
 
   nonisolated func fetchModels() async throws -> TagsResponse {
-    // TODO: Replace force-unwrap
-    let url = URL(string: "\(scheme)://\(host):\(port)/api/tags")!
+    let url = baseURL.appendingPathComponent("/api/tags")
     let (data, _) = try await URLSession.shared.data(from: url)
     return try TagsResponse.from(data: data)
   }
