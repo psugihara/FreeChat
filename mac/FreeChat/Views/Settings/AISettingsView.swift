@@ -209,9 +209,9 @@ struct AISettingsView: View {
           .foregroundColor(indicatorColor)
         Group {
           switch serverHealthScore {
-          case 0.75...1:
+          case 0.25...1:
             Text("Connected")
-          case 0..<0.75:
+          case 0..<0.25:
             Text("Connection Error. Retrying...")
           default:
             Text("Not Connected")
@@ -333,7 +333,7 @@ struct AISettingsView: View {
       }
     }
     .formStyle(.grouped)
-    .sheet(isPresented: $customizeModels) {
+    .sheet(isPresented: $customizeModels, onDismiss: { pickedModel = selectedModelId }) {
       EditModels(selectedModelId: $selectedModelId)
     }
     .sheet(isPresented: $editSystemPrompt) {
