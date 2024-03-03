@@ -5,8 +5,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/Recouse/EventSource.git",
       "state" : {
-        "revision" : "fcd7152a3106d75287c7303bba40a4761e5b7f6d",
-        "version" : "0.0.5"
+        "revision" : "ffaa978620b19c891d107941c1b36d18836e8ecb",
+        "version" : "0.0.7"
       }
     },
     {
@@ -25,24 +25,6 @@
       "state" : {
         "revision" : "7f4df436eb78fe64fe2c32c58006e9949fa28ad8",
         "version" : "0.16.0"
-      }
-    },
-    {
-      "identity" : "swift-async-algorithms",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/apple/swift-async-algorithms.git",
-      "state" : {
-        "revision" : "9cfed92b026c524674ed869a4ff2dcfdeedf8a2a",
-        "version" : "0.1.0"
-      }
-    },
-    {
-      "identity" : "swift-collections",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/apple/swift-collections.git",
-      "state" : {
-        "revision" : "937e904258d22af6e447a0b72c0bc67583ef64a2",
-        "version" : "1.0.4"
       }
     },
     {

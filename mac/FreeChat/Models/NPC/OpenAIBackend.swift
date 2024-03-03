@@ -1,12 +1,28 @@
 //
-//  OllamaBackend.swift
+//  OpenAIBackend.swift
 //  FreeChat
 //
 
 import Foundation
 import EventSource
 
-actor OllamaBackend {
+actor OpenAIBackend {
+
+  enum BackendType: String, CaseIterable {
+    case local = "local"
+    case llama = "llama"
+    case openai = "openai"
+    case ollama = "ollama"
+
+    var defaultURL: URL {
+      switch self {
+      case .local: return URL(string: "http://127.0.0.1:8690")!
+      case .llama: return URL(string: "http://127.0.0.1:8690")!
+      case .ollama: return URL(string: "http://127.0.0.1:11434")!
+      case .openai: return URL(string: "https://api.openai.com")!
+      }
+    }
+  }
 
   struct RoleMessage: Codable {
     let role: String
@@ -74,14 +90,24 @@ actor OllamaBackend {
     }
   }
 
+  struct ResponseSummary {
+    var text: String
+    var responseStartSeconds: Double
+    var predictedPerSecond: Double?
+    var modelName: String?
+    var nPredicted: Int?
+  }
+
   private var interrupted = false
 
   private let contextLength: Int
   private let baseURL: URL
+  private let backendType: BackendType
 
-  init(contextLength: Int, tls: Bool, host: String, port: String) {
+  init(backend: BackendType, contextLength: Int, tls: Bool, host: String, port: String) {
     self.contextLength = contextLength
     self.baseURL = URL(string: "\(tls ? "https" : "http")://\(host):\(port)")!
+    self.backendType = backend
   }
 
   func complete(messages: [String]) throws -> AsyncStream<String> {
@@ -116,21 +142,21 @@ actor OllamaBackend {
           }
         }
 
-        await eventSource.close()
         continuation.finish()
+        await eventSource.close()
       }
     }
   }
 
   func interrupt() async { interrupted = true }
 
-  func buildRequest(url: URL, params: CompleteParams) -> URLRequest {
+  func buildRequest(url: URL, params: CompleteParams, token: String = "none") -> URLRequest {
     var request = URLRequest(url: url)
     request.httpMethod = "POST"
     request.setValue("application/json", forHTTPHeaderField: "Content-Type")
     request.setValue("text/event-stream", forHTTPHeaderField: "Accept")
     request.setValue("keep-alive", forHTTPHeaderField: "Connection")
-    request.setValue("Bearer: none", forHTTPHeaderField: "Authorization")
+    request.setValue("Bearer: \(token)", forHTTPHeaderField: "Authorization")
     request.httpBody = params.toJSON().data(using: .utf8)
 
     return request
@@ -164,7 +190,7 @@ actor OllamaBackend {
     }
   }
 
-  nonisolated func fetchModels() async throws -> TagsResponse {
+  nonisolated func fetchOllamaModels() async throws -> TagsResponse {
     let url = baseURL.appendingPathComponent("/api/tags")
     let (data, _) = try await URLSession.shared.data(from: url)
     return try TagsResponse.from(data: data)

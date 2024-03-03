@@ -58,7 +58,7 @@
 		A1F617562A782E4F00F2048C /* ConversationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1F617552A782E4F00F2048C /* ConversationView.swift */; };
 		A1F617582A7836AE00F2048C /* Message+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1F617572A7836AE00F2048C /* Message+Extensions.swift */; };
 		A1F6175B2A7838F700F2048C /* Conversation+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1F6175A2A7838F700F2048C /* Conversation+Extensions.swift */; };
-		DE16617B2B8A40D100826556 /* OllamaBackend.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE16617A2B8A40D100826556 /* OllamaBackend.swift */; };
+		DE16617B2B8A40D100826556 /* OpenAIBackend.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE16617A2B8A40D100826556 /* OpenAIBackend.swift */; };
 		DEA8CF572B51938B007A4CE7 /* FreeChatAppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEA8CF562B51938B007A4CE7 /* FreeChatAppDelegate.swift */; };
 		DEEA39CC2B586F3800992592 /* ServerHealth.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEEA39CB2B586F3800992592 /* ServerHealth.swift */; };
 /* End PBXBuildFile section */
@@ -177,7 +177,7 @@
 		A1F617552A782E4F00F2048C /* ConversationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationView.swift; sourceTree = "<group>"; };
 		A1F617572A7836AE00F2048C /* Message+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Message+Extensions.swift"; sourceTree = "<group>"; };
 		A1F6175A2A7838F700F2048C /* Conversation+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Conversation+Extensions.swift"; sourceTree = "<group>"; };
-		DE16617A2B8A40D100826556 /* OllamaBackend.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = OllamaBackend.swift; path = FreeChat/Models/NPC/OllamaBackend.swift; sourceTree = SOURCE_ROOT; };
+		DE16617A2B8A40D100826556 /* OpenAIBackend.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = OpenAIBackend.swift; path = FreeChat/Models/NPC/OpenAIBackend.swift; sourceTree = SOURCE_ROOT; };
 		DEA8CF562B51938B007A4CE7 /* FreeChatAppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FreeChatAppDelegate.swift; sourceTree = "<group>"; };
 		DEEA39CB2B586F3800992592 /* ServerHealth.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerHealth.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -261,7 +261,7 @@
 				A137A3872AB502DB00BE1AE0 /* ggml-metal.metal */,
 				A17A2E122A79A005006CDD90 /* Agent.swift */,
 				A17A2E132A79A005006CDD90 /* LlamaServer.swift */,
-				DE16617A2B8A40D100826556 /* OllamaBackend.swift */,
+				DE16617A2B8A40D100826556 /* OpenAIBackend.swift */,
 				DEEA39CB2B586F3800992592 /* ServerHealth.swift */,
 				A137A3822AB4FD4800BE1AE0 /* freechat-server */,
 				A1A286F32A7E17750004967A /* server-watchdog */,
@@ -580,7 +580,7 @@
 				A1F617582A7836AE00F2048C /* Message+Extensions.swift in Sources */,
 				A13C8C682A902A1200EC18D8 /* CGKeycode+Extensions.swift in Sources */,
 				A15D50D22A7F539800FC1681 /* NavList.swift in Sources */,
-				DE16617B2B8A40D100826556 /* OllamaBackend.swift in Sources */,
+				DE16617B2B8A40D100826556 /* OpenAIBackend.swift in Sources */,
 				A1156D342AD1F5EF00081313 /* Templates.swift in Sources */,
 				A1D4B49D2B9A780B00B9C4BE /* AgentDefaults.swift in Sources */,
 				A1F617262A782AA100F2048C /* FreeChat.swift in Sources */,

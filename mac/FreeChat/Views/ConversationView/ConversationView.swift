@@ -91,13 +91,13 @@ struct ConversationView: View, Sendable {
           }
         }
       }
-        .padding(.vertical, 12)
-        .onReceive(
+      .padding(.vertical, 12)
+      .onReceive(
         agent.$pendingMessage.throttle(for: .seconds(0.1), scheduler: RunLoop.main, latest: true)
       ) { text in
         pendingMessageText = text
       }
-        .onReceive(
+      .onReceive(
         agent.$pendingMessage.throttle(for: .seconds(0.2), scheduler: RunLoop.main, latest: true)
       ) { _ in
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
@@ -105,10 +105,13 @@ struct ConversationView: View, Sendable {
         }
       }
     }
-      .textSelection(.enabled)
-      .safeAreaInset(edge: .bottom, spacing: 0) {
+    .textSelection(.enabled)
+    .safeAreaInset(edge: .bottom, spacing: 0) {
       MessageTextField { s in
-        submit(s)
+        Task {
+          // TODO: Disable or cancel if busy
+          await submit(s)
+        }
       }
     }
       .frame(maxWidth: .infinity)
@@ -117,12 +120,12 @@ struct ConversationView: View, Sendable {
       .onChange(of: selectedModelId) { showConversation(conversation, modelId: $0) }
       .navigationTitle(conversation.titleWithDefault)
       .alert(isPresented: $showErrorAlert, error: llamaError) { _ in
-      Button("OK") {
-        llamaError = nil
+        Button("OK") {
+          llamaError = nil
+        }
+      } message: { error in
+        Text(error.recoverySuggestion ?? "")
       }
-    } message: { error in
-      Text(error.recoverySuggestion ?? "")
-    }
       .background(Color.textBackground)
   }
 
@@ -158,9 +161,7 @@ struct ConversationView: View, Sendable {
   }
 
   private func initializeServerLocal(modelId: String) async {
-    guard let id = UUID(uuidString: modelId)
-    else { return }
-    
+    guard let id = UUID(uuidString: modelId) else { return }
     let llamaPath = await agent.llama.modelPath
     let req = Model.fetchRequest()
     req.predicate = NSPredicate(format: "id == %@", id as CVarArg)
@@ -169,6 +170,9 @@ struct ConversationView: View, Sendable {
        modelPath != llamaPath {
       await agent.llama.stopServer()
       agent.llama = LlamaServer(modelPath: modelPath, contextLength: contextLength)
+      // TODO: Check the backend type
+      let backendURL = OpenAIBackend.BackendType.local.defaultURL
+      agent.createBackend(contextLength: contextLength, tls: false, host: backendURL.host()!, port: "\(backendURL.port!)")
     }
   }
 
@@ -178,8 +182,7 @@ struct ConversationView: View, Sendable {
           let port = serverPort
     else { return }
     await agent.llama.stopServer()
-    agent.llama = LlamaServer(contextLength: contextLength, tls: tls, host: host, port: port)
-    agent.backend = OllamaBackend(contextLength: contextLength, tls: tls, host: host, port: port)
+    agent.createBackend(contextLength: contextLength, tls: tls, host: host, port: port)
   }
 
   private func scrollToLastIfRecent(_ proxy: ScrollViewProxy) {
@@ -219,17 +222,9 @@ struct ConversationView: View, Sendable {
     showErrorAlert = true
   }
 
-  func submit(_ input: String) {
+  func submit(_ input: String) async {
     if (agent.status == .processing || agent.status == .coldProcessing) {
-      Task {
-        await agent.interrupt()
-
-        Task.detached(priority: .userInitiated) {
-          try? await Task.sleep(for: .seconds(1))
-          await submit(input)
-        }
-      }
-      return
+      await agent.interrupt()
     }
 
     playSendSound()
@@ -281,45 +276,41 @@ struct ConversationView: View, Sendable {
       }
     }
 
-    Task {
-      var response: LlamaServer.CompleteResponse
+    let response: OpenAIBackend.ResponseSummary
+    do {
+      response = try await agent.listenThinkRespond(speakerId: Message.USER_SPEAKER_ID, messages: messageTexts, template: model.template, temperature: temperature)
+    } catch let error as LlamaServerError {
+      handleResponseError(error)
+      return
+    } catch {
+      print("agent listen threw unexpected error", error as Any)
+      return
+    }
+
+    await MainActor.run {
+      m.text = response.text
+      m.predictedPerSecond = response.predictedPerSecond ?? -1
+      m.responseStartSeconds = response.responseStartSeconds
+      m.nPredicted = Int64(response.nPredicted ?? -1)
+      m.modelName = response.modelName
+      m.updatedAt = Date()
+
+      playReceiveSound()
       do {
-        response = try await agent.listenThinkRespond(speakerId: Message.USER_SPEAKER_ID, messages: messageTexts, template: model.template, temperature: temperature)
-      } catch let error as LlamaServerError {
-        handleResponseError(error)
-        return
+        try viewContext.save()
       } catch {
-        print("agent listen threw unexpected error", error as Any)
-        return
+        print("error creating message", error.localizedDescription)
       }
 
-      await MainActor.run {
-        m.text = response.text
-        m.predictedPerSecond = response.predictedPerSecond ?? -1
-        m.responseStartSeconds = response.responseStartSeconds
-        m.nPredicted = Int64(response.nPredicted ?? -1)
-        m.modelName = response.modelName
-        m.updatedAt = Date()
+      if pendingMessage?.text != nil,
+         !pendingMessage!.text!.isEmpty,
+         response.text.hasPrefix(agent.pendingMessage),
+         m == pendingMessage {
+        pendingMessage = nil
+        agent.pendingMessage = ""
+      }
 
-        playReceiveSound()
-        do {
-          try viewContext.save()
-        } catch {
-          print("error creating message", error.localizedDescription)
-        }
-
-        if pendingMessage?.text != nil,
-          !pendingMessage!.text!.isEmpty,
-          response.text.hasPrefix(agent.pendingMessage),
-          m == pendingMessage {
-          pendingMessage = nil
-          agent.pendingMessage = ""
-        }
-
-        if conversation != agentConversation {
-          return
-        }
-
+      if conversation == agentConversation {
         messages = agentConversation.orderedMessages
       }
     }

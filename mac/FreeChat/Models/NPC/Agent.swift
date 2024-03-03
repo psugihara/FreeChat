@@ -19,10 +19,9 @@ class Agent: ObservableObject {
   @Published var pendingMessage = ""
   @Published var status: Status = .cold
 
-  @available(*, deprecated, message: "use backend with a common interface")
   // each agent runs their own server
   var llama: LlamaServer
-  var backend: OllamaBackend?
+  private var backend: OpenAIBackend!
 
   init(id: String, prompt: String, systemPrompt: String, modelPath: String, contextLength: Int) {
     self.id = id
@@ -31,38 +30,17 @@ class Agent: ObservableObject {
     llama = LlamaServer(modelPath: modelPath, contextLength: contextLength)
   }
 
+  func createBackend(contextLength: Int, tls: Bool, host: String, port: String) {
+    self.backend = OpenAIBackend(backend: .ollama, contextLength: contextLength, tls: tls, host: host, port: port)
+  }
+
   // this is the main loop of the agent
   // listen -> respond -> update mental model and save checkpoint
   // we respond before updating to avoid a long delay after user input
   func listenThinkRespond(
     speakerId: String, messages: [String], template: Template, temperature: Double?
-  ) async throws -> LlamaServer.CompleteResponse {
-    if status == .cold {
-      status = .coldProcessing
-    } else {
-      status = .processing
-    }
-
-    // TODO: Uncomment this block
-    /*
-    prompt = template.run(systemPrompt: systemPrompt, messages: messages)
-
-    pendingMessage = ""
-
-    let response = try await llama.complete(
-      prompt: prompt, stop: template.stopWords, temperature: temperature
-    ) { partialResponse in
-      DispatchQueue.main.async {
-        self.handleCompletionProgress(partialResponse: partialResponse)
-      }
-    }
-
-    pendingMessage = response.text
-    status = .ready
-
-    return response
-     */
-
+  ) async throws -> OpenAIBackend.ResponseSummary {
+    status = status == .cold ? .coldProcessing : .processing
     pendingMessage = ""
     for try await partialResponse in try await backend!.complete(messages: messages) {
       self.pendingMessage += partialResponse
@@ -70,7 +48,7 @@ class Agent: ObservableObject {
     }
     status = .ready
 
-    return LlamaServer.CompleteResponse(text: pendingMessage, responseStartSeconds: 0)
+    return OpenAIBackend.ResponseSummary(text: pendingMessage, responseStartSeconds: 0)
   }
 
   func handleCompletionProgress(partialResponse: String) {
@@ -86,11 +64,14 @@ class Agent: ObservableObject {
 
   func warmup() async throws {
     if prompt.isEmpty, systemPrompt.isEmpty { return }
+    // TODO: Implement this part
+    /*
     do {
       _ = try await llama.complete(prompt: prompt, stop: nil, temperature: nil)
       status = .ready
     } catch {
       status = .cold
     }
+     */
   }
 }
