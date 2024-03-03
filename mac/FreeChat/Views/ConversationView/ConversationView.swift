@@ -41,9 +41,9 @@ struct ConversationView: View, Sendable {
     conversationManager.agent
   }
 
+  // TODO: Use different lists for the remote backends
   var selectedModel: Model? {
-    if selectedModelId != AISettingsView.remoteModelOption,
-      let selectedModelId = self.selectedModelId {
+      if let selectedModelId {
       models.first(where: { $0.id?.uuidString == selectedModelId })
     } else {
       models.first
@@ -152,11 +152,15 @@ struct ConversationView: View, Sendable {
 
     // warmup the agent if it's cold or model has changed
     Task {
+      // TODO: Use backend type instead
+      /*
       if selectedModelId == AISettingsView.remoteModelOption {
         await initializeServerRemote()
       } else {
         await initializeServerLocal(modelId: selectedModelId)
       }
+       */
+      await initializeServerRemote()
     }
   }
 

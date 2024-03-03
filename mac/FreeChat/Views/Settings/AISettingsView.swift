@@ -11,8 +11,6 @@ import SwiftUI
 struct AISettingsView: View {
   static let title = "Intelligence"
   private static let customizeModelsId = "customizeModels"
-  static let remoteModelOption = "remoteModelOption"
-
   private let serverHealthTimer = Timer.publish(every: 3, on: .main, in: .common).autoconnect()
 
   @Environment(\.managedObjectContext) private var viewContext
@@ -23,6 +21,7 @@ struct AISettingsView: View {
     animation: .default)
   private var models: FetchedResults<Model>
 
+  @AppStorage("backendTypeID") private var backendTypeID: String?
   @AppStorage("selectedModelId") private var selectedModelId: String?
   @AppStorage("systemPrompt") private var systemPrompt = DEFAULT_SYSTEM_PROMPT
   @AppStorage("contextLength") private var contextLength = DEFAULT_CONTEXT_LENGTH
@@ -35,7 +34,6 @@ struct AISettingsView: View {
 
   @State var pickedModel: String?  // Picker selection
   @State var customizeModels = false  // Show add remove models
-  @State var editRemoteModel = false  // Show remote model server
   @State var editSystemPrompt = false
   @State var editFormat = false
   @State var revealAdvanced = false
@@ -45,6 +43,10 @@ struct AISettingsView: View {
   @State var serverHealthScore: Double = -1
 
   @StateObject var gpu = GPU.shared
+
+  private var isUsingLocalServer: Bool { 
+    backendTypeID == OpenAIBackend.BackendType.local.rawValue
+  }
 
   let contextLengthFormatter: NumberFormatter = {
     let formatter = NumberFormatter()
@@ -90,6 +92,21 @@ struct AISettingsView: View {
     }
   }
 
+  var backendTypePicker: some View {
+    HStack {
+      Picker("Backend", selection: $backendTypeID) {
+        ForEach(OpenAIBackend.BackendType.allCases, id: \.self) { name in
+          Text(name.rawValue).tag(name.rawValue as String?)
+        }
+      }
+      .onAppear {
+        if backendTypeID == nil {
+          backendTypeID = OpenAIBackend.BackendType.local.rawValue
+        }
+      }
+    }
+  }
+
   var modelPicker: some View {
     VStack(alignment: .leading) {
       Picker("Model", selection: $pickedModel) {
@@ -101,21 +118,17 @@ struct AISettingsView: View {
           }
         }
 
-        Divider().tag(nil as String?)
-        Text("Remote Model (Advanced)").tag(AISettingsView.remoteModelOption as String?)
-        Text("Add or Remove Models...").tag(AISettingsView.customizeModelsId as String?)
-      }.onReceive(Just(pickedModel)) { _ in
+        if isUsingLocalServer {
+          Divider().tag(nil as String?)
+          Text("Add or Remove Models...").tag(AISettingsView.customizeModelsId as String?)
+        }
+      }
+      .onReceive(Just(pickedModel)) { _ in
         switch pickedModel {
         case AISettingsView.customizeModelsId:
           customizeModels = true
-          editRemoteModel = false
-        case AISettingsView.remoteModelOption:
-          customizeModels = false
-          editRemoteModel = true
-          selectedModelId = AISettingsView.remoteModelOption
         case .some(let pickedModelValue):
           customizeModels = false
-          editRemoteModel = false
           selectedModelId = pickedModelValue
         default: break
         }
@@ -124,21 +137,14 @@ struct AISettingsView: View {
         switch pickedModel {
         case AISettingsView.customizeModelsId:
           customizeModels = true
-          editRemoteModel = false
-        case AISettingsView.remoteModelOption:
-          customizeModels = false
-          editRemoteModel = true
-          selectedModelId = AISettingsView.remoteModelOption
         case .some(let pickedModelValue):
           customizeModels = false
-          editRemoteModel = false
           selectedModelId = pickedModelValue
         default: break
         }
-
       }
 
-      if !editRemoteModel {
+      if isUsingLocalServer {
         Text(
           "The default model is general purpose, small, and works on most computers. Larger models are slower but wiser. Some models specialize in certain tasks like coding Python. FreeChat is compatible with most models in GGUF format. [Find new models](https://huggingface.co/models?search=GGUF)"
         )
@@ -154,7 +160,7 @@ struct AISettingsView: View {
           Text("Prompt format: \(model.template.format.rawValue)")
             .foregroundColor(Color(NSColor.secondaryLabelColor))
             .font(.caption)
-        } else if editRemoteModel {
+        } else if !isUsingLocalServer {
           Text("Prompt format: \(remoteModelTemplate ?? TemplateFormat.vicuna.rawValue)")
             .foregroundColor(Color(NSColor.secondaryLabelColor))
             .font(.caption)
@@ -170,7 +176,8 @@ struct AISettingsView: View {
         content: {
           if let model = selectedModel {
             EditFormat(model: model)
-          } else if editRemoteModel {
+          } else if !isUsingLocalServer {
+            // TODO: Check if the editor and model name are needed here
             EditFormat(modelName: "Remote")
           }
         })
@@ -266,8 +273,9 @@ struct AISettingsView: View {
     Form {
       Section {
         systemPromptEditor
+        backendTypePicker
         modelPicker
-        if editRemoteModel {
+        if !isUsingLocalServer {
           sectionRemoteModel
         }
       }
@@ -288,7 +296,7 @@ struct AISettingsView: View {
                 .padding(.top, 2.5)
                 .padding(.bottom, 4)
 
-              if !editRemoteModel {
+              if isUsingLocalServer {
                 Divider()
 
                 HStack {
@@ -311,7 +319,7 @@ struct AISettingsView: View {
                   .frame(width: 24, alignment: .trailing)
               }.padding(.top, 1)
 
-              if gpu.available && !editRemoteModel {
+              if gpu.available && isUsingLocalServer {
                 Divider()
 
                 Toggle("Use GPU Acceleration", isOn: $useGPU).padding(.top, 1)
@@ -342,7 +350,7 @@ struct AISettingsView: View {
     .onSubmit(saveFormRemoteServer)
     .navigationTitle(AISettingsView.title)
     .onAppear {
-      if selectedModelId != AISettingsView.remoteModelOption {
+      if isUsingLocalServer {
         let selectedModelExists =
           models
           .compactMap({ $0.id?.uuidString })
@@ -352,7 +360,6 @@ struct AISettingsView: View {
         }
       }
       pickedModel = selectedModelId
-
       inputServerTLS = serverTLS
       inputServerHost = serverHost ?? ""
       inputServerPort = serverPort ?? ""
@@ -395,8 +402,6 @@ struct AISettingsView: View {
     serverPort = inputServerPort
     serverHealthScore = -1
     updateRemoteServerURL()
-
-    selectedModelId = AISettingsView.remoteModelOption
   }
 
   private func updateRemoteServerURL() {

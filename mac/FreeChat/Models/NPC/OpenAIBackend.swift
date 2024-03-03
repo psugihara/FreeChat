@@ -9,10 +9,10 @@ import EventSource
 actor OpenAIBackend {
 
   enum BackendType: String, CaseIterable {
-    case local = "local"
-    case llama = "llama"
-    case openai = "openai"
-    case ollama = "ollama"
+    case local = "This Computer (default)"
+    case llama = "Llama.cpp"
+    case openai = "OpenAI"
+    case ollama = "Ollama"
 
     var defaultURL: URL {
       switch self {
