@@ -128,7 +128,6 @@ struct AISettingsView: View {
       if let model = selectedModel {
         EditFormat(model: model)
       } else if !isUsingLocalServer {
-        // TODO: Check if the editor and model name are needed here
         EditFormat(modelName: "Remote")
       }
     }

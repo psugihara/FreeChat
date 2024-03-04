@@ -10,9 +10,12 @@ import MarkdownUI
 import Foundation
 
 struct ConversationView: View, Sendable {
+  typealias BackendType = OpenAIBackend.BackendType
+
   @Environment(\.managedObjectContext) private var viewContext
   @EnvironmentObject private var conversationManager: ConversationManager
 
+  @AppStorage("backendTypeID") private var backendTypeID: String?
   @AppStorage("selectedModelId") private var selectedModelId: String?
   @AppStorage("systemPrompt") private var systemPrompt: String = DEFAULT_SYSTEM_PROMPT
   @AppStorage("contextLength") private var contextLength: Int = DEFAULT_CONTEXT_LENGTH
@@ -152,15 +155,12 @@ struct ConversationView: View, Sendable {
 
     // warmup the agent if it's cold or model has changed
     Task {
-      // TODO: Use backend type instead
-      /*
-      if selectedModelId == AISettingsView.remoteModelOption {
-        await initializeServerRemote()
-      } else {
+      let backendType: BackendType = BackendType(rawValue: backendTypeID ?? "") ?? .local
+      if backendType == .local {
         await initializeServerLocal(modelId: selectedModelId)
+      } else {
+        await initializeServerRemote()
       }
-       */
-      await initializeServerRemote()
     }
   }
 
@@ -174,7 +174,6 @@ struct ConversationView: View, Sendable {
        modelPath != llamaPath {
       await agent.llama.stopServer()
       agent.llama = LlamaServer(modelPath: modelPath, contextLength: contextLength)
-      // TODO: Check the backend type
       let backendURL = OpenAIBackend.BackendType.local.defaultURL
       agent.createBackend(contextLength: contextLength, tls: false, host: backendURL.host()!, port: "\(backendURL.port!)")
     }
