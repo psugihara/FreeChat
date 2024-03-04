@@ -1,4 +1,3 @@
-@preconcurrency import EventSource
 import Foundation
 import SwiftUI
 import os.lock
@@ -35,7 +34,6 @@ actor LlamaServer {
   private var process = Process()
   private var serverUp = false
   private var serverErrorMessage = ""
-  private var eventSource: EventSource?
   private let url: URL
 
   private var monitor = Process()
@@ -120,12 +118,6 @@ actor LlamaServer {
   func stopServer() {
     if process.isRunning { process.terminate() }
     if monitor.isRunning { monitor.terminate() }
-  }
-
-  func interrupt() async {
-    if let eventSource, eventSource.readyState != .closed {
-      await eventSource.close()
-    }
   }
 
   private func waitForServer() async throws {

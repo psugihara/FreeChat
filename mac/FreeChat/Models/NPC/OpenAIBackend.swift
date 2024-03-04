@@ -120,10 +120,10 @@ actor OpenAIBackend {
 
     return AsyncStream<String> { continuation in
       Task.detached {
-        let eventSource = EventSource(request: request)
-        eventSource.connect()
+        let eventSource = EventSource()
+        let dataTask = eventSource.dataTask(for: request)
 
-      L: for await event in eventSource.events {
+      L: for await event in dataTask.events() {
           guard await !self.interrupted else { break L }
           switch event {
           case .open: continue
@@ -143,12 +143,11 @@ actor OpenAIBackend {
         }
 
         continuation.finish()
-        await eventSource.close()
       }
     }
   }
 
-  func interrupt() async { interrupted = true }
+  func interrupt() { interrupted = true }
 
   func buildRequest(url: URL, params: CompleteParams, token: String = "none") -> URLRequest {
     var request = URLRequest(url: url)
