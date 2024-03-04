@@ -107,6 +107,33 @@ struct AISettingsView: View {
     }
   }
 
+  var editPromptFormat: some View {
+    HStack {
+      if let model = selectedModel {
+        Text("Prompt format: \(model.template.format.rawValue)")
+          .foregroundColor(Color(NSColor.secondaryLabelColor))
+          .font(.caption)
+      } else if !isUsingLocalServer {
+        Text("Prompt format: \(remoteModelTemplate ?? TemplateFormat.vicuna.rawValue)")
+          .foregroundColor(Color(NSColor.secondaryLabelColor))
+          .font(.caption)
+      }
+      Button("Edit") {
+        editFormat = true
+      }
+      .buttonStyle(.link).font(.caption)
+      .offset(x: -4)
+    }
+    .sheet(isPresented: $editFormat) {
+      if let model = selectedModel {
+        EditFormat(model: model)
+      } else if !isUsingLocalServer {
+        // TODO: Check if the editor and model name are needed here
+        EditFormat(modelName: "Remote")
+      }
+    }
+  }
+
   var modelPicker: some View {
     VStack(alignment: .leading) {
       Picker("Model", selection: $pickedModel) {
@@ -153,34 +180,17 @@ struct AISettingsView: View {
         .lineLimit(5)
         .fixedSize(horizontal: false, vertical: true)
         .padding(.top, 0.5)
+      } else {
+        Text(
+          "If you have access to a powerful server, you may want to run your model there. Enter the host and port to connect to a remote llama.cpp server. Instructions for running the server can be found [here](https://github.com/ggerganov/llama.cpp/blob/master/examples/server/README.md)"
+        )
+        .font(.callout)
+        .foregroundColor(Color(NSColor.secondaryLabelColor))
+        .lineLimit(5)
+        .fixedSize(horizontal: false, vertical: true)
+        .padding(.top, 0.5)
       }
-
-      HStack {
-        if let model = selectedModel {
-          Text("Prompt format: \(model.template.format.rawValue)")
-            .foregroundColor(Color(NSColor.secondaryLabelColor))
-            .font(.caption)
-        } else if !isUsingLocalServer {
-          Text("Prompt format: \(remoteModelTemplate ?? TemplateFormat.vicuna.rawValue)")
-            .foregroundColor(Color(NSColor.secondaryLabelColor))
-            .font(.caption)
-        }
-        Button("Edit") {
-          editFormat = true
-        }
-        .buttonStyle(.link).font(.caption)
-        .offset(x: -4)
-      }
-      .sheet(
-        isPresented: $editFormat,
-        content: {
-          if let model = selectedModel {
-            EditFormat(model: model)
-          } else if !isUsingLocalServer {
-            // TODO: Check if the editor and model name are needed here
-            EditFormat(modelName: "Remote")
-          }
-        })
+      editPromptFormat
     }
   }
 
@@ -237,16 +247,8 @@ struct AISettingsView: View {
     }
   }
 
-  var sectionRemoteModel: some View {
+  var sectionRemoteBackend: some View {
     Group {
-      Text(
-        "If you have access to a powerful server, you may want to run your model there. Enter the host and port to connect to a remote llama.cpp server. Instructions for running the server can be found [here](https://github.com/ggerganov/llama.cpp/blob/master/examples/server/README.md)"
-      )
-      .font(.callout)
-      .foregroundColor(Color(NSColor.secondaryLabelColor))
-      .lineLimit(5)
-      .fixedSize(horizontal: false, vertical: true)
-      .padding(.top, 0.5)
       HStack {
         TextField("Server host", text: $inputServerHost, prompt: Text("yourserver.net"))
           .textFieldStyle(.plain)
@@ -276,7 +278,7 @@ struct AISettingsView: View {
         backendTypePicker
         modelPicker
         if !isUsingLocalServer {
-          sectionRemoteModel
+          sectionRemoteBackend
         }
       }
       Section {
@@ -296,20 +298,16 @@ struct AISettingsView: View {
                 .padding(.top, 2.5)
                 .padding(.bottom, 4)
 
-              if isUsingLocalServer {
-                Divider()
-
-                HStack {
-                  Text("Context Length")
-                  TextField("", value: $contextLength, formatter: contextLengthFormatter)
-                    .padding(.vertical, -8)
-                    .padding(.trailing, -10)
-                }
-                .padding(.top, 0.5)
+              Divider()
+              HStack {
+                Text("Context Length")
+                TextField("", value: $contextLength, formatter: contextLengthFormatter)
+                  .padding(.vertical, -8)
+                  .padding(.trailing, -10)
               }
+              .padding(.top, 0.5)
 
               Divider()
-
               HStack {
                 Text("Temperature")
                 Slider(value: $temperature, in: 0...2, step: 0.1).offset(y: 1)
