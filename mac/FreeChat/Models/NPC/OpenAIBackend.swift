@@ -133,7 +133,7 @@ actor OpenAIBackend {
           case .message(let message):
             if let response = try Response.from(data: message.data?.data(using: .utf8)),
             let choice = response.choices.first {
-              continuation.yield(choice.delta.content)
+              continuation.yield(choice.delta.content.removeUnmatchedTrailingQuote())
               if choice.finishReason != nil { break L }
             }
           case .closed:
