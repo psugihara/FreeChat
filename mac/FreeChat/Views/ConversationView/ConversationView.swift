@@ -10,8 +10,6 @@ import MarkdownUI
 import Foundation
 
 struct ConversationView: View, Sendable {
-  typealias BackendType = OpenAIBackend.BackendType
-
   @Environment(\.managedObjectContext) private var viewContext
   @EnvironmentObject private var conversationManager: ConversationManager
 
@@ -20,16 +18,11 @@ struct ConversationView: View, Sendable {
   @AppStorage("systemPrompt") private var systemPrompt: String = DEFAULT_SYSTEM_PROMPT
   @AppStorage("contextLength") private var contextLength: Int = DEFAULT_CONTEXT_LENGTH
   @AppStorage("playSoundEffects") private var playSoundEffects = true
-  @AppStorage("temperature") private var temperature: Double?
   @AppStorage("useGPU") private var useGPU: Bool = DEFAULT_USE_GPU
   @AppStorage("serverHost") private var serverHost: String?
   @AppStorage("serverPort") private var serverPort: String?
   @AppStorage("serverTLS") private var serverTLS: Bool?
-
-  @FetchRequest(
-    sortDescriptors: [NSSortDescriptor(keyPath: \Model.size, ascending: true)],
-    animation: .default)
-  private var models: FetchedResults<Model>
+  @AppStorage("openAIToken") private var openAIToken: String?
 
   private static let SEND = NSDataAsset(name: "ESM_Perfect_App_Button_2_Organic_Simple_Classic_Game_Click")
   private static let PING = NSDataAsset(name: "ESM_POWER_ON_SYNTH")
@@ -42,15 +35,6 @@ struct ConversationView: View, Sendable {
 
   var agent: Agent {
     conversationManager.agent
-  }
-
-  // TODO: Use different lists for the remote backends
-  var selectedModel: Model? {
-      if let selectedModelId {
-      models.first(where: { $0.id?.uuidString == selectedModelId })
-    } else {
-      models.first
-    }
   }
 
   @State var pendingMessage: Message?
@@ -78,8 +62,8 @@ struct ConversationView: View, Sendable {
             if m == pendingMessage {
               MessageView(pendingMessage!, overrideText: pendingMessageText, agentStatus: agent.status)
                 .onAppear {
-                scrollToLastIfRecent(proxy)
-              }
+                  scrollToLastIfRecent(proxy)
+                }
                 .opacity(showResponse ? 1 : 0)
                 .animation(.interpolatingSpring(stiffness: 170, damping: 20), value: showResponse)
                 .id("\(m.id)\(m.updatedAt as Date?)")
@@ -107,20 +91,22 @@ struct ConversationView: View, Sendable {
           autoScroll(proxy)
         }
       }
+      .onReceive(NotificationCenter.default.publisher(for: NSNotification.Name("backendTypeIDDidChange"))) { _ in
+        initializeBackends()
+      }
     }
     .textSelection(.enabled)
     .safeAreaInset(edge: .bottom, spacing: 0) {
       MessageTextField { s in
         Task {
-          // TODO: Disable or cancel if busy
           await submit(s)
         }
       }
     }
-      .frame(maxWidth: .infinity)
-      .onAppear { showConversation(conversation) }
-      .onChange(of: conversation) { nextConvo in showConversation(nextConvo) }
-      .onChange(of: selectedModelId) { showConversation(conversation, modelId: $0) }
+    .frame(maxWidth: .infinity)
+    .onAppear { showConversation(conversation) }
+    .onChange(of: conversation) { nextConvo in showConversation(nextConvo) }
+    .onChange(of: selectedModelId) { showConversation(conversation, modelId: $0) }
       .navigationTitle(conversation.titleWithDefault)
       .alert(isPresented: $showErrorAlert, error: llamaError) { _ in
         Button("OK") {
@@ -145,27 +131,25 @@ struct ConversationView: View, Sendable {
   }
 
   private func showConversation(_ c: Conversation, modelId: String? = nil) {
-    guard
-      let selectedModelId = modelId ?? self.selectedModelId,
-      !selectedModelId.isEmpty
-    else { return }
-
     messages = c.orderedMessages
-        
+    initializeBackends()
+  }
 
-    // warmup the agent if it's cold or model has changed
+  private func initializeBackends() {
+    let backendType: BackendType = BackendType(rawValue: backendTypeID ?? "") ?? .local
     Task {
-      let backendType: BackendType = BackendType(rawValue: backendTypeID ?? "") ?? .local
       if backendType == .local {
-        await initializeServerLocal(modelId: selectedModelId)
+        await initializeBackendLocal()
       } else {
-        await initializeServerRemote()
+        await initializeBackendRemote(backend: backendType)
       }
     }
   }
 
-  private func initializeServerLocal(modelId: String) async {
-    guard let id = UUID(uuidString: modelId) else { return }
+  private func initializeBackendLocal() async {
+    guard let selectedModelId, !selectedModelId.isEmpty,
+    let id = UUID(uuidString: selectedModelId)
+    else { return }
     let llamaPath = await agent.llama.modelPath
     let req = Model.fetchRequest()
     req.predicate = NSPredicate(format: "id == %@", id as CVarArg)
@@ -174,18 +158,19 @@ struct ConversationView: View, Sendable {
        modelPath != llamaPath {
       await agent.llama.stopServer()
       agent.llama = LlamaServer(modelPath: modelPath, contextLength: contextLength)
-      let backendURL = OpenAIBackend.BackendType.local.defaultURL
-      agent.createBackend(contextLength: contextLength, tls: false, host: backendURL.host()!, port: "\(backendURL.port!)")
+      
+      let baseURL = BackendType.local.defaultURL
+      agent.createBackend(.local, contextLength: contextLength, baseURL: baseURL, apiKey: openAIToken)
+
     }
   }
 
-  private func initializeServerRemote() async {
-    guard let tls = serverTLS,
-          let host = serverHost,
-          let port = serverPort
+  private func initializeBackendRemote(backend: BackendType) async {
+    guard let tls = serverTLS, let host = serverHost, let port = serverPort
     else { return }
     await agent.llama.stopServer()
-    agent.createBackend(contextLength: contextLength, tls: tls, host: host, port: port)
+    let baseURL = URL(string: "\(tls ? "https" : "http")://\(host):\(port)")!
+    agent.createBackend(backend, contextLength: contextLength, baseURL: baseURL, apiKey: openAIToken)
   }
 
   private func scrollToLastIfRecent(_ proxy: ScrollViewProxy) {
@@ -231,9 +216,6 @@ struct ConversationView: View, Sendable {
     }
 
     playSendSound()
-
-    guard let model = selectedModel else { return }
-
     showUserMessage = false
     engageAutoScroll()
 
@@ -279,9 +261,9 @@ struct ConversationView: View, Sendable {
       }
     }
 
-    let response: OpenAIBackend.ResponseSummary
+    let response: CompleteResponseSummary
     do {
-      response = try await agent.listenThinkRespond(speakerId: Message.USER_SPEAKER_ID, messages: messageTexts, template: model.template, temperature: temperature)
+      response = try await agent.listenThinkRespond(speakerId: Message.USER_SPEAKER_ID, messages: messageTexts)
     } catch let error as LlamaServerError {
       handleResponseError(error)
       return

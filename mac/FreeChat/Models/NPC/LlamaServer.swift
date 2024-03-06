@@ -2,27 +2,6 @@ import Foundation
 import SwiftUI
 import os.lock
 
-func removeUnmatchedTrailingQuote(_ inputString: String) -> String {
-  var outputString = inputString
-  if inputString.last != "\"" { return outputString }
-
-  // Count the number of quotes in the string
-  let countOfQuotes = outputString.reduce(
-    0,
-    { (count, character) -> Int in
-      return character == "\"" ? count + 1 : count
-    })
-
-  // If there is an odd number of quotes, remove the last one
-  if countOfQuotes % 2 != 0 {
-    if let indexOfLastQuote = outputString.lastIndex(of: "\"") {
-      outputString.remove(at: indexOfLastQuote)
-    }
-  }
-
-  return outputString
-}
-
 actor LlamaServer {
 
   var modelPath: String?

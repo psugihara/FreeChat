@@ -16,6 +16,7 @@ struct AISettingsView: View {
   @Environment(\.managedObjectContext) private var viewContext
   @EnvironmentObject var conversationManager: ConversationManager
 
+  @available(*, deprecated, message: "use modelList instead")
   @FetchRequest(
     sortDescriptors: [NSSortDescriptor(keyPath: \Model.size, ascending: true)],
     animation: .default)
@@ -30,6 +31,7 @@ struct AISettingsView: View {
   @AppStorage("serverTLS") private var serverTLS: Bool = false
   @AppStorage("serverHost") private var serverHost: String?
   @AppStorage("serverPort") private var serverPort: String?
+  @AppStorage("openAIToken") private var openAIToken: String?
   @AppStorage("remoteModelTemplate") var remoteModelTemplate: String?
 
   @State var pickedModel: String?  // Picker selection
@@ -37,15 +39,15 @@ struct AISettingsView: View {
   @State var editSystemPrompt = false
   @State var editFormat = false
   @State var revealAdvanced = false
-  @State var inputServerTLS: Bool = false
   @State var inputServerHost: String = ""
   @State var inputServerPort: String = ""
   @State var serverHealthScore: Double = -1
+  @State var modelList: [String] = []
 
   @StateObject var gpu = GPU.shared
 
   private var isUsingLocalServer: Bool { 
-    backendTypeID == OpenAIBackend.BackendType.local.rawValue
+    backendTypeID == BackendType.local.rawValue
   }
 
   let contextLengthFormatter: NumberFormatter = {
@@ -61,12 +63,18 @@ struct AISettingsView: View {
     return formatter
   }()
 
+  
+  @available(*, deprecated, message: "use selectedModelName instead")
   var selectedModel: Model? {
-    if let selectedModelId = self.selectedModelId {
+    if let selectedModelId {
       models.first(where: { $0.id?.uuidString == selectedModelId })
     } else {
       models.first
     }
+  }
+  
+  var selectedModelName: String? {
+    modelList.first
   }
 
   var systemPromptEditor: some View {
@@ -95,13 +103,25 @@ struct AISettingsView: View {
   var backendTypePicker: some View {
     HStack {
       Picker("Backend", selection: $backendTypeID) {
-        ForEach(OpenAIBackend.BackendType.allCases, id: \.self) { name in
+        ForEach(BackendType.allCases, id: \.self) { name in
           Text(name.rawValue).tag(name.rawValue as String?)
         }
       }
       .onAppear {
         if backendTypeID == nil {
-          backendTypeID = OpenAIBackend.BackendType.local.rawValue
+          backendTypeID = BackendType.local.rawValue
+        }
+      }
+      .onChange(of: backendTypeID) {
+        NotificationCenter.default.post(name: NSNotification.Name("backendTypeIDDidChange"), object: $0)
+        Task {
+          do {
+            try await fetchModels()
+            // TODO: This is temporary just to list the models
+            pickedModel = modelList.first
+          } catch let error {
+            print("error fetching models:", error)
+          }
         }
       }
     }
@@ -136,18 +156,27 @@ struct AISettingsView: View {
   var modelPicker: some View {
     VStack(alignment: .leading) {
       Picker("Model", selection: $pickedModel) {
-        ForEach(models) { i in
-          if let url = i.url {
-            Text(i.name ?? url.lastPathComponent)
-              .tag(i.id?.uuidString)
-              .help(url.path)
-          }
+        // TODO: Format the models
+        ForEach(modelList, id: \.self) {
+          Text($0)
+            .tag($0 as String?)
+            .help($0)
         }
+//        ForEach(models) { i in
+//          if let url = i.url {
+//            Text(i.name ?? url.lastPathComponent)
+//              .tag(i.id?.uuidString)
+//              .help(url.path)
+//          }
+//        }
 
         if isUsingLocalServer {
           Divider().tag(nil as String?)
           Text("Add or Remove Models...").tag(AISettingsView.customizeModelsId as String?)
         }
+      }
+      .onAppear {
+        Task { try? await fetchModels() }
       }
       .onReceive(Just(pickedModel)) { _ in
         switch pickedModel {
@@ -194,7 +223,7 @@ struct AISettingsView: View {
   }
 
   var hasRemoteServerInputChanged: Bool {
-    inputServerHost != serverHost || inputServerPort != serverPort || inputServerTLS != serverTLS
+    inputServerHost != serverHost || inputServerPort != serverPort
   }
   var hasRemoteConnectionError: Bool {
     serverHealthScore < 0.25 && serverHealthScore >= 0
@@ -257,7 +286,7 @@ struct AISettingsView: View {
           .font(.callout)
         Spacer()
       }
-      Toggle(isOn: $inputServerTLS) {
+      Toggle(isOn: $serverTLS) {
         Text("Secure connection (HTTPS)")
           .font(.callout)
       }
@@ -357,7 +386,6 @@ struct AISettingsView: View {
         }
       }
       pickedModel = selectedModelId
-      inputServerTLS = serverTLS
       inputServerHost = serverHost ?? ""
       inputServerPort = serverPort ?? ""
       updateRemoteServerURL()
@@ -394,7 +422,6 @@ struct AISettingsView: View {
   }
 
   private func saveFormRemoteServer() {
-    serverTLS = inputServerTLS
     serverHost = inputServerHost
     serverPort = inputServerPort
     serverHealthScore = -1
@@ -402,7 +429,7 @@ struct AISettingsView: View {
   }
 
   private func updateRemoteServerURL() {
-    let scheme = inputServerTLS ? "https" : "http"
+    let scheme = serverTLS ? "https" : "http"
     guard let url = URL(string: "\(scheme)://\(inputServerHost):\(inputServerPort)")
     else { return }
     Task {
@@ -410,9 +437,37 @@ struct AISettingsView: View {
       await ServerHealth.shared.check()
     }
   }
+
+  //  MARK: - Fetch models
+
+  private func fetchModels() async throws {
+    let backendType: BackendType = BackendType(rawValue: backendTypeID ?? "") ?? .local
+    let baseURL: URL
+    if let serverHost, let serverPort {
+      baseURL = URL(string: "\(serverTLS ? "https" : "http")://\(serverHost):\(serverPort)")!
+    } else {
+      baseURL = BackendType.local.defaultURL
+    }
+
+    switch backendType {
+    case .local:
+      let baseURL = BackendType.local.defaultURL
+      let backend = LocalBackend(contextLength: 0, baseURL: baseURL, apiKey: nil)
+      modelList = try await backend.listModels()
+    case .llama:
+      let backend = LlamaBackend(contextLength: 0, baseURL: baseURL, apiKey: openAIToken)
+      modelList = try await backend.listModels()
+    case .openai:
+      let backend = OpenAIBackend(contextLength: 0, baseURL: baseURL, apiKey: openAIToken)
+      modelList = backend.listModels()
+    case .ollama:
+      let backend = OllamaBackend(contextLength: 0, baseURL: baseURL, apiKey: openAIToken)
+      modelList = try await backend.listModels()
+    }
+  }
 }
 
 #Preview{
-  AISettingsView(inputServerTLS: true)
+  AISettingsView()
     .environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
 }

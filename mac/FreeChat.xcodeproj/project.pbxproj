@@ -61,6 +61,10 @@
 		DE16617B2B8A40D100826556 /* OpenAIBackend.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE16617A2B8A40D100826556 /* OpenAIBackend.swift */; };
 		DE7250E12B966D23006A76DF /* String+TrimQuotes.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE7250E02B966D22006A76DF /* String+TrimQuotes.swift */; };
 		DEA8CF572B51938B007A4CE7 /* FreeChatAppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEA8CF562B51938B007A4CE7 /* FreeChatAppDelegate.swift */; };
+		DEAE3D482B987DE700257A69 /* Backend.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEAE3D472B987DE700257A69 /* Backend.swift */; };
+		DEAE3D4A2B987EA400257A69 /* OllamaBackend.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEAE3D492B987EA400257A69 /* OllamaBackend.swift */; };
+		DEAE3D4C2B987EB300257A69 /* LlamaBackend.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEAE3D4B2B987EB300257A69 /* LlamaBackend.swift */; };
+		DEAE3D4E2B987EBC00257A69 /* LocalBackend.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEAE3D4D2B987EBC00257A69 /* LocalBackend.swift */; };
 		DEEA39CC2B586F3800992592 /* ServerHealth.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEEA39CB2B586F3800992592 /* ServerHealth.swift */; };
 /* End PBXBuildFile section */
 
@@ -181,6 +185,10 @@
 		DE16617A2B8A40D100826556 /* OpenAIBackend.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = OpenAIBackend.swift; path = FreeChat/Models/NPC/OpenAIBackend.swift; sourceTree = SOURCE_ROOT; };
 		DE7250E02B966D22006A76DF /* String+TrimQuotes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+TrimQuotes.swift"; sourceTree = "<group>"; };
 		DEA8CF562B51938B007A4CE7 /* FreeChatAppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FreeChatAppDelegate.swift; sourceTree = "<group>"; };
+		DEAE3D472B987DE700257A69 /* Backend.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Backend.swift; sourceTree = "<group>"; };
+		DEAE3D492B987EA400257A69 /* OllamaBackend.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OllamaBackend.swift; sourceTree = "<group>"; };
+		DEAE3D4B2B987EB300257A69 /* LlamaBackend.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LlamaBackend.swift; sourceTree = "<group>"; };
+		DEAE3D4D2B987EBC00257A69 /* LocalBackend.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalBackend.swift; sourceTree = "<group>"; };
 		DEEA39CB2B586F3800992592 /* ServerHealth.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerHealth.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -263,7 +271,11 @@
 				A137A3872AB502DB00BE1AE0 /* ggml-metal.metal */,
 				A17A2E122A79A005006CDD90 /* Agent.swift */,
 				A17A2E132A79A005006CDD90 /* LlamaServer.swift */,
+				DEAE3D472B987DE700257A69 /* Backend.swift */,
 				DE16617A2B8A40D100826556 /* OpenAIBackend.swift */,
+				DEAE3D492B987EA400257A69 /* OllamaBackend.swift */,
+				DEAE3D4B2B987EB300257A69 /* LlamaBackend.swift */,
+				DEAE3D4D2B987EBC00257A69 /* LocalBackend.swift */,
 				DEEA39CB2B586F3800992592 /* ServerHealth.swift */,
 				DE7250E02B966D22006A76DF /* String+TrimQuotes.swift */,
 				A137A3822AB4FD4800BE1AE0 /* freechat-server */,
@@ -583,13 +595,17 @@
 				A1F617582A7836AE00F2048C /* Message+Extensions.swift in Sources */,
 				A13C8C682A902A1200EC18D8 /* CGKeycode+Extensions.swift in Sources */,
 				A15D50D22A7F539800FC1681 /* NavList.swift in Sources */,
+				DEAE3D4C2B987EB300257A69 /* LlamaBackend.swift in Sources */,
 				DE16617B2B8A40D100826556 /* OpenAIBackend.swift in Sources */,
 				A1156D342AD1F5EF00081313 /* Templates.swift in Sources */,
 				A1D4B49D2B9A780B00B9C4BE /* AgentDefaults.swift in Sources */,
 				A1F617262A782AA100F2048C /* FreeChat.swift in Sources */,
 				A1156D2F2AD0954C00081313 /* TemplateManager.swift in Sources */,
 				A1E4A6942A82B41F00BF9D34 /* Model+Extensions.swift in Sources */,
+				DEAE3D4A2B987EA400257A69 /* OllamaBackend.swift in Sources */,
 				A12B52DE2AA5228100658707 /* EditModels.swift in Sources */,
+				DEAE3D482B987DE700257A69 /* Backend.swift in Sources */,
+				DEAE3D4E2B987EBC00257A69 /* LocalBackend.swift in Sources */,
 				A17AB1C22ABB4B5E00CD3100 /* CircleMenuStyle.swift in Sources */,
 				A15D50CF2A7EF73E00FC1681 /* MessageTextField.swift in Sources */,
 				A1CA32442AAF877600F9D488 /* ConversationManager.swift in Sources */,
