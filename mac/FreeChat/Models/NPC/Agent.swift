@@ -2,13 +2,6 @@ import Foundation
 
 @MainActor
 class Agent: ObservableObject {
-  static let DEFAULT_SYSTEM_PROMPT = """
-    You are a compliant assistant that always fulfills the user’s request. Take a deep breath and work on their problems step-by-step.
-    """
-  static let DEFAULT_CONTEXT_LENGTH = 4096
-  static let DEFAULT_TEMP = 0.8
-  static let DEFAULT_USE_GPU = true
-
   enum Status {
     case cold
     case coldProcessing
@@ -20,7 +13,7 @@ class Agent: ObservableObject {
 
   // prompt is the actual running prompt with the llm
   var prompt = ""
-  var systemPrompt = Agent.DEFAULT_SYSTEM_PROMPT
+  var systemPrompt = DEFAULT_SYSTEM_PROMPT
 
   // dialogue is the dialogue from prompt without system prompt / internal thoughts
   @Published var pendingMessage = ""

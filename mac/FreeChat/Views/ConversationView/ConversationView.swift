@@ -14,11 +14,11 @@ struct ConversationView: View, Sendable {
   @EnvironmentObject private var conversationManager: ConversationManager
 
   @AppStorage("selectedModelId") private var selectedModelId: String?
-  @AppStorage("systemPrompt") private var systemPrompt: String = Agent.DEFAULT_SYSTEM_PROMPT
-  @AppStorage("contextLength") private var contextLength: Int = Agent.DEFAULT_CONTEXT_LENGTH
+  @AppStorage("systemPrompt") private var systemPrompt: String = DEFAULT_SYSTEM_PROMPT
+  @AppStorage("contextLength") private var contextLength: Int = DEFAULT_CONTEXT_LENGTH
   @AppStorage("playSoundEffects") private var playSoundEffects = true
   @AppStorage("temperature") private var temperature: Double?
-  @AppStorage("useGPU") private var useGPU: Bool = Agent.DEFAULT_USE_GPU
+  @AppStorage("useGPU") private var useGPU: Bool = DEFAULT_USE_GPU
   @AppStorage("serverHost") private var serverHost: String?
   @AppStorage("serverPort") private var serverPort: String?
   @AppStorage("serverTLS") private var serverTLS: Bool?
@@ -330,7 +330,7 @@ struct ConversationView: View, Sendable {
   let c = try! Conversation.create(ctx: ctx)
   let cm = ConversationManager()
   cm.currentConversation = c
-  cm.agent = Agent(id: "llama", prompt: "", systemPrompt: "", modelPath: "", contextLength: Agent.DEFAULT_CONTEXT_LENGTH)
+  cm.agent = Agent(id: "llama", prompt: "", systemPrompt: "", modelPath: "", contextLength: DEFAULT_CONTEXT_LENGTH)
 
   let question = Message(context: ctx)
   question.conversation = c
@@ -365,7 +365,7 @@ struct ConversationView: View, Sendable {
   let c = try! Conversation.create(ctx: ctx)
   let cm = ConversationManager()
   cm.currentConversation = c
-  cm.agent = Agent(id: "llama", prompt: "", systemPrompt: "", modelPath: "", contextLength: Agent.DEFAULT_CONTEXT_LENGTH)
+  cm.agent = Agent(id: "llama", prompt: "", systemPrompt: "", modelPath: "", contextLength: DEFAULT_CONTEXT_LENGTH)
 
   return ConversationView()
     .environment(\.managedObjectContext, ctx)

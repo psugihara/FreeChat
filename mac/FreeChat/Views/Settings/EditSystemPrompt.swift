@@ -10,7 +10,7 @@ import SwiftUI
 struct EditSystemPrompt: View {
   @Environment(\.dismiss) var dismiss
 
-  @AppStorage("systemPrompt") private var systemPrompt = Agent.DEFAULT_SYSTEM_PROMPT
+  @AppStorage("systemPrompt") private var systemPrompt = DEFAULT_SYSTEM_PROMPT
   @State private var pendingSystemPrompt = ""
   private var systemPromptPendingSave: Bool {
     pendingSystemPrompt != "" && pendingSystemPrompt != systemPrompt
@@ -42,9 +42,9 @@ struct EditSystemPrompt: View {
       
       HStack {
         Button("Restore Default") {
-          pendingSystemPrompt = Agent.DEFAULT_SYSTEM_PROMPT
+          pendingSystemPrompt = DEFAULT_SYSTEM_PROMPT
         }
-        .disabled(pendingSystemPrompt ==  Agent.DEFAULT_SYSTEM_PROMPT)
+        .disabled(pendingSystemPrompt ==  DEFAULT_SYSTEM_PROMPT)
         Spacer()
         Button("Cancel") {
           dismiss()

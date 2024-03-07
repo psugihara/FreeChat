@@ -15,10 +15,10 @@ class ConversationManager: ObservableObject {
 
   var summonRegistered = false
 
-  @AppStorage("systemPrompt") private var systemPrompt: String = Agent.DEFAULT_SYSTEM_PROMPT
-  @AppStorage("contextLength") private var contextLength: Int = Agent.DEFAULT_CONTEXT_LENGTH
+  @AppStorage("systemPrompt") private var systemPrompt: String = DEFAULT_SYSTEM_PROMPT
+  @AppStorage("contextLength") private var contextLength: Int = DEFAULT_CONTEXT_LENGTH
 
-  @Published var agent: Agent = Agent(id: "Llama", prompt: "", systemPrompt: "", modelPath: "", contextLength: Agent.DEFAULT_CONTEXT_LENGTH)
+  @Published var agent: Agent = Agent(id: "Llama", prompt: "", systemPrompt: "", modelPath: "", contextLength: DEFAULT_CONTEXT_LENGTH)
   @Published var loadingModelId: String?
 
   private static var dummyConversation: Conversation = {

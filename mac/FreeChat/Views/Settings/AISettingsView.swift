@@ -24,10 +24,10 @@ struct AISettingsView: View {
   private var models: FetchedResults<Model>
 
   @AppStorage("selectedModelId") private var selectedModelId: String?
-  @AppStorage("systemPrompt") private var systemPrompt = Agent.DEFAULT_SYSTEM_PROMPT
-  @AppStorage("contextLength") private var contextLength = Agent.DEFAULT_CONTEXT_LENGTH
-  @AppStorage("temperature") private var temperature: Double = Agent.DEFAULT_TEMP
-  @AppStorage("useGPU") private var useGPU = Agent.DEFAULT_USE_GPU
+  @AppStorage("systemPrompt") private var systemPrompt = DEFAULT_SYSTEM_PROMPT
+  @AppStorage("contextLength") private var contextLength = DEFAULT_CONTEXT_LENGTH
+  @AppStorage("temperature") private var temperature: Double = DEFAULT_TEMP
+  @AppStorage("useGPU") private var useGPU = DEFAULT_USE_GPU
   @AppStorage("serverTLS") private var serverTLS: Bool = false
   @AppStorage("serverHost") private var serverHost: String?
   @AppStorage("serverPort") private var serverPort: String?
@@ -280,8 +280,8 @@ struct AISettingsView: View {
                 Text("Configure llama.cpp based on the model you're using.")
                   .foregroundColor(Color(NSColor.secondaryLabelColor))
                 Button("Restore defaults") {
-                  contextLength = Agent.DEFAULT_CONTEXT_LENGTH
-                  temperature = Agent.DEFAULT_TEMP
+                  contextLength = DEFAULT_CONTEXT_LENGTH
+                  temperature = DEFAULT_TEMP
                 }.buttonStyle(.link)
                   .offset(x: -5.5)
               }.font(.callout)

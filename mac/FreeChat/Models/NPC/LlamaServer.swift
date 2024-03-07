@@ -29,7 +29,7 @@ actor LlamaServer {
   var modelPath: String?
   var contextLength: Int
 
-  @AppStorage("useGPU") private var useGPU: Bool = Agent.DEFAULT_USE_GPU
+  @AppStorage("useGPU") private var useGPU: Bool = DEFAULT_USE_GPU
 
   private let gpu = GPU.shared
   private var process = Process()
@@ -303,7 +303,7 @@ actor LlamaServer {
     var n_threads = 6
 
     var n_predict = -1
-    var temperature = Agent.DEFAULT_TEMP
+    var temperature = DEFAULT_TEMP
     var repeat_last_n = 128  // 0 = disable penalty, -1 = context size
     var repeat_penalty = 1.18  // 1.0 = disabled
     var top_k = 40  // <= 0 to use vocab size
