@@ -19,10 +19,6 @@ struct ConversationView: View, Sendable {
   @AppStorage("contextLength") private var contextLength: Int = DEFAULT_CONTEXT_LENGTH
   @AppStorage("playSoundEffects") private var playSoundEffects = true
   @AppStorage("useGPU") private var useGPU: Bool = DEFAULT_USE_GPU
-  @AppStorage("serverHost") private var serverHost: String?
-  @AppStorage("serverPort") private var serverPort: String?
-  @AppStorage("serverTLS") private var serverTLS: Bool?
-  @AppStorage("openAIToken") private var openAIToken: String?
 
   private static let SEND = NSDataAsset(name: "ESM_Perfect_App_Button_2_Organic_Simple_Classic_Game_Click")
   private static let PING = NSDataAsset(name: "ESM_POWER_ON_SYNTH")
@@ -107,15 +103,15 @@ struct ConversationView: View, Sendable {
     .onAppear { showConversation(conversation) }
     .onChange(of: conversation) { nextConvo in showConversation(nextConvo) }
     .onChange(of: selectedModelId) { showConversation(conversation, modelId: $0) }
-      .navigationTitle(conversation.titleWithDefault)
-      .alert(isPresented: $showErrorAlert, error: llamaError) { _ in
-        Button("OK") {
-          llamaError = nil
-        }
-      } message: { error in
-        Text(error.recoverySuggestion ?? "")
+    .navigationTitle(conversation.titleWithDefault)
+    .alert(isPresented: $showErrorAlert, error: llamaError) { _ in
+      Button("OK") {
+        llamaError = nil
       }
-      .background(Color.textBackground)
+    } message: { error in
+      Text(error.recoverySuggestion ?? "")
+    }
+    .background(Color.textBackground)
   }
 
   private func playSendSound() {
@@ -137,40 +133,38 @@ struct ConversationView: View, Sendable {
 
   private func initializeBackends() {
     let backendType: BackendType = BackendType(rawValue: backendTypeID ?? "") ?? .local
-    Task {
-      if backendType == .local {
-        await initializeBackendLocal()
-      } else {
-        await initializeBackendRemote(backend: backendType)
-      }
+    if backendType == .local {
+      Task { try? await initializeBackendLocal() }
     }
+    
+    do {
+      guard let config = try fetchBackendConfig(backendType: backendType, context: viewContext) else { return }
+      agent.createBackend(backendType, contextLength: contextLength, config: config)
+
+    } catch { print("error fetching backend config", error) }
   }
 
-  private func initializeBackendLocal() async {
+  private func initializeBackendLocal() async throws {
     guard let selectedModelId, !selectedModelId.isEmpty,
     let id = UUID(uuidString: selectedModelId)
     else { return }
+    
     let llamaPath = await agent.llama.modelPath
     let req = Model.fetchRequest()
     req.predicate = NSPredicate(format: "id == %@", id as CVarArg)
-    if let model = try? viewContext.fetch(req).first,
+    guard let model = try viewContext.fetch(req).first,
        let modelPath = model.url?.path(percentEncoded: false),
-       modelPath != llamaPath {
-      await agent.llama.stopServer()
-      agent.llama = LlamaServer(modelPath: modelPath, contextLength: contextLength)
-      
-      let baseURL = BackendType.local.defaultURL
-      agent.createBackend(.local, contextLength: contextLength, baseURL: baseURL, apiKey: openAIToken)
-
-    }
+          modelPath != llamaPath
+    else { return }
+    
+    await agent.llama.stopServer()
+    agent.llama = LlamaServer(modelPath: modelPath, contextLength: contextLength)
   }
 
-  private func initializeBackendRemote(backend: BackendType) async {
-    guard let tls = serverTLS, let host = serverHost, let port = serverPort
-    else { return }
-    await agent.llama.stopServer()
-    let baseURL = URL(string: "\(tls ? "https" : "http")://\(host):\(port)")!
-    agent.createBackend(backend, contextLength: contextLength, baseURL: baseURL, apiKey: openAIToken)
+  private func fetchBackendConfig(backendType: BackendType, context: NSManagedObjectContext) throws -> BackendConfig? {
+    let req = BackendConfig.fetchRequest()
+    req.predicate = NSPredicate(format: "backendType == %@", backendType.rawValue)
+    return try context.fetch(req).first
   }
 
   private func scrollToLastIfRecent(_ proxy: ScrollViewProxy) {
@@ -263,7 +257,8 @@ struct ConversationView: View, Sendable {
 
     let response: CompleteResponseSummary
     do {
-      response = try await agent.listenThinkRespond(speakerId: Message.USER_SPEAKER_ID, messages: messageTexts)
+      let config = try fetchBackendConfig()
+      response = try await agent.listenThinkRespond(speakerId: Message.USER_SPEAKER_ID, messages: messageTexts, model: config?.model ?? Model.defaultModelUrl.deletingPathExtension().lastPathComponent)
     } catch let error as LlamaServerError {
       handleResponseError(error)
       return
@@ -299,6 +294,13 @@ struct ConversationView: View, Sendable {
         messages = agentConversation.orderedMessages
       }
     }
+  }
+
+  private func fetchBackendConfig() throws -> BackendConfig? {
+    let backendType: BackendType = BackendType(rawValue: backendTypeID ?? "") ?? .local
+    let req = BackendConfig.fetchRequest()
+    req.predicate = NSPredicate(format: "backendType == %@", backendType.rawValue)
+    return try viewContext.fetch(req).first
   }
 }
 

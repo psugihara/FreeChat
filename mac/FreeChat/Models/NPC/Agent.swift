@@ -30,7 +30,9 @@ class Agent: ObservableObject {
     llama = LlamaServer(modelPath: modelPath, contextLength: contextLength)
   }
 
-  func createBackend(_ backend: BackendType, contextLength: Int, baseURL: URL, apiKey: String?) {
+  func createBackend(_ backend: BackendType, contextLength: Int, config: BackendConfig) {
+    guard let baseURL = config.baseURL, let apiKey = config.apiKey else { return }
+
     switch backend {
     case .local:
       self.backend = LocalBackend(contextLength: contextLength, baseURL: baseURL, apiKey: apiKey)
@@ -46,10 +48,12 @@ class Agent: ObservableObject {
   // this is the main loop of the agent
   // listen -> respond -> update mental model and save checkpoint
   // we respond before updating to avoid a long delay after user input
-  func listenThinkRespond(speakerId: String, messages: [String]) async throws -> CompleteResponseSummary {
+  func listenThinkRespond(speakerId: String, messages: [String], model: String) async throws -> CompleteResponseSummary {
     status = status == .cold ? .coldProcessing : .processing
     pendingMessage = ""
-    for try await partialResponse in try await backend.complete(messages: messages) {
+    let messages = messages.map({ RoleMessage(role: "user", content: $0) })
+    let params = CompleteParams(messages: messages, model: model)
+    for try await partialResponse in try await backend.complete(params: params) {
       self.pendingMessage += partialResponse
       self.prompt = pendingMessage
     }
@@ -71,7 +75,7 @@ class Agent: ObservableObject {
   func warmup() async throws {
     if prompt.isEmpty, systemPrompt.isEmpty { return }
     do {
-      _ = try await backend.complete(messages: [])
+      _ = try await backend.complete(params: CompleteParams(messages: [], model: ""))
       status = .ready
     } catch {
       status = .cold

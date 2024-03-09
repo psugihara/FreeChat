@@ -12,7 +12,7 @@ protocol Backend: Actor, Sendable {
   var apiKey: String? { get }
   var interrupted: Bool { get set }
 
-  func complete(messages: [String]) async throws -> AsyncStream<String>
+  func complete(params: CompleteParams) async throws -> AsyncStream<String>
   func buildRequest(path: String, params: CompleteParams) -> URLRequest
   func interrupt() async
 
@@ -20,10 +20,7 @@ protocol Backend: Actor, Sendable {
 }
 
 extension Backend {
-  func complete(messages: [String]) async throws -> AsyncStream<String> {
-    let messages = [RoleMessage(role: "system", content: "you know")]
-    + messages.map({ RoleMessage(role: "user", content: $0) })
-    let params = CompleteParams(messages: messages, model: "orca-mini")
+  func complete(params: CompleteParams) async throws -> AsyncStream<String> {
     let request = buildRequest(path: "/v1/chat/completions", params: params)
     self.interrupted = false
 
@@ -36,7 +33,7 @@ extension Backend {
         switch event {
         case .open: continue
         case .error(let error):
-          print("ollama EventSource server error:", error.localizedDescription)
+          print("EventSource server error:", error.localizedDescription)
           break L
         case .message(let message):
           if let response = try CompleteResponse.from(data: message.data?.data(using: .utf8)),
@@ -44,9 +41,7 @@ extension Backend {
             continuation.yield(choice.delta.content.removeUnmatchedTrailingQuote())
             if choice.finishReason != nil { break L }
           }
-        case .closed:
-          print("ollama EventSource closed")
-          break L
+        case .closed: break L
         }
       }
 
@@ -58,13 +53,12 @@ extension Backend {
   func interrupt() async { interrupted = true }
 
   func buildRequest(path: String, params: CompleteParams) -> URLRequest {
-    let apiKey = ""
     var request = URLRequest(url: baseURL.appendingPathComponent("/v1/chat/completions"))
     request.httpMethod = "POST"
     request.setValue("application/json", forHTTPHeaderField: "Content-Type")
     request.setValue("text/event-stream", forHTTPHeaderField: "Accept")
     request.setValue("keep-alive", forHTTPHeaderField: "Connection")
-    request.setValue("Bearer: \(apiKey)", forHTTPHeaderField: "Authorization")
+    if let apiKey { request.setValue("Bearer: \(apiKey)", forHTTPHeaderField: "Authorization") }
     request.httpBody = params.toJSON().data(using: .utf8)
 
     return request

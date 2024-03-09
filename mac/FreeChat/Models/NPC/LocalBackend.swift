@@ -25,6 +25,6 @@ actor LocalBackend: Backend {
     let req = Model.fetchRequest()
     req.sortDescriptors = [NSSortDescriptor(key: "size", ascending: true)]
     let context = PersistenceController.shared.container.newBackgroundContext()
-    return try context.fetch(req).compactMap({ $0.url?.path(percentEncoded: false) })
+    return try context.fetch(req).compactMap({ $0.url?.lastPathComponent })
   }
 }
