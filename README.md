@@ -8,7 +8,7 @@ Chat with LLMs on your Mac without installing any other software. Every conversa
 
 - Customize persona and expertise by changing the system prompt
 - Try any llama.cpp compatible model
-- No internet connection required, all local
+- No internet connection required, all local (with the option to connect to a remote model)
 
 https://github.com/psugihara/FreeChat/assets/282016/fd546e39-7657-4ccd-a44f-0b872547a629
 
@@ -28,7 +28,7 @@ FreeChat is a native LLM appliance for macOS that runs completely locally. Downl
 
 - No config. Usable by people who haven't heard of models, prompts, or LLMs.
 - Performance and simplicity over dev experience or features. Notes not Word, Swift not Elektron.
-- Local first. Core functionality should not require an internet connection. There are lots of great clients for GPT-4, claude, etc. This is not one of them.
+- Local first. Core functionality should not require an internet connection.
 - No conversation tracking. Talk about whatever you want with FreeChat, just like Notes.
 - Open source. What's the point of running local AI if you can't audit that it's actually running locally?
 
