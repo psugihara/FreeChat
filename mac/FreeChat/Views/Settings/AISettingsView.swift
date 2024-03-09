@@ -341,7 +341,7 @@ struct AISettingsView: View {
       }
     }
     .formStyle(.grouped)
-    .sheet(isPresented: $customizeModels, onDismiss: { pickedModel = selectedModelId }) {
+    .sheet(isPresented: $customizeModels, onDismiss: { setPickedModelFromID(modelID: selectedModelId) }) {
       EditModels(selectedModelId: $selectedModelId)
     }
     .sheet(isPresented: $editSystemPrompt) {
@@ -356,6 +356,10 @@ struct AISettingsView: View {
       }
     }
     .onChange(of: selectedModelId) { _ in
+      Task {
+        try? await fetchModels(backendType: .local)
+        setPickedModelFromID(modelID: selectedModelId)
+      }
       if isUsingLocalServer { rebootAgentWithSelectedModel() }
     }
     .onChange(of: systemPrompt) { _ in
@@ -367,11 +371,7 @@ struct AISettingsView: View {
     .onReceive(
       NotificationCenter.default.publisher(for: NSNotification.Name("selectedLocalModelDidChange"))
     ) { output in
-      if let model = models.filter({ $0.id?.uuidString == output.object as? String }).first {
-        selectedModelId = model.id?.uuidString
-        pickedModel = model.name
-        backendTypeID = BackendType.local.rawValue
-      }
+      setPickedModelFromID(modelID: output.object as? String)
     }
     .frame(
       minWidth: 300, maxWidth: 600, minHeight: 184, idealHeight: 195, maxHeight: 400,
@@ -434,6 +434,14 @@ struct AISettingsView: View {
     } catch { print("error fetching model id:", selectedModelId, error) }
   }
 
+  private func setPickedModelFromID(modelID: String?) {
+    guard let model = models.filter({ $0.id?.uuidString == modelID }).first
+    else { return }
+    selectedModelId = model.id?.uuidString
+    pickedModel = model.name
+    backendTypeID = BackendType.local.rawValue
+  }
+
   //  MARK: - Backend config
 
   private func loadBackendConfig() async throws {
@@ -454,6 +462,8 @@ struct AISettingsView: View {
     config.model = config.model ?? modelList.first
     pickedModel = config.model
     try viewContext.save()
+
+    await ServerHealth.shared.updateURL(config.baseURL)
   }
 
   private func findOrCreateBackendConfig(_ backendType: BackendType, context: NSManagedObjectContext) throws -> BackendConfig {

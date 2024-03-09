@@ -19,6 +19,7 @@ struct ConversationView: View, Sendable {
   @AppStorage("contextLength") private var contextLength: Int = DEFAULT_CONTEXT_LENGTH
   @AppStorage("playSoundEffects") private var playSoundEffects = true
   @AppStorage("useGPU") private var useGPU: Bool = DEFAULT_USE_GPU
+  @AppStorage("temperature") private var temperature: Double = DEFAULT_TEMP
 
   private static let SEND = NSDataAsset(name: "ESM_Perfect_App_Button_2_Organic_Simple_Classic_Game_Click")
   private static let PING = NSDataAsset(name: "ESM_POWER_ON_SYNTH")
@@ -258,7 +259,11 @@ struct ConversationView: View, Sendable {
     let response: CompleteResponseSummary
     do {
       let config = try fetchBackendConfig()
-      response = try await agent.listenThinkRespond(speakerId: Message.USER_SPEAKER_ID, messages: messageTexts, model: config?.model ?? Model.defaultModelUrl.deletingPathExtension().lastPathComponent)
+      let messages = messages .compactMap({ $0.text }).map({ RoleMessage(role: "user", content: $0) })
+      let params = CompleteParams(messages: messages,
+                                  model: config?.model ?? Model.defaultModelUrl.deletingPathExtension().lastPathComponent,
+                                  temperature: Float(temperature))
+      response = try await agent.listenThinkRespond(speakerId: Message.USER_SPEAKER_ID, params: params)
     } catch let error as LlamaServerError {
       handleResponseError(error)
       return

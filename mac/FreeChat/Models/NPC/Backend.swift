@@ -53,12 +53,12 @@ extension Backend {
   func interrupt() async { interrupted = true }
 
   func buildRequest(path: String, params: CompleteParams) -> URLRequest {
-    var request = URLRequest(url: baseURL.appendingPathComponent("/v1/chat/completions"))
+    var request = URLRequest(url: baseURL.appendingPathComponent(path))
     request.httpMethod = "POST"
     request.setValue("application/json", forHTTPHeaderField: "Content-Type")
     request.setValue("text/event-stream", forHTTPHeaderField: "Accept")
     request.setValue("keep-alive", forHTTPHeaderField: "Connection")
-    if let apiKey { request.setValue("Bearer: \(apiKey)", forHTTPHeaderField: "Authorization") }
+    request.setValue("Bearer: \(apiKey ?? "none")", forHTTPHeaderField: "Authorization")
     request.httpBody = params.toJSON().data(using: .utf8)
 
     return request
@@ -82,39 +82,36 @@ enum BackendType: String, CaseIterable {
 }
 
 struct RoleMessage: Codable {
-  let role: String
+  let role: String?
   let content: String
 }
 
 struct CompleteParams: Encodable {
-  struct OllamaOptions: Encodable {
-    enum Mirostat: Int, Encodable {
-      case disabled = 0
-      case v1 = 1
-      case v2 = 2
-    }
-    let mirostat: Mirostat
-    let mirostatETA: Float = 0.1
-    let mirostatTAU: Float = 5
-    let numCTX = 2048
-    let numGQA = 1
-    let numGPU: Int? = nil
-    let numThread: Int? = nil
-    let repeatLastN = 64
-    let repeatPenalty: Float = 1.1
-    let temperature: Float = 0.7
-    let seed: Int? = nil
-    let stop: String? = nil
-    let tfsZ: Float? = nil
-    let numPredict = 128
-    let topK = 40
-    let topP: Float = 0.9
+  enum Mirostat: Int, Encodable {
+    case disabled = 0
+    case v1 = 1
+    case v2 = 2
   }
   let messages: [RoleMessage]
   let model: String
-  let format: String? = nil
-  let options: OllamaOptions? = nil
+  let mirostat: Mirostat = .disabled
+  let mirostatETA: Float = 0.1
+  let mirostatTAU: Float = 5
+  let numCTX = 2048
+  let numGQA = 1
+  let numGPU: Int? = nil
+  let numThread: Int? = nil
+  let repeatLastN = 64
+  let repeatPenalty: Float = 1.1
+  let temperature: Float // 0.7
+  let seed: Int? = nil
+  let stop: [String]? = nil
+  let tfsZ: Float? = nil
+  let numPredict = 128
+  let topK = 40
+  let topP: Float = 0.9
   let template: String? = nil
+  let cachePrompt = true
   let stream = true
   let keepAlive = true
 
@@ -136,7 +133,7 @@ struct CompleteResponse: Decodable {
   let object: String
   let created: Int
   let model: String
-  let systemFingerprint: String
+  let systemFingerprint: String?
   let choices: [Choice]
 
   static func from(data: Data?) throws -> CompleteResponse? {

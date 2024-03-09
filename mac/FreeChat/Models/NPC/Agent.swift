@@ -48,11 +48,9 @@ class Agent: ObservableObject {
   // this is the main loop of the agent
   // listen -> respond -> update mental model and save checkpoint
   // we respond before updating to avoid a long delay after user input
-  func listenThinkRespond(speakerId: String, messages: [String], model: String) async throws -> CompleteResponseSummary {
+  func listenThinkRespond(speakerId: String, params: CompleteParams) async throws -> CompleteResponseSummary {
     status = status == .cold ? .coldProcessing : .processing
     pendingMessage = ""
-    let messages = messages.map({ RoleMessage(role: "user", content: $0) })
-    let params = CompleteParams(messages: messages, model: model)
     for try await partialResponse in try await backend.complete(params: params) {
       self.pendingMessage += partialResponse
       self.prompt = pendingMessage
@@ -75,7 +73,7 @@ class Agent: ObservableObject {
   func warmup() async throws {
     if prompt.isEmpty, systemPrompt.isEmpty { return }
     do {
-      _ = try await backend.complete(params: CompleteParams(messages: [], model: ""))
+      _ = try await backend.complete(params: CompleteParams(messages: [], model: "", temperature: 0.7))
       status = .ready
     } catch {
       status = .cold
