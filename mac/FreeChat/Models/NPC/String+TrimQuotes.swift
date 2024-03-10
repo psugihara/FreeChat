@@ -6,7 +6,7 @@
 import Foundation
 
 extension String {
-  func removeUnmatchedTrailingQuote() -> String {
+  func trimTrailingQuote() -> String {
     guard self.last == "\"" else { return self }
 
     // Count the number of quotes in the string

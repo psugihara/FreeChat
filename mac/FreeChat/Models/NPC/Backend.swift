@@ -38,7 +38,7 @@ extension Backend {
         case .message(let message):
           if let response = try CompleteResponse.from(data: message.data?.data(using: .utf8)),
              let choice = response.choices.first {
-            continuation.yield(choice.delta.content.removeUnmatchedTrailingQuote())
+            if let content = choice.delta.content?.trimTrailingQuote() { continuation.yield(content) }
             if choice.finishReason != nil { break L }
           }
         case .closed: break L
@@ -83,7 +83,7 @@ enum BackendType: String, CaseIterable {
 
 struct RoleMessage: Codable {
   let role: String?
-  let content: String
+  let content: String?
 }
 
 struct CompleteParams: Encodable {

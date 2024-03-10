@@ -23,7 +23,7 @@ class FreeChatAppDelegate: NSObject, NSApplicationDelegate, ObservableObject {
         selectedModelId = insertedModel.id?.uuidString
       }
 
-      if urls.count == 1 { selectedModelId = existingModels.first(where: { $0.url == urls.first })?.id?.uuidString }
+      if urls.count == 1, let modelID = existingModels.first(where: { $0.url == urls.first })?.id?.uuidString { selectedModelId = modelID }
 
       NotificationCenter.default.post(name: NSNotification.Name("selectedLocalModelDidChange"), object: selectedModelId)
       NotificationCenter.default.post(name: NSNotification.Name("needStartNewConversation"), object: selectedModelId)
