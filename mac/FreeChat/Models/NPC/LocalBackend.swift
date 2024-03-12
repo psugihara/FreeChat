@@ -11,10 +11,7 @@ actor LocalBackend: Backend {
   var apiKey: String?
   var interrupted = false
   
-  private let contextLength: Int
-
-  init(contextLength: Int, baseURL: URL, apiKey: String?) {
-    self.contextLength = contextLength
+  init(baseURL: URL, apiKey: String?) {
     self.baseURL = baseURL
     self.apiKey = apiKey
   }

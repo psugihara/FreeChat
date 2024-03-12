@@ -97,7 +97,7 @@ struct CompleteParams: Encodable {
   let mirostat: Mirostat = .disabled
   let mirostatETA: Float = 0.1
   let mirostatTAU: Float = 5
-  let numCTX = 2048
+  let numCTX: Int // 2048
   let numGQA = 1
   let numGPU: Int? = nil
   let numThread: Int? = nil

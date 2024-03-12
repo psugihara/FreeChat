@@ -289,7 +289,7 @@ struct AISettingsView: View {
           content: {
             VStack(alignment: .leading) {
               HStack {
-                Text("Configure llama.cpp based on the model you're using.")
+                Text("Configure your backend based on the model you're using.")
                   .foregroundColor(Color(NSColor.secondaryLabelColor))
                 Button("Restore defaults") {
                   contextLength = DEFAULT_CONTEXT_LENGTH
@@ -408,15 +408,15 @@ struct AISettingsView: View {
     switch backendType {
     case .local:
       let baseURL = BackendType.local.defaultURL
-      let backend = LocalBackend(contextLength: 0, baseURL: baseURL, apiKey: nil)
+      let backend = LocalBackend(baseURL: baseURL, apiKey: nil)
       modelList = try await backend.listModels()
     case .llama:
       modelList = ["Unavailable"]
     case .openai:
-      let backend = OpenAIBackend(contextLength: 0, baseURL: baseURL, apiKey: openAIToken)
+      let backend = OpenAIBackend(baseURL: baseURL, apiKey: nil)
       modelList = backend.listModels()
     case .ollama:
-      let backend = OllamaBackend(contextLength: 0, baseURL: baseURL, apiKey: openAIToken)
+      let backend = OllamaBackend(baseURL: baseURL, apiKey: nil)
       modelList = try await backend.listModels()
     }
 

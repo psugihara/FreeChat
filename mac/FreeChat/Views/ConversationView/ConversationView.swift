@@ -139,7 +139,7 @@ struct ConversationView: View, Sendable {
     }
     
     do {
-      guard let config = try fetchBackendConfig(backendType: backendType, context: viewContext) else { return }
+      let config = try fetchBackendConfig(backendType: backendType, context: viewContext) ?? BackendConfig(context: viewContext)
       agent.createBackend(backendType, contextLength: contextLength, config: config)
 
     } catch { print("error fetching backend config", error) }
@@ -228,8 +228,6 @@ struct ConversationView: View, Sendable {
       showUserMessage = true
     }
 
-    let messageTexts = messages.map { $0.text ?? "" }
-
     // Pending message for bot's reply
     let m = Message(context: viewContext)
     m.fromId = agent.id
@@ -259,9 +257,10 @@ struct ConversationView: View, Sendable {
     let response: CompleteResponseSummary
     do {
       let config = try fetchBackendConfig()
-      let messages = messages .compactMap({ $0.text }).map({ RoleMessage(role: "user", content: $0) })
+      let messages = messages.compactMap({ $0.text }).map({ RoleMessage(role: "user", content: $0) })
       let params = CompleteParams(messages: messages,
                                   model: config?.model ?? Model.defaultModelUrl.deletingPathExtension().lastPathComponent,
+                                  numCTX: contextLength,
                                   temperature: Float(temperature))
       response = try await agent.listenThinkRespond(speakerId: Message.USER_SPEAKER_ID, params: params)
     } catch let error as LlamaServerError {

@@ -31,17 +31,17 @@ class Agent: ObservableObject {
   }
 
   func createBackend(_ backend: BackendType, contextLength: Int, config: BackendConfig) {
-    guard let baseURL = config.baseURL, let apiKey = config.apiKey else { return }
+    let baseURL = config.baseURL ?? backend.defaultURL // Prevent backend crash; should have value.
 
     switch backend {
     case .local:
-      self.backend = LocalBackend(contextLength: contextLength, baseURL: baseURL, apiKey: apiKey)
+      self.backend = LocalBackend(baseURL: baseURL, apiKey: config.apiKey)
     case .llama:
-      self.backend = LlamaBackend(contextLength: contextLength, baseURL: baseURL, apiKey: apiKey)
+      self.backend = LlamaBackend(baseURL: baseURL, apiKey: config.apiKey)
     case .openai:
-      self.backend = OpenAIBackend(contextLength: contextLength, baseURL: baseURL, apiKey: apiKey)
+      self.backend = OpenAIBackend(baseURL: baseURL, apiKey: config.apiKey)
     case .ollama:
-      self.backend = OllamaBackend(contextLength: contextLength, baseURL: baseURL, apiKey: apiKey)
+      self.backend = OllamaBackend(baseURL: baseURL, apiKey: config.apiKey)
     }
   }
 
@@ -73,7 +73,7 @@ class Agent: ObservableObject {
   func warmup() async throws {
     if prompt.isEmpty, systemPrompt.isEmpty { return }
     do {
-      _ = try await backend.complete(params: CompleteParams(messages: [], model: "", temperature: 0.7))
+      _ = try await backend.complete(params: CompleteParams(messages: [], model: "", numCTX: 2048, temperature: 0.7))
       status = .ready
     } catch {
       status = .cold

@@ -13,14 +13,13 @@ actor LlamaServer {
   private var process = Process()
   private var serverUp = false
   private var serverErrorMessage = ""
-  private let url: URL
+  private let url = URL(string: "http://127.0.0.1:8690")!
 
   private var monitor = Process()
 
   init(modelPath: String, contextLength: Int) {
     self.modelPath = modelPath
     self.contextLength = contextLength
-    self.url = URL(string: "http://127.0.0.1:8690")!
   }
 
   // Start a monitor process that will terminate the server when our app dies.
