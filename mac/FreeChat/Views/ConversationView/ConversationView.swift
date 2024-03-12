@@ -257,7 +257,8 @@ struct ConversationView: View, Sendable {
     let response: CompleteResponseSummary
     do {
       let config = try fetchBackendConfig()
-      let messages = messages.compactMap({ $0.text }).map({ RoleMessage(role: "user", content: $0) })
+      let messages = [RoleMessage(role: "system", content: systemPrompt)]
+        + messages.compactMap({ $0.text }).map({ RoleMessage(role: "user", content: $0) })
       let params = CompleteParams(messages: messages,
                                   model: config?.model ?? Model.defaultModelUrl.deletingPathExtension().lastPathComponent,
                                   numCTX: contextLength,

@@ -76,16 +76,16 @@ enum BackendType: String, CaseIterable {
     case .local: return URL(string: "http://127.0.0.1:8690")!
     case .llama: return URL(string: "http://127.0.0.1:8690")!
     case .ollama: return URL(string: "http://127.0.0.1:11434")!
-    case .openai: return URL(string: "https://api.openai.com")!
+    case .openai: return URL(string: "https://api.openai.com:443")!
     }
   }
 
-  var howtoConfigure: String {
+  var howtoConfigure: AttributedString {
     switch self {
-    case .local: NSLocalizedString("Runs on this computer using llama.cpp. No configuration required", comment: "No configuration")
-    case .llama: NSLocalizedString("Llama.cpp is an efficient server than runs more than just LLaMa models. [Learn more](https://github.com/ggerganov/llama.cpp/blob/master/examples/server/README.md)", comment: "What it is and Usage link")
-    case .openai: NSLocalizedString("Configure OpenAI's ChatGPT. [Learn more](https://openai.com/product)", comment: "What it is and Usage link")
-    case .ollama: NSLocalizedString("Ollama runs large language models locally. [Learn more](https://ollama.com)", comment: "What it is and Usage link")
+    case .local: try! AttributedString(markdown: NSLocalizedString("Runs on this computer offline using llama.cpp. No configuration required", comment: "No configuration"))
+    case .llama: try! AttributedString(markdown: NSLocalizedString("Llama.cpp is an efficient server than runs more than just LLaMa models. [Learn more](https://github.com/ggerganov/llama.cpp/blob/master/examples/server/README.md)", comment: "What it is and Usage link"))
+    case .openai: try! AttributedString(markdown: NSLocalizedString("Configure OpenAI's ChatGPT. [Learn more](https://openai.com/product)", comment: "What it is and Usage link"))
+    case .ollama: try! AttributedString(markdown: NSLocalizedString("Ollama runs large language models locally. [Learn more](https://ollama.com)", comment: "What it is and Usage link"))
     }
   }
 }

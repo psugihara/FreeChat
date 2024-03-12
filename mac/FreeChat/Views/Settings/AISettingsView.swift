@@ -28,7 +28,6 @@ struct AISettingsView: View {
   @AppStorage("temperature") private var temperature: Double = DEFAULT_TEMP
   @AppStorage("useGPU") private var useGPU = DEFAULT_USE_GPU
   @AppStorage("openAIToken") private var openAIToken: String?
-  @AppStorage("remoteModelTemplate") var remoteModelTemplate: String?
 
   @State var pickedModel: String?  // Picker selection
   @State var customizeModels = false  // Show add remove models
@@ -93,7 +92,7 @@ struct AISettingsView: View {
   }
 
   var backendTypePicker: some View {
-    HStack {
+    VStack(alignment: .leading) {
       Picker("Backend", selection: $backendTypeID) {
         ForEach(BackendType.allCases, id: \.self) { name in
           Text(name.rawValue).tag(name.rawValue)
@@ -106,20 +105,21 @@ struct AISettingsView: View {
         }
         NotificationCenter.default.post(name: NSNotification.Name("backendTypeIDDidChange"), object: $0)
       }
+      Text(BackendType(rawValue: backendTypeID)?.howtoConfigure ?? "")
+        .font(.callout)
+        .foregroundColor(Color(NSColor.secondaryLabelColor))
+        .lineLimit(5)
+        .fixedSize(horizontal: false, vertical: true)
+        .padding(.top, 0.5)
     }
   }
 
+  @available(*, deprecated, message: "template is not supported")
   var editPromptFormat: some View {
     HStack {
-      if let model = selectedModel {
-        Text("Prompt format: \(model.template.format.rawValue)")
-          .foregroundColor(Color(NSColor.secondaryLabelColor))
-          .font(.caption)
-      } else if !isUsingLocalServer {
-        Text("Prompt format: \(remoteModelTemplate ?? TemplateFormat.vicuna.rawValue)")
-          .foregroundColor(Color(NSColor.secondaryLabelColor))
-          .font(.caption)
-      }
+      Text("Prompt format \(selectedModel?.template.format.rawValue ?? "")")
+        .foregroundColor(Color(NSColor.secondaryLabelColor))
+        .font(.caption)
       Button("Edit") {
         editFormat = true
       }
@@ -148,7 +148,7 @@ struct AISettingsView: View {
           Text("Add or Remove Models...").tag(AISettingsView.customizeModelsId as String?)
         }
       }
-      .disabled(backendTypeID == BackendType.llama.rawValue)
+      .disabled(backendTypeID == BackendType.llama.rawValue || modelList.isEmpty)
       .onReceive(Just(pickedModel)) { _ in
         if pickedModel == AISettingsView.customizeModelsId {
           customizeModels = true
@@ -182,17 +182,7 @@ struct AISettingsView: View {
         .lineLimit(5)
         .fixedSize(horizontal: false, vertical: true)
         .padding(.top, 0.5)
-      } else {
-        Text(
-          "If you have access to a powerful server, you may want to run your model there. Enter the host and port to connect to a remote llama.cpp server. Instructions for running the server can be found [here](https://github.com/ggerganov/llama.cpp/blob/master/examples/server/README.md)"
-        )
-        .font(.callout)
-        .foregroundColor(Color(NSColor.secondaryLabelColor))
-        .lineLimit(5)
-        .fixedSize(horizontal: false, vertical: true)
-        .padding(.top, 0.5)
       }
-      editPromptFormat
     }
   }
 
@@ -202,18 +192,12 @@ struct AISettingsView: View {
 
   var indicatorColor: Color {
     switch serverHealthScore {
-    case 0..<0.25:
-      Color(red: 1, green: 0, blue: 0)
-    case 0.25..<0.5:
-      Color(red: 1, green: 0.5, blue: 0)
-    case 0.5..<0.75:
-      Color(red: 0.45, green: 0.55, blue: 0)
-    case 0.75..<0.95:
-      Color(red: 0.1, green: 0.9, blue: 0)
-    case 0.95...1:
-      Color(red: 0, green: 1, blue: 0)
-    default:
-      Color(red: 0.5, green: 0.5, blue: 0.5)
+    case 0..<0.25: Color(red: 1, green: 0, blue: 0)
+    case 0.25..<0.5: Color(red: 1, green: 0.5, blue: 0)
+    case 0.5..<0.75: Color(red: 0.45, green: 0.55, blue: 0)
+    case 0.75..<0.95: Color(red: 0.1, green: 0.9, blue: 0)
+    case 0.95...1: Color(red: 0, green: 1, blue: 0)
+    default: Color(red: 0.5, green: 0.5, blue: 0.5)
     }
   }
 
@@ -225,12 +209,9 @@ struct AISettingsView: View {
           .foregroundColor(indicatorColor)
         Group {
           switch serverHealthScore {
-          case 0.25...1:
-            Text("Connected")
-          case 0..<0.25:
-            Text("Connection Error. Retrying...")
-          default:
-            Text("Not Connected")
+          case 0.25...1: Text("Connected")
+          case 0..<0.25: Text("Connection Error. Retrying...")
+          default: Text("Not Connected")
           }
         }
         .font(.callout)
@@ -448,9 +429,10 @@ struct AISettingsView: View {
   private func loadBackendConfig() async throws {
     let backendType: BackendType = BackendType(rawValue: backendTypeID) ?? .local
     let config = try findOrCreateBackendConfig(backendType, context: viewContext)
-    if backendType == .local,
-       let model = models.filter({ $0.id?.uuidString == selectedModelId }).first {
-      config.model = model.name
+    if backendType == .local {
+      let model = models.first(where: { $0.id?.uuidString == selectedModelId }) ?? models.first
+      config.model = model?.name
+      selectedModelId = model?.id?.uuidString
     }
 
     if config.baseURL == nil { config.baseURL = backendType.defaultURL }
