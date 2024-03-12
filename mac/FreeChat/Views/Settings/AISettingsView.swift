@@ -148,6 +148,7 @@ struct AISettingsView: View {
           Text("Add or Remove Models...").tag(AISettingsView.customizeModelsId as String?)
         }
       }
+      .disabled(backendTypeID == BackendType.llama.rawValue)
       .onReceive(Just(pickedModel)) { _ in
         if pickedModel == AISettingsView.customizeModelsId {
           customizeModels = true
