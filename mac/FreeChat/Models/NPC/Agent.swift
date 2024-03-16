@@ -31,7 +31,7 @@ class Agent: ObservableObject {
   }
 
   func createBackend(_ backend: BackendType, contextLength: Int, config: BackendConfig) {
-    let baseURL = config.baseURL ?? backend.defaultURL // Prevent backend crash; should have value.
+    let baseURL = config.baseURL ?? backend.defaultURL
 
     switch backend {
     case .local:

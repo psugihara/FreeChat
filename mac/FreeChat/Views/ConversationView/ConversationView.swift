@@ -139,7 +139,7 @@ struct ConversationView: View, Sendable {
     }
     
     do {
-      let config = try fetchBackendConfig(backendType: backendType, context: viewContext) ?? BackendConfig(context: viewContext)
+      let config = try fetchBackendConfig(context: viewContext) ?? BackendConfig(context: viewContext)
       agent.createBackend(backendType, contextLength: contextLength, config: config)
 
     } catch { print("error fetching backend config", error) }
@@ -160,12 +160,6 @@ struct ConversationView: View, Sendable {
     
     await agent.llama.stopServer()
     agent.llama = LlamaServer(modelPath: modelPath, contextLength: contextLength)
-  }
-
-  private func fetchBackendConfig(backendType: BackendType, context: NSManagedObjectContext) throws -> BackendConfig? {
-    let req = BackendConfig.fetchRequest()
-    req.predicate = NSPredicate(format: "backendType == %@", backendType.rawValue)
-    return try context.fetch(req).first
   }
 
   private func scrollToLastIfRecent(_ proxy: ScrollViewProxy) {
@@ -256,7 +250,7 @@ struct ConversationView: View, Sendable {
 
     let response: CompleteResponseSummary
     do {
-      let config = try fetchBackendConfig()
+      let config = try fetchBackendConfig(context: viewContext)
       let messages = [RoleMessage(role: "system", content: systemPrompt)]
         + messages.compactMap({ $0.text }).map({ RoleMessage(role: "user", content: $0) })
       let params = CompleteParams(messages: messages,
@@ -301,11 +295,11 @@ struct ConversationView: View, Sendable {
     }
   }
 
-  private func fetchBackendConfig() throws -> BackendConfig? {
+  private func fetchBackendConfig(context: NSManagedObjectContext) throws -> BackendConfig? {
     let backendType: BackendType = BackendType(rawValue: backendTypeID ?? "") ?? .local
     let req = BackendConfig.fetchRequest()
     req.predicate = NSPredicate(format: "backendType == %@", backendType.rawValue)
-    return try viewContext.fetch(req).first
+    return try context.fetch(req).first
   }
 }
 
