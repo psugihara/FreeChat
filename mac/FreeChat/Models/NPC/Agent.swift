@@ -21,13 +21,14 @@ class Agent: ObservableObject {
 
   // each agent runs their own server
   var llama: LlamaServer
-  private var backend: Backend!
+  private var backend: Backend
 
   init(id: String, prompt: String, systemPrompt: String, modelPath: String, contextLength: Int) {
     self.id = id
     self.prompt = prompt
     self.systemPrompt = systemPrompt
-    llama = LlamaServer(modelPath: modelPath, contextLength: contextLength)
+    self.llama = LlamaServer(modelPath: modelPath, contextLength: contextLength)
+    self.backend = LocalBackend(baseURL: BackendType.local.defaultURL, apiKey: nil)
   }
 
   func createBackend(_ backend: BackendType, contextLength: Int, config: BackendConfig) {
@@ -67,7 +68,7 @@ class Agent: ObservableObject {
 
   func interrupt() async {
     if status != .processing, status != .coldProcessing { return }
-    await backend?.interrupt()
+    await backend.interrupt()
   }
 
   func warmup() async throws {

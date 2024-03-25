@@ -58,7 +58,7 @@ actor LlamaServer {
     print("started monitor for \(serverPID)")
   }
 
-  private func startServer() async throws {
+  func startServer() async throws {
     guard !process.isRunning, let modelPath = self.modelPath else { return }
     stopServer()
     process = Process()

@@ -160,6 +160,7 @@ struct ConversationView: View, Sendable {
     
     await agent.llama.stopServer()
     agent.llama = LlamaServer(modelPath: modelPath, contextLength: contextLength)
+    try await agent.llama.startServer()
   }
 
   private func scrollToLastIfRecent(_ proxy: ScrollViewProxy) {
