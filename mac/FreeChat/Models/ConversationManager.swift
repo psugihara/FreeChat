@@ -15,6 +15,7 @@ class ConversationManager: ObservableObject {
 
   var summonRegistered = false
 
+  @AppStorage("backendTypeID") private var backendTypeID: String?
   @AppStorage("systemPrompt") private var systemPrompt: String = DEFAULT_SYSTEM_PROMPT
   @AppStorage("contextLength") private var contextLength: Int = DEFAULT_CONTEXT_LENGTH
 
@@ -72,10 +73,8 @@ class ConversationManager: ObservableObject {
 
   @MainActor
   func rebootAgent(systemPrompt: String? = nil, model: Model, viewContext: NSManagedObjectContext) {
+    guard let url = model.url else { return }
     let systemPrompt = systemPrompt ?? self.systemPrompt
-    guard let url = model.url else {
-      return
-    }
 
     Task {
       await agent.llama.stopServer()
@@ -83,12 +82,25 @@ class ConversationManager: ObservableObject {
       let messages = currentConversation.orderedMessages.map { $0.text ?? "" }
       let convoPrompt = model.template.run(systemPrompt: systemPrompt, messages: messages)
       agent = Agent(id: "Llama", prompt: convoPrompt, systemPrompt: systemPrompt, modelPath: url.path, contextLength: contextLength)
-      loadingModelId = model.id?.uuidString 
+
+      do {
+        let backendType: BackendType = BackendType(rawValue: backendTypeID ?? "") ?? .local
+        let context = PersistenceController.shared.container.newBackgroundContext()
+        let config = try fetchBackendConfig(context: context) ?? BackendConfig(context: context)
+        agent.createBackend(backendType, contextLength: contextLength, config: config)
+      } catch { print("error fetching backend config", error) }
+      loadingModelId = model.id?.uuidString
 
       model.error = nil
-
       loadingModelId = nil
       try? viewContext.save()
     }
+  }
+
+  private func fetchBackendConfig(context: NSManagedObjectContext) throws -> BackendConfig? {
+    let backendType: BackendType = BackendType(rawValue: backendTypeID ?? "") ?? .local
+    let req = BackendConfig.fetchRequest()
+    req.predicate = NSPredicate(format: "backendType == %@", backendType.rawValue)
+    return try context.fetch(req).first
   }
 }

@@ -1,5 +1,16 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="22225" systemVersion="23A344" minimumToolsVersion="Automatic" sourceLanguage="Swift" usedWithCloudKit="YES" userDefinedModelVersionIdentifier="">
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="22522" systemVersion="22G513" minimumToolsVersion="Automatic" sourceLanguage="Swift" usedWithCloudKit="YES" userDefinedModelVersionIdentifier="">
+    <entity name="BackendConfig" representedClassName="BackendConfig" syncable="YES" codeGenerationType="class">
+        <attribute name="apiKey" optional="YES" attributeType="String"/>
+        <attribute name="backendType" optional="YES" attributeType="String"/>
+        <attribute name="baseURL" optional="YES" attributeType="URI"/>
+        <attribute name="model" optional="YES" attributeType="String"/>
+        <uniquenessConstraints>
+            <uniquenessConstraint>
+                <constraint value="backendType"/>
+            </uniquenessConstraint>
+        </uniquenessConstraints>
+    </entity>
     <entity name="Conversation" representedClassName="Conversation" syncable="YES" codeGenerationType="class">
         <attribute name="createdAt" attributeType="Date" defaultDateTimeInterval="712519080" usesScalarValueType="NO"/>
         <attribute name="lastMessageAt" optional="YES" attributeType="Date" usesScalarValueType="NO"/>

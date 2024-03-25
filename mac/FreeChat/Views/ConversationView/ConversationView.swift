@@ -13,20 +13,13 @@ struct ConversationView: View, Sendable {
   @Environment(\.managedObjectContext) private var viewContext
   @EnvironmentObject private var conversationManager: ConversationManager
 
+  @AppStorage("backendTypeID") private var backendTypeID: String?
   @AppStorage("selectedModelId") private var selectedModelId: String?
   @AppStorage("systemPrompt") private var systemPrompt: String = DEFAULT_SYSTEM_PROMPT
   @AppStorage("contextLength") private var contextLength: Int = DEFAULT_CONTEXT_LENGTH
   @AppStorage("playSoundEffects") private var playSoundEffects = true
-  @AppStorage("temperature") private var temperature: Double?
   @AppStorage("useGPU") private var useGPU: Bool = DEFAULT_USE_GPU
-  @AppStorage("serverHost") private var serverHost: String?
-  @AppStorage("serverPort") private var serverPort: String?
-  @AppStorage("serverTLS") private var serverTLS: Bool?
-
-  @FetchRequest(
-    sortDescriptors: [NSSortDescriptor(keyPath: \Model.size, ascending: true)],
-    animation: .default)
-  private var models: FetchedResults<Model>
+  @AppStorage("temperature") private var temperature: Double = DEFAULT_TEMP
 
   private static let SEND = NSDataAsset(name: "ESM_Perfect_App_Button_2_Organic_Simple_Classic_Game_Click")
   private static let PING = NSDataAsset(name: "ESM_POWER_ON_SYNTH")
@@ -39,15 +32,6 @@ struct ConversationView: View, Sendable {
 
   var agent: Agent {
     conversationManager.agent
-  }
-
-  var selectedModel: Model? {
-    if selectedModelId != AISettingsView.remoteModelOption,
-      let selectedModelId = self.selectedModelId {
-      models.first(where: { $0.id?.uuidString == selectedModelId })
-    } else {
-      models.first
-    }
   }
 
   @State var pendingMessage: Message?
@@ -75,8 +59,8 @@ struct ConversationView: View, Sendable {
             if m == pendingMessage {
               MessageView(pendingMessage!, overrideText: pendingMessageText, agentStatus: agent.status)
                 .onAppear {
-                scrollToLastIfRecent(proxy)
-              }
+                  scrollToLastIfRecent(proxy)
+                }
                 .opacity(showResponse ? 1 : 0)
                 .animation(.interpolatingSpring(stiffness: 170, damping: 20), value: showResponse)
                 .id("\(m.id)\(m.updatedAt as Date?)")
@@ -91,39 +75,44 @@ struct ConversationView: View, Sendable {
           }
         }
       }
-        .padding(.vertical, 12)
-        .onReceive(
+      .padding(.vertical, 12)
+      .onReceive(
         agent.$pendingMessage.throttle(for: .seconds(0.1), scheduler: RunLoop.main, latest: true)
       ) { text in
         pendingMessageText = text
       }
-        .onReceive(
+      .onReceive(
         agent.$pendingMessage.throttle(for: .seconds(0.2), scheduler: RunLoop.main, latest: true)
       ) { _ in
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
           autoScroll(proxy)
         }
       }
-    }
-      .textSelection(.enabled)
-      .safeAreaInset(edge: .bottom, spacing: 0) {
-      MessageTextField { s in
-        submit(s)
+      .onReceive(NotificationCenter.default.publisher(for: NSNotification.Name("backendTypeIDDidChange"))) { _ in
+        initializeBackends()
       }
     }
-      .frame(maxWidth: .infinity)
-      .onAppear { showConversation(conversation) }
-      .onChange(of: conversation) { nextConvo in showConversation(nextConvo) }
-      .onChange(of: selectedModelId) { showConversation(conversation, modelId: $0) }
-      .navigationTitle(conversation.titleWithDefault)
-      .alert(isPresented: $showErrorAlert, error: llamaError) { _ in
+    .textSelection(.enabled)
+    .safeAreaInset(edge: .bottom, spacing: 0) {
+      MessageTextField { s in
+        Task {
+          await submit(s)
+        }
+      }
+    }
+    .frame(maxWidth: .infinity)
+    .onAppear { showConversation(conversation) }
+    .onChange(of: conversation) { nextConvo in showConversation(nextConvo) }
+    .onChange(of: selectedModelId) { showConversation(conversation, modelId: $0) }
+    .navigationTitle(conversation.titleWithDefault)
+    .alert(isPresented: $showErrorAlert, error: llamaError) { _ in
       Button("OK") {
         llamaError = nil
       }
     } message: { error in
       Text(error.recoverySuggestion ?? "")
     }
-      .background(Color.textBackground)
+    .background(Color.textBackground)
   }
 
   private func playSendSound() {
@@ -139,46 +128,39 @@ struct ConversationView: View, Sendable {
   }
 
   private func showConversation(_ c: Conversation, modelId: String? = nil) {
-    guard
-      let selectedModelId = modelId ?? self.selectedModelId,
-      !selectedModelId.isEmpty
-    else { return }
-
     messages = c.orderedMessages
-        
-
-    // warmup the agent if it's cold or model has changed
-    Task {
-      if selectedModelId == AISettingsView.remoteModelOption {
-        await initializeServerRemote()
-      } else {
-        await initializeServerLocal(modelId: selectedModelId)
-      }
-    }
+    initializeBackends()
   }
 
-  private func initializeServerLocal(modelId: String) async {
-    guard let id = UUID(uuidString: modelId)
+  private func initializeBackends() {
+    let backendType: BackendType = BackendType(rawValue: backendTypeID ?? "") ?? .local
+    if backendType == .local {
+      Task { try? await initializeBackendLocal() }
+    }
+    
+    do {
+      let config = try fetchBackendConfig(context: viewContext) ?? BackendConfig(context: viewContext)
+      agent.createBackend(backendType, contextLength: contextLength, config: config)
+
+    } catch { print("error fetching backend config", error) }
+  }
+
+  private func initializeBackendLocal() async throws {
+    guard let selectedModelId, !selectedModelId.isEmpty,
+    let id = UUID(uuidString: selectedModelId)
     else { return }
     
     let llamaPath = await agent.llama.modelPath
     let req = Model.fetchRequest()
     req.predicate = NSPredicate(format: "id == %@", id as CVarArg)
-    if let model = try? viewContext.fetch(req).first,
+    guard let model = try viewContext.fetch(req).first,
        let modelPath = model.url?.path(percentEncoded: false),
-       modelPath != llamaPath {
-      await agent.llama.stopServer()
-      agent.llama = LlamaServer(modelPath: modelPath, contextLength: contextLength)
-    }
-  }
-
-  private func initializeServerRemote() async {
-    guard let tls = serverTLS,
-          let host = serverHost,
-          let port = serverPort
+          modelPath != llamaPath
     else { return }
+    
     await agent.llama.stopServer()
-    agent.llama = LlamaServer(contextLength: contextLength, tls: tls, host: host, port: port)
+    agent.llama = LlamaServer(modelPath: modelPath, contextLength: contextLength)
+    try await agent.llama.startServer()
   }
 
   private func scrollToLastIfRecent(_ proxy: ScrollViewProxy) {
@@ -218,23 +200,12 @@ struct ConversationView: View, Sendable {
     showErrorAlert = true
   }
 
-  func submit(_ input: String) {
+  func submit(_ input: String) async {
     if (agent.status == .processing || agent.status == .coldProcessing) {
-      Task {
-        await agent.interrupt()
-
-        Task.detached(priority: .userInitiated) {
-          try? await Task.sleep(for: .seconds(1))
-          await submit(input)
-        }
-      }
-      return
+      await agent.interrupt()
     }
 
     playSendSound()
-
-    guard let model = selectedModel else { return }
-
     showUserMessage = false
     engageAutoScroll()
 
@@ -251,8 +222,6 @@ struct ConversationView: View, Sendable {
     withAnimation {
       showUserMessage = true
     }
-
-    let messageTexts = messages.map { $0.text ?? "" }
 
     // Pending message for bot's reply
     let m = Message(context: viewContext)
@@ -280,48 +249,58 @@ struct ConversationView: View, Sendable {
       }
     }
 
-    Task {
-      var response: LlamaServer.CompleteResponse
+    let response: CompleteResponseSummary
+    do {
+      let config = try fetchBackendConfig(context: viewContext)
+      let messages = [RoleMessage(role: "system", content: systemPrompt)]
+        + messages.compactMap({ $0.text }).map({ RoleMessage(role: "user", content: $0) })
+      let params = CompleteParams(messages: messages,
+                                  model: config?.model ?? Model.defaultModelUrl.deletingPathExtension().lastPathComponent,
+                                  numCTX: contextLength,
+                                  temperature: Float(temperature))
+      response = try await agent.listenThinkRespond(speakerId: Message.USER_SPEAKER_ID, params: params)
+    } catch let error as LlamaServerError {
+      handleResponseError(error)
+      return
+    } catch {
+      print("agent listen threw unexpected error", error as Any)
+      return
+    }
+
+    await MainActor.run {
+      m.text = response.text
+      m.predictedPerSecond = response.predictedPerSecond ?? -1
+      m.responseStartSeconds = response.responseStartSeconds
+      m.nPredicted = Int64(response.nPredicted ?? -1)
+      m.modelName = response.modelName
+      m.updatedAt = Date()
+
+      playReceiveSound()
       do {
-        response = try await agent.listenThinkRespond(speakerId: Message.USER_SPEAKER_ID, messages: messageTexts, template: model.template, temperature: temperature)
-      } catch let error as LlamaServerError {
-        handleResponseError(error)
-        return
+        try viewContext.save()
       } catch {
-        print("agent listen threw unexpected error", error as Any)
-        return
+        print("error creating message", error.localizedDescription)
       }
 
-      await MainActor.run {
-        m.text = response.text
-        m.predictedPerSecond = response.predictedPerSecond ?? -1
-        m.responseStartSeconds = response.responseStartSeconds
-        m.nPredicted = Int64(response.nPredicted ?? -1)
-        m.modelName = response.modelName
-        m.updatedAt = Date()
+      if pendingMessage?.text != nil,
+         !pendingMessage!.text!.isEmpty,
+         response.text.hasPrefix(agent.pendingMessage),
+         m == pendingMessage {
+        pendingMessage = nil
+        agent.pendingMessage = ""
+      }
 
-        playReceiveSound()
-        do {
-          try viewContext.save()
-        } catch {
-          print("error creating message", error.localizedDescription)
-        }
-
-        if pendingMessage?.text != nil,
-          !pendingMessage!.text!.isEmpty,
-          response.text.hasPrefix(agent.pendingMessage),
-          m == pendingMessage {
-          pendingMessage = nil
-          agent.pendingMessage = ""
-        }
-
-        if conversation != agentConversation {
-          return
-        }
-
+      if conversation == agentConversation {
         messages = agentConversation.orderedMessages
       }
     }
+  }
+
+  private func fetchBackendConfig(context: NSManagedObjectContext) throws -> BackendConfig? {
+    let backendType: BackendType = BackendType(rawValue: backendTypeID ?? "") ?? .local
+    let req = BackendConfig.fetchRequest()
+    req.predicate = NSPredicate(format: "backendType == %@", backendType.rawValue)
+    return try context.fetch(req).first
   }
 }
 

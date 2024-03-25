@@ -15,16 +15,11 @@ fileprivate struct ServerHealthRequest {
     let config = URLSessionConfiguration.default
     config.timeoutIntervalForRequest = 3
     config.timeoutIntervalForResource = 1
-    let (data, response) = try await URLSession(configuration: config).data(from: url)
-    guard let responseCode = (response as? HTTPURLResponse)?.statusCode,
-          responseCode > 0
+    let (_, response) = try await URLSession(configuration: config).data(from: url)
+    guard let code = (response as? HTTPURLResponse)?.statusCode, code > 0
     else { throw ServerHealthError.invalidResponse }
 
-    guard let json = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
-          let jsonStatus: String = json["status"] as? String
-    else { throw ServerHealthError.invalidResponse }
-
-    return responseCode == 200 && jsonStatus == "ok"
+    return code == 200
   }
 }
 

@@ -21,42 +21,44 @@ class Agent: ObservableObject {
 
   // each agent runs their own server
   var llama: LlamaServer
+  private var backend: Backend
 
   init(id: String, prompt: String, systemPrompt: String, modelPath: String, contextLength: Int) {
     self.id = id
     self.prompt = prompt
     self.systemPrompt = systemPrompt
-    llama = LlamaServer(modelPath: modelPath, contextLength: contextLength)
+    self.llama = LlamaServer(modelPath: modelPath, contextLength: contextLength)
+    self.backend = LocalBackend(baseURL: BackendType.local.defaultURL, apiKey: nil)
+  }
+
+  func createBackend(_ backend: BackendType, contextLength: Int, config: BackendConfig) {
+    let baseURL = config.baseURL ?? backend.defaultURL
+
+    switch backend {
+    case .local:
+      self.backend = LocalBackend(baseURL: baseURL, apiKey: config.apiKey)
+    case .llama:
+      self.backend = LlamaBackend(baseURL: baseURL, apiKey: config.apiKey)
+    case .openai:
+      self.backend = OpenAIBackend(baseURL: baseURL, apiKey: config.apiKey)
+    case .ollama:
+      self.backend = OllamaBackend(baseURL: baseURL, apiKey: config.apiKey)
+    }
   }
 
   // this is the main loop of the agent
   // listen -> respond -> update mental model and save checkpoint
   // we respond before updating to avoid a long delay after user input
-  func listenThinkRespond(
-    speakerId: String, messages: [String], template: Template, temperature: Double?
-  ) async throws -> LlamaServer.CompleteResponse {
-    if status == .cold {
-      status = .coldProcessing
-    } else {
-      status = .processing
-    }
-
-    prompt = template.run(systemPrompt: systemPrompt, messages: messages)
-
+  func listenThinkRespond(speakerId: String, params: CompleteParams) async throws -> CompleteResponseSummary {
+    status = status == .cold ? .coldProcessing : .processing
     pendingMessage = ""
-
-    let response = try await llama.complete(
-      prompt: prompt, stop: template.stopWords, temperature: temperature
-    ) { partialResponse in
-      DispatchQueue.main.async {
-        self.handleCompletionProgress(partialResponse: partialResponse)
-      }
+    for try await partialResponse in try await backend.complete(params: params) {
+      self.pendingMessage += partialResponse
+      self.prompt = pendingMessage
     }
-
-    pendingMessage = response.text
     status = .ready
 
-    return response
+    return CompleteResponseSummary(text: pendingMessage, responseStartSeconds: 0)
   }
 
   func handleCompletionProgress(partialResponse: String) {
@@ -66,13 +68,13 @@ class Agent: ObservableObject {
 
   func interrupt() async {
     if status != .processing, status != .coldProcessing { return }
-    await llama.interrupt()
+    await backend.interrupt()
   }
 
   func warmup() async throws {
     if prompt.isEmpty, systemPrompt.isEmpty { return }
     do {
-      _ = try await llama.complete(prompt: prompt, stop: nil, temperature: nil)
+      _ = try await backend.complete(params: CompleteParams(messages: [], model: "", numCTX: 2048, temperature: 0.7))
       status = .ready
     } catch {
       status = .cold
