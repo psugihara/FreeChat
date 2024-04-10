@@ -120,8 +120,8 @@ actor LlamaServer {
     process.standardInput = FileHandle.nullDevice
 
     // To debug with server's output, comment these 2 lines to inherit stdout.
-    process.standardOutput =  FileHandle.nullDevice
-    process.standardError =  FileHandle.nullDevice
+//    process.standardOutput =  FileHandle.nullDevice
+//    process.standardError =  FileHandle.nullDevice
 
     try process.run()
 
