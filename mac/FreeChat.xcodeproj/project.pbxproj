@@ -18,7 +18,6 @@
 		A12FAAEC2AC5E0C0006ACC43 /* WelcomeSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = A12FAAEB2AC5E0C0006ACC43 /* WelcomeSheet.swift */; };
 		A12FAAF02AC638DE006ACC43 /* DownloadManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A12FAAEF2AC638DE006ACC43 /* DownloadManager.swift */; };
 		A137A37C2AB3D26C00BE1AE0 /* ObservableScrollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A137A37B2AB3D26C00BE1AE0 /* ObservableScrollView.swift */; };
-		A137A3842AB4FDAD00BE1AE0 /* freechat-server in Embed helper tools */ = {isa = PBXBuildFile; fileRef = A137A3822AB4FD4800BE1AE0 /* freechat-server */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		A137A3892AB502E500BE1AE0 /* ggml-metal.metal in Copy Metal */ = {isa = PBXBuildFile; fileRef = A137A3872AB502DB00BE1AE0 /* ggml-metal.metal */; };
 		A137A38C2AB6B2F800BE1AE0 /* KeyboardShortcuts in Frameworks */ = {isa = PBXBuildFile; productRef = A137A38B2AB6B2F800BE1AE0 /* KeyboardShortcuts */; };
 		A137A38E2AB6B52400BE1AE0 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = A137A38D2AB6B52400BE1AE0 /* Constants.swift */; };
@@ -40,6 +39,7 @@
 		A18A8BAF2B155FC000D2197C /* Network.swift in Sources */ = {isa = PBXBuildFile; fileRef = A18A8BAE2B155FC000D2197C /* Network.swift */; };
 		A18A8BB32B24FC0400D2197C /* AISettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A18A8BB22B24FC0400D2197C /* AISettingsView.swift */; };
 		A18A8BB52B24FC0F00D2197C /* UISettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A18A8BB42B24FC0F00D2197C /* UISettingsView.swift */; };
+		A1988F0A2BC7116400278A42 /* freechat-server in Resources */ = {isa = PBXBuildFile; fileRef = A1988F092BC7116400278A42 /* freechat-server */; };
 		A19AA5222AA667BE009D9573 /* QuickPromptButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = A19AA5212AA667BE009D9573 /* QuickPromptButton.swift */; };
 		A1A286E82A7D8A7D0004967A /* MessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1A286E72A7D8A7D0004967A /* MessageView.swift */; };
 		A1A286F52A7E17750004967A /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1A286F42A7E17750004967A /* main.swift */; };
@@ -113,7 +113,6 @@
 			dstPath = "";
 			dstSubfolderSpec = 6;
 			files = (
-				A137A3842AB4FDAD00BE1AE0 /* freechat-server in Embed helper tools */,
 				A1A286FD2A7E1E460004967A /* server-watchdog in Embed helper tools */,
 			);
 			name = "Embed helper tools";
@@ -132,7 +131,6 @@
 		A12FAAEB2AC5E0C0006ACC43 /* WelcomeSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeSheet.swift; sourceTree = "<group>"; };
 		A12FAAEF2AC638DE006ACC43 /* DownloadManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownloadManager.swift; sourceTree = "<group>"; };
 		A137A37B2AB3D26C00BE1AE0 /* ObservableScrollView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObservableScrollView.swift; sourceTree = "<group>"; };
-		A137A3822AB4FD4800BE1AE0 /* freechat-server */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = "freechat-server"; sourceTree = "<group>"; };
 		A137A3872AB502DB00BE1AE0 /* ggml-metal.metal */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.metal; path = "ggml-metal.metal"; sourceTree = "<group>"; };
 		A137A38D2AB6B52400BE1AE0 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		A13C8C592A8FEEE400EC18D8 /* SplashCodeSyntaxHighlighter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashCodeSyntaxHighlighter.swift; sourceTree = "<group>"; };
@@ -152,6 +150,7 @@
 		A18A8BAE2B155FC000D2197C /* Network.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Network.swift; sourceTree = "<group>"; };
 		A18A8BB22B24FC0400D2197C /* AISettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AISettingsView.swift; sourceTree = "<group>"; };
 		A18A8BB42B24FC0F00D2197C /* UISettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UISettingsView.swift; sourceTree = "<group>"; };
+		A1988F092BC7116400278A42 /* freechat-server */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = "freechat-server"; sourceTree = "<group>"; };
 		A19AA5212AA667BE009D9573 /* QuickPromptButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickPromptButton.swift; sourceTree = "<group>"; };
 		A1A286E72A7D8A7D0004967A /* MessageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageView.swift; sourceTree = "<group>"; };
 		A1A286F22A7E17750004967A /* server-watchdog */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "server-watchdog"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -260,7 +259,7 @@
 				A17A2E122A79A005006CDD90 /* Agent.swift */,
 				A17A2E132A79A005006CDD90 /* LlamaServer.swift */,
 				DEEA39CB2B586F3800992592 /* ServerHealth.swift */,
-				A137A3822AB4FD4800BE1AE0 /* freechat-server */,
+				A1988F092BC7116400278A42 /* freechat-server */,
 				A1A286F32A7E17750004967A /* server-watchdog */,
 				A1A286F92A7E197F0004967A /* README.md */,
 				A1D4B49C2B9A780B00B9C4BE /* AgentDefaults.swift */,
@@ -524,6 +523,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				A1F6172D2A782AA200F2048C /* Preview Assets.xcassets in Resources */,
+				A1988F0A2BC7116400278A42 /* freechat-server in Resources */,
 				A1F6172A2A782AA200F2048C /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
