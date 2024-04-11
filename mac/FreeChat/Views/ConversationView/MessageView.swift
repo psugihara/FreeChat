@@ -6,9 +6,7 @@
 //
 
 import SwiftUI
-import MarkdownUI
 import Splash
-
 
 struct MessageView: View {
   @Environment(\.colorScheme) private var colorScheme
@@ -31,9 +29,11 @@ struct MessageView: View {
   }
 
   var messageText: String {
-    (overrideText.isEmpty && m.text != nil ? m.text! : overrideText)
-    // make newlines display https://github.com/gonzalezreal/swift-markdown-ui/issues/92
-    .replacingOccurrences(of: "\n", with: "  \n", options: .regularExpression)
+      if overrideText.isEmpty, let text = m.text {
+          return text
+      } else {
+          return overrideText
+      }
   }
 
   var infoText: some View {
@@ -198,9 +198,7 @@ struct MessageView: View {
           if m.fromId == Message.USER_SPEAKER_ID {
             Text(messageText)
           } else {
-            Markdown(messageText)
-              .markdownTheme(.freeChat)
-              .markdownCodeSyntaxHighlighter(.splash(theme: self.theme))
+            MarkdownView(markdownContent: messageText)
           }
         }
         .textSelection(.enabled)
@@ -263,18 +261,67 @@ struct MessageView_Previews: PreviewProvider {
     m3.conversation = c
     m3.fromId = "llama"
     m3.text = """
-      Hi! You can use `FileManager` to get information about files, including their sizes. Here's an example of getting the size of a text file:
-      ```swift
-      let path = "path/to/file"
-      do {
-          let attributes = try FileManager.default.attributesOfItem(atPath: path)
-          if let fileSize = attributes[FileAttributeKey.size] as? UInt64 {
-              print("The file is \\(ByteCountFormatter().string(fromByteCount: Int64(fileSize)))")
-          }
-      } catch {
-          // Handle any errors
-      }
+      # Heading Level 1
+
+      ## Heading Level 2
+
+      ### Heading Level 3
+
+      #### Heading Level 4
+
+      ##### Heading Level 5
+
+      ###### Heading Level 6
+
+      ---
+
+      **This is bold text**
+
+      *This is italic text*
+
+      ~~This is strikethrough text~~
+
+      > This is a blockquote.
+      >
+      > It can span multiple lines!
+
+      ---
+
+      1. First item in an ordered list
+      2. Second item in an ordered list
+      3. Third item in an ordered list
+
+      ---
+
+      - First item in an unordered list
+      - Second item in an unordered list
+      - Third item in an unordered list
+
+      ---
+
+      [This is a link](http://example.com)
+
+      `This is inline code`
+
+      ```python
+      # This is a code block written in Python
+      def hello_world():
+          print("Hello, world!")
+
       ```
+
+      ---
+
+      | Column 1 | Column 2 | Column 3 |
+      |----------|----------|----------|
+      | Row 1    | Data 1   | Data 2   |
+      | Row 2    | Data 3   | Data 4   |
+      | Row 3    | Data 5   | Data 6   |
+
+      ---
+      - [ ] This is an unchecked task list item
+      - [x] This is a checked task list item
+      ---
       """
     return [m, m2, m3]
   }

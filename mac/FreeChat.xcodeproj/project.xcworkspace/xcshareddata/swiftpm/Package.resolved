@@ -1,5 +1,5 @@
 {
-  "originHash" : "04a8c11f72362f47d59177d15256ac90f5d52a55c318f5bf36a666693bf89737",
+  "originHash" : "d3d8f2ac1d38166b394ada51a9b79c6fcd2289b58bf9714cbbbc583333a193ae",
   "pins" : [
     {
       "identity" : "eventsource",
@@ -17,6 +17,15 @@
       "state" : {
         "revision" : "b878f8132be59576fc87e39405b1914eff9f55d3",
         "version" : "1.14.1"
+      }
+    },
+    {
+      "identity" : "libcmark_gfm",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/KristopherGBaker/libcmark_gfm.git",
+      "state" : {
+        "revision" : "adfab58d571f9e8d1447e7e876ca381d7f0f6cdb",
+        "version" : "0.29.4"
       }
     },
     {
@@ -44,15 +53,6 @@
       "state" : {
         "revision" : "937e904258d22af6e447a0b72c0bc67583ef64a2",
         "version" : "1.0.4"
-      }
-    },
-    {
-      "identity" : "swift-markdown-ui",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/gonzalezreal/swift-markdown-ui",
-      "state" : {
-        "revision" : "12b351a75201a8124c2f2e1f9fc6ef5cd812c0b9",
-        "version" : "2.1.0"
       }
     }
   ],
