@@ -67,49 +67,13 @@ struct ConversationView: View, Sendable {
   @State var showErrorAlert = false
 
   var body: some View {
-    ObservableScrollView(scrollOffset: $scrollOffset, scrollHeight: $scrollHeight) { proxy in
-      VStack(alignment: .leading) {
-        ForEach(messages) { m in
-          if m == messages.last! {
-            if m == pendingMessage {
-              MessageView(pendingMessage!, overrideText: pendingMessageText, agentStatus: agent.status)
-                .onAppear {
-                scrollToLastIfRecent(proxy)
-              }
-                .opacity(showResponse ? 1 : 0)
-                .animation(.interpolatingSpring(stiffness: 170, damping: 20), value: showResponse)
-                .id("\(m.id)\(m.updatedAt as Date?)")
-            } else {
-              MessageView(m, agentStatus: nil)
-                .id("\(m.id)\(m.updatedAt as Date?)")
-                .opacity(showUserMessage ? 1 : 0)
-                .animation(.interpolatingSpring(stiffness: 170, damping: 20), value: showUserMessage)
-            }
-          } else {
-            MessageView(m, agentStatus: nil).transition(.identity).id("\(m.id)\(m.updatedAt as Date?)")
-          }
-        }
-      }
-        .padding(.vertical, 12)
-        .onReceive(
-        agent.$pendingMessage.throttle(for: .seconds(0.1), scheduler: RunLoop.main, latest: true)
-      ) { text in
-        pendingMessageText = text
-      }
-        .onReceive(
-        agent.$pendingMessage.throttle(for: .seconds(0.2), scheduler: RunLoop.main, latest: true)
-      ) { _ in
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-          autoScroll(proxy)
-        }
-      }
-    }
-      .textSelection(.enabled)
+    ConversationMessagesView(messages: messages)
+      .frame(maxWidth: .infinity, maxHeight: .infinity)
       .safeAreaInset(edge: .bottom, spacing: 0) {
-      MessageTextField { s in
-        submit(s)
+        MessageTextField { s in
+          submit(s)
+        }
       }
-    }
       .frame(maxWidth: .infinity)
       .onAppear { showConversation(conversation) }
       .onChange(of: conversation) { nextConvo in showConversation(nextConvo) }
