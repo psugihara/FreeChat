@@ -67,7 +67,7 @@ struct ConversationView: View, Sendable {
   @State var showErrorAlert = false
 
   var body: some View {
-    ConversationMessagesView(messages: messages)
+    ConversationMessagesView(messages: messages, agentStatus: agent.status)
       .frame(maxWidth: .infinity, maxHeight: .infinity)
       .safeAreaInset(edge: .bottom, spacing: 0) {
         MessageTextField { s in
