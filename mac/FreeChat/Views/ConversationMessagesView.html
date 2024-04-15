@@ -74,10 +74,8 @@
     %MESSAGES%
   </body>
   <script>
-    document.body.addEventListener("click", (e) => {
-      var x = event.pageX;
-      var y = event.pageY;
-      window.webkit.messageHandlers.displayMenu.postMessage({});
-    })
+  document.querySelector(".menu-button").addEventListener("click", (e) => {
+    window.webkit.messageHandlers.displayMenu.postMessage({});
+  })
   </script>
 </html>

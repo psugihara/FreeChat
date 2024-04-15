@@ -16,7 +16,6 @@
 		A12B52E42AA5A99E00658707 /* EditSystemPrompt.swift in Sources */ = {isa = PBXBuildFile; fileRef = A12B52E32AA5A99E00658707 /* EditSystemPrompt.swift */; };
 		A12FAAEC2AC5E0C0006ACC43 /* WelcomeSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = A12FAAEB2AC5E0C0006ACC43 /* WelcomeSheet.swift */; };
 		A12FAAF02AC638DE006ACC43 /* DownloadManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A12FAAEF2AC638DE006ACC43 /* DownloadManager.swift */; };
-		A137A37C2AB3D26C00BE1AE0 /* ObservableScrollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A137A37B2AB3D26C00BE1AE0 /* ObservableScrollView.swift */; };
 		A137A3842AB4FDAD00BE1AE0 /* freechat-server in Embed helper tools */ = {isa = PBXBuildFile; fileRef = A137A3822AB4FD4800BE1AE0 /* freechat-server */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		A137A38C2AB6B2F800BE1AE0 /* KeyboardShortcuts in Frameworks */ = {isa = PBXBuildFile; productRef = A137A38B2AB6B2F800BE1AE0 /* KeyboardShortcuts */; };
 		A137A38E2AB6B52400BE1AE0 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = A137A38D2AB6B52400BE1AE0 /* Constants.swift */; };
@@ -37,7 +36,6 @@
 		A18A8BB32B24FC0400D2197C /* AISettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A18A8BB22B24FC0400D2197C /* AISettingsView.swift */; };
 		A18A8BB52B24FC0F00D2197C /* UISettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A18A8BB42B24FC0F00D2197C /* UISettingsView.swift */; };
 		A19AA5222AA667BE009D9573 /* QuickPromptButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = A19AA5212AA667BE009D9573 /* QuickPromptButton.swift */; };
-		A1A286E82A7D8A7D0004967A /* MessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1A286E72A7D8A7D0004967A /* MessageView.swift */; };
 		A1A286F52A7E17750004967A /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1A286F42A7E17750004967A /* main.swift */; };
 		A1A286FD2A7E1E460004967A /* server-watchdog in Embed helper tools */ = {isa = PBXBuildFile; fileRef = A1A286F22A7E17750004967A /* server-watchdog */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		A1CA32442AAF877600F9D488 /* ConversationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1CA32432AAF877600F9D488 /* ConversationManager.swift */; };
@@ -129,7 +127,6 @@
 		A12B52E32AA5A99E00658707 /* EditSystemPrompt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditSystemPrompt.swift; sourceTree = "<group>"; };
 		A12FAAEB2AC5E0C0006ACC43 /* WelcomeSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeSheet.swift; sourceTree = "<group>"; };
 		A12FAAEF2AC638DE006ACC43 /* DownloadManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownloadManager.swift; sourceTree = "<group>"; };
-		A137A37B2AB3D26C00BE1AE0 /* ObservableScrollView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObservableScrollView.swift; sourceTree = "<group>"; };
 		A137A3822AB4FD4800BE1AE0 /* freechat-server */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = "freechat-server"; sourceTree = "<group>"; };
 		A137A38D2AB6B52400BE1AE0 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		A13C8C652A9027A200EC18D8 /* CopyButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CopyButton.swift; sourceTree = "<group>"; };
@@ -148,7 +145,6 @@
 		A18A8BB22B24FC0400D2197C /* AISettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AISettingsView.swift; sourceTree = "<group>"; };
 		A18A8BB42B24FC0F00D2197C /* UISettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UISettingsView.swift; sourceTree = "<group>"; };
 		A19AA5212AA667BE009D9573 /* QuickPromptButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickPromptButton.swift; sourceTree = "<group>"; };
-		A1A286E72A7D8A7D0004967A /* MessageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageView.swift; sourceTree = "<group>"; };
 		A1A286F22A7E17750004967A /* server-watchdog */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "server-watchdog"; sourceTree = BUILT_PRODUCTS_DIR; };
 		A1A286F42A7E17750004967A /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		A1A286F92A7E197F0004967A /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
@@ -259,12 +255,10 @@
 		A19AA51F2AA66768009D9573 /* ConversationView */ = {
 			isa = PBXGroup;
 			children = (
-				A1A286E72A7D8A7D0004967A /* MessageView.swift */,
 				A1506D732B0026B4002194F2 /* FeedbackButton.swift */,
 				A1F617552A782E4F00F2048C /* ConversationView.swift */,
 				A15D50CE2A7EF73E00FC1681 /* MessageTextField.swift */,
 				A19AA5212AA667BE009D9573 /* QuickPromptButton.swift */,
-				A137A37B2AB3D26C00BE1AE0 /* ObservableScrollView.swift */,
 			);
 			path = ConversationView;
 			sourceTree = "<group>";
@@ -560,7 +554,6 @@
 				A18A8BAF2B155FC000D2197C /* Network.swift in Sources */,
 				A1F617282A782AA100F2048C /* ContentView.swift in Sources */,
 				A1F617322A782AA200F2048C /* Chats.xcdatamodeld in Sources */,
-				A1A286E82A7D8A7D0004967A /* MessageView.swift in Sources */,
 				A17A2E192A79A006006CDD90 /* LlamaServer.swift in Sources */,
 				A1F617582A7836AE00F2048C /* Message+Extensions.swift in Sources */,
 				A13C8C682A902A1200EC18D8 /* CGKeycode+Extensions.swift in Sources */,
@@ -579,7 +572,6 @@
 				A12FAAEC2AC5E0C0006ACC43 /* WelcomeSheet.swift in Sources */,
 				DEEA39CC2B586F3800992592 /* ServerHealth.swift in Sources */,
 				A1156D382AD5E75A00081313 /* EnumMap.swift in Sources */,
-				A137A37C2AB3D26C00BE1AE0 /* ObservableScrollView.swift in Sources */,
 				A16FFF8B2B2E35D200E6AAE2 /* GPU.swift in Sources */,
 				A18A8BB32B24FC0400D2197C /* AISettingsView.swift in Sources */,
 				A1F617562A782E4F00F2048C /* ConversationView.swift in Sources */,
