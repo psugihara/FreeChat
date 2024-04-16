@@ -80,17 +80,45 @@ struct ConversationMessagesView: NSViewRepresentable {
         return parts.joined(separator: "\n")
       }
       
+      var miniInfo: String {
+        var parts: [String] = []
+        
+        if let ggufCut = try? Regex(".gguf$"),
+           let modelName = message.modelName?.replacing(ggufCut, with: "") {
+          parts.append("\(modelName)")
+        }
+        if message.predictedPerSecond > 0 {
+          parts.append("\(String(format: "%.1f", message.predictedPerSecond)) tokens/s")
+        }
+        return parts.joined(separator: ", ")
+      }
+
+      var advancedDetailsMenuItem: String {
+        return message.fromId != Message.USER_SPEAKER_ID ? """
+        <li onclick="showAdvancedDetails('\(message.id)')">Advanced details</li>
+        """ : ""
+      }
+      
       return """
-      <div class="message-view">
+      <div data-id="\(message.id)" class="message-view">
         <svg class="avatar"><use href="#user-avatar"></use></svg>
         <div class="content">
           <div class="info-line">
-            <span class="info-text">\(infoText)</span>
             <span class="mini-info">
-              <button class="menu-button">
+              <span class="info-text">\(infoText)</span>
+              <button class="menu-button" onclick="showMenu('\(message.id)')">
                 <svg class="menu-icon"><use href="#circle-ellipsis"></use></svg>
+                <menu>
+                  \(advancedDetailsMenuItem)
+                  <li onclick="copyMessage('\(message.id)')">Copy message</li>
+                </menu>
+                <span class="popover">
+                  \(info)
+                </span>
               </button>
-              \(info)
+              <span>
+                \(miniInfo)
+              </span>
             </span>
           </div>
           <div class="message-text">
@@ -112,48 +140,16 @@ struct ConversationMessagesView: NSViewRepresentable {
   }
   
   func makeNSView(context: Context) -> WKWebView  {
-    let userContentController = WKUserContentController()
-    userContentController.add(context.coordinator, name: "displayMenu")
-    
-    let webViewConfiguration = WKWebViewConfiguration()
-    webViewConfiguration.userContentController = userContentController
-    
-    let webView = WKWebView(frame: .zero, configuration: webViewConfiguration)
+    let webView = WKWebView(frame: .zero)
     webView.setValue(false, forKey: "drawsBackground")
-    context.coordinator.webView = webView
-    
+    if #available(macOS 13.3, *) {
+      webView.isInspectable = true
+    } else {
+      // Fallback on earlier versions
+    }
     return webView
   }
   
-  func makeCoordinator() -> Coordinator {
-    Coordinator(self)
-  }
-  
-  class Coordinator: NSObject, WKScriptMessageHandler {
-    var parent: ConversationMessagesView
-    var webView: WKWebView?
-    
-    init(_ parent: ConversationMessagesView) {
-      self.parent = parent
-    }
-    
-    func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
-      if message.name == "displayMenu" {
-        displayMenu(webView: webView!)
-      }
-    }
-    
-    func displayMenu(webView: WKWebView) {
-      let menu = NSMenu()
-      menu.addItem(NSMenuItem(title: "Option 1", action: #selector(optionSelected(_:)), keyEquivalent: ""))
-      menu.addItem(NSMenuItem(title: "Option 2", action: #selector(optionSelected(_:)), keyEquivalent: ""))
-      NSMenu.popUpContextMenu(menu, with: NSApp.currentEvent!, for: webView)
-    }
-    
-    @objc func optionSelected(_ sender: NSMenuItem) {
-      // Handle menu selection
-    }
-  }
   
   func updateNSView(_ nsView: WKWebView, context: Context) {
     if let htmlPath = Bundle.main.path(forResource: "ConversationMessagesView", ofType: "html") {
