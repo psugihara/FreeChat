@@ -10,7 +10,21 @@ import Foundation
 
 extension Message {
   static let USER_SPEAKER_ID = "### User"
-
+  
+  private struct AssociatedKeys {
+    static var uuid = "uuid"
+  }
+  
+  var uuid: UUID {
+    if let uuid = objc_getAssociatedObject(self, &AssociatedKeys.uuid) as? UUID {
+      return uuid
+    } else {
+      let uuid = UUID()
+      objc_setAssociatedObject(self, &AssociatedKeys.uuid, uuid, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+      return uuid
+    }
+  }
+  
   static func create(
     text: String,
     fromId: String,
@@ -25,19 +39,21 @@ extension Message {
     record.systemPrompt = systemPrompt
     conversation.lastMessageAt = record.createdAt
     record.fromId = fromId
-
+    
     try ctx.save()
-
+    
     return record
   }
-
+  
+  
+  
   public override func willSave() {
     super.willSave()
-
+    
     if !isDeleted, changedValues()["updatedAt"] == nil {
       self.setValue(Date(), forKey: "updatedAt")
     }
-
+    
     if !isDeleted, createdAt == nil {
       self.setValue(Date(), forKey: "createdAt")
     }
