@@ -60,6 +60,7 @@
 		A1F6175B2A7838F700F2048C /* Conversation+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1F6175A2A7838F700F2048C /* Conversation+Extensions.swift */; };
 		DEA8CF572B51938B007A4CE7 /* FreeChatAppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEA8CF562B51938B007A4CE7 /* FreeChatAppDelegate.swift */; };
 		DEEA39CC2B586F3800992592 /* ServerHealth.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEEA39CB2B586F3800992592 /* ServerHealth.swift */; };
+		F1FF9CBF2BD0B15800DDED28 /* ToggleFormattingButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1FF9CBE2BD0B15800DDED28 /* ToggleFormattingButton.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -177,6 +178,7 @@
 		A1F6175A2A7838F700F2048C /* Conversation+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Conversation+Extensions.swift"; sourceTree = "<group>"; };
 		DEA8CF562B51938B007A4CE7 /* FreeChatAppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FreeChatAppDelegate.swift; sourceTree = "<group>"; };
 		DEEA39CB2B586F3800992592 /* ServerHealth.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerHealth.swift; sourceTree = "<group>"; };
+		F1FF9CBE2BD0B15800DDED28 /* ToggleFormattingButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ToggleFormattingButton.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -270,6 +272,7 @@
 		A19AA51F2AA66768009D9573 /* ConversationView */ = {
 			isa = PBXGroup;
 			children = (
+				F1FF9CBE2BD0B15800DDED28 /* ToggleFormattingButton.swift */,
 				A1A286E72A7D8A7D0004967A /* MessageView.swift */,
 				A1506D732B0026B4002194F2 /* FeedbackButton.swift */,
 				A1F617552A782E4F00F2048C /* ConversationView.swift */,
@@ -594,6 +597,7 @@
 				A16FFF8B2B2E35D200E6AAE2 /* GPU.swift in Sources */,
 				A18A8BB32B24FC0400D2197C /* AISettingsView.swift in Sources */,
 				A1F617562A782E4F00F2048C /* ConversationView.swift in Sources */,
+				F1FF9CBF2BD0B15800DDED28 /* ToggleFormattingButton.swift in Sources */,
 				A13C8C5A2A8FEEE400EC18D8 /* SplashCodeSyntaxHighlighter.swift in Sources */,
 				A15C684A2BC7176E0012084E /* ggml-metal-embed.metal in Sources */,
 				A15D50D42A80BCA900FC1681 /* SettingsView.swift in Sources */,
@@ -649,7 +653,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_INJECT_BASE_ENTITLEMENTS = NO;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 6577JALN5F;
+				DEVELOPMENT_TEAM = JQ29C66UG8;
 				ENABLE_HARDENED_RUNTIME = YES;
 				OTHER_CODE_SIGN_FLAGS = "$(inherited) -i $(PRODUCT_BUNDLE_IDENTIFIER)";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.npc-pet.Chats.watchdog";
@@ -665,7 +669,7 @@
 				CODE_SIGN_ENTITLEMENTS = "server-watchdog.entitlements";
 				CODE_SIGN_INJECT_BASE_ENTITLEMENTS = NO;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 6577JALN5F;
+				DEVELOPMENT_TEAM = JQ29C66UG8;
 				ENABLE_HARDENED_RUNTIME = YES;
 				OTHER_CODE_SIGN_FLAGS = "$(inherited) -i $(PRODUCT_BUNDLE_IDENTIFIER)";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.npc-pet.Chats.watchdog";
@@ -806,7 +810,7 @@
 				CURRENT_PROJECT_VERSION = 46;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "\"FreeChat/Preview Content\"";
-				DEVELOPMENT_TEAM = 6577JALN5F;
+				DEVELOPMENT_TEAM = JQ29C66UG8;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
@@ -843,7 +847,7 @@
 				CURRENT_PROJECT_VERSION = 46;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "\"FreeChat/Preview Content\"";
-				DEVELOPMENT_TEAM = 6577JALN5F;
+				DEVELOPMENT_TEAM = JQ29C66UG8;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
@@ -876,7 +880,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = YES;
-				DEVELOPMENT_TEAM = 6577JALN5F;
+				DEVELOPMENT_TEAM = JQ29C66UG8;
 				GENERATE_INFOPLIST_FILE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 13.5;
 				MARKETING_VERSION = 1.0;
@@ -897,7 +901,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = YES;
-				DEVELOPMENT_TEAM = 6577JALN5F;
+				DEVELOPMENT_TEAM = JQ29C66UG8;
 				GENERATE_INFOPLIST_FILE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 13.5;
 				MARKETING_VERSION = 1.0;
@@ -917,7 +921,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = YES;
-				DEVELOPMENT_TEAM = 6577JALN5F;
+				DEVELOPMENT_TEAM = JQ29C66UG8;
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.npc-pet.MantrasUITests";
@@ -936,7 +940,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = YES;
-				DEVELOPMENT_TEAM = 6577JALN5F;
+				DEVELOPMENT_TEAM = JQ29C66UG8;
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.npc-pet.MantrasUITests";

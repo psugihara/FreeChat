@@ -21,7 +21,7 @@ struct MessageView: View {
   @State var showInfoPopover = false
   @State var isHover = false
   @State var animateDots = false
-  @State var isTextSelectionEnabled = false
+  @State var isFormattingDisabled = false
   
   @AppStorage("showFeedbackButtons") private var showFeedbackButtons = true
 
@@ -95,8 +95,8 @@ struct MessageView: View {
 
     return HStack(alignment: .center, spacing: 4) {
       infoText
-      TextSelectButton(isTextSelectionEnabled: $isTextSelectionEnabled)
-        .opacity(showButtons ? 1 : 0)
+      ToggleFormattingButton(active: $isFormattingDisabled)
+
       if processing {
         Button(action: {
           Task {
@@ -119,7 +119,7 @@ struct MessageView: View {
           .background(.primary.opacity(0.00001)) // needed to be clickable
       })
         .menuStyle(.circle)
-        .popover(isPresented: $showInfoPopover) {
+          .popover(isPresented: $showInfoPopover) {
           Text(info).padding(12).font(.caption).textSelection(.enabled)
         }
         .opacity(showButtons ? 1 : 0)
@@ -198,21 +198,15 @@ struct MessageView: View {
       VStack(alignment: .leading, spacing: 1) {
         infoLine
         Group {
-          if isTextSelectionEnabled {
-              Text(messageText).textSelection(.enabled)
+          if m.fromId == Message.USER_SPEAKER_ID || isFormattingDisabled {
+            Text(messageText)
           } else {
-            Group {
-              if m.fromId == Message.USER_SPEAKER_ID {
-                Text(messageText)
-              } else {
-                Markdown(messageText)
-                  .markdownTheme(.freeChat)
-                  .markdownCodeSyntaxHighlighter(.splash(theme: self.theme))
-              }
-            }
-            .textSelection(.disabled)
+            Markdown(messageText)
+              .markdownTheme(.freeChat)
+              .markdownCodeSyntaxHighlighter(.splash(theme: self.theme))
           }
         }
+        .textSelection(.enabled)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
         .transition(.identity)
       }
