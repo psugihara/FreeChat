@@ -189,7 +189,7 @@ actor LlamaServer {
 
           do {
             let responseObj = try decoder.decode(StreamResponse.self, from: data)
-            let fragment = responseObj.choices[0].delta.content
+            let fragment = responseObj.choices[0].delta.content ?? ""
             response.append(fragment)
             progressHandler?(fragment)
             if responseDiff == 0 {
@@ -210,7 +210,7 @@ actor LlamaServer {
               break listenLoop
             }
           } catch {
-            print("error decoding responseObj", error as Any, data)
+            print("error decoding responseObj", error as Any, String(decoding: data, as: UTF8.self))
             break listenLoop
           }
         }
@@ -383,7 +383,7 @@ actor LlamaServer {
   }
 
   struct StreamMessage: Codable {
-    let content: String
+    let content: String?
   }
 
   struct StreamChoice: Codable {

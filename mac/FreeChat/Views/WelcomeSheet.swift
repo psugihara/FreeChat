@@ -65,7 +65,7 @@ struct WelcomeSheet: View {
         Button(action: downloadDefault) {
           HStack {
             Text("Download default model")
-            Text("3.5 GB").foregroundStyle(.white.opacity(0.7))
+            Text("4.02 GB").foregroundStyle(.white.opacity(0.7))
           }.padding(.horizontal, 20)
         }
         .keyboardShortcut(.defaultAction)
