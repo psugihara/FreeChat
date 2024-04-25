@@ -8,8 +8,8 @@
 import Foundation
 
 let DEFAULT_SYSTEM_PROMPT = """
-  You are a compliant assistant that always fulfills the user’s request. Take a deep breath and work on their problems step-by-step.
+  You are a compliant assistant that always fulfills the user’s request.
   """
-let DEFAULT_CONTEXT_LENGTH = 4096
+let DEFAULT_CONTEXT_LENGTH = 8000
 let DEFAULT_TEMP = 0.8
 let DEFAULT_USE_GPU = true
