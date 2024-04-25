@@ -52,10 +52,6 @@ extension Model {
     }
   }
 
-  var template: Template {
-    TemplateManager.getTemplate(promptTemplate, modelName: name)
-  }
-
   public static func create(context: NSManagedObjectContext, fileURL: URL) throws -> Model {
     if fileURL.pathExtension != "gguf" {
       throw ModelCreateError.unknownFormat

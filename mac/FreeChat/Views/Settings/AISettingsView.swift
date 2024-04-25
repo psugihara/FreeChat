@@ -37,7 +37,6 @@ struct AISettingsView: View {
   @State var customizeModels = false  // Show add remove models
   @State var editRemoteModel = false  // Show remote model server
   @State var editSystemPrompt = false
-  @State var editFormat = false
   @State var revealAdvanced = false
   @State var inputServerTLS: Bool = false
   @State var inputServerHost: String = ""
@@ -149,31 +148,6 @@ struct AISettingsView: View {
         .padding(.top, 0.5)
       }
 
-      HStack {
-        if let model = selectedModel {
-          Text("Prompt format: \(model.template.format.rawValue)")
-            .foregroundColor(Color(NSColor.secondaryLabelColor))
-            .font(.caption)
-        } else if editRemoteModel {
-          Text("Prompt format: \(remoteModelTemplate ?? TemplateFormat.vicuna.rawValue)")
-            .foregroundColor(Color(NSColor.secondaryLabelColor))
-            .font(.caption)
-        }
-        Button("Edit") {
-          editFormat = true
-        }
-        .buttonStyle(.link).font(.caption)
-        .offset(x: -4)
-      }
-      .sheet(
-        isPresented: $editFormat,
-        content: {
-          if let model = selectedModel {
-            EditFormat(model: model)
-          } else if editRemoteModel {
-            EditFormat(modelName: "Remote")
-          }
-        })
     }
   }
 

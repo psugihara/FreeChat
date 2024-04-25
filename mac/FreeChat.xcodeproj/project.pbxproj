@@ -7,11 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		A1156D2F2AD0954C00081313 /* TemplateManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1156D2E2AD0954C00081313 /* TemplateManager.swift */; };
 		A1156D312AD09FDD00081313 /* PromptTemplateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1156D302AD09FDD00081313 /* PromptTemplateTests.swift */; };
-		A1156D342AD1F5EF00081313 /* Templates.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1156D332AD1F5EF00081313 /* Templates.swift */; };
-		A1156D362AD5AB8700081313 /* EditFormat.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1156D352AD5AB8700081313 /* EditFormat.swift */; };
-		A1156D382AD5E75A00081313 /* EnumMap.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1156D372AD5E75A00081313 /* EnumMap.swift */; };
 		A117219C2A7D7B70003B0358 /* MarkdownUI in Frameworks */ = {isa = PBXBuildFile; productRef = A117219B2A7D7B70003B0358 /* MarkdownUI */; };
 		A12B52DE2AA5228100658707 /* EditModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = A12B52DD2AA5228100658707 /* EditModels.swift */; };
 		A12B52E42AA5A99E00658707 /* EditSystemPrompt.swift in Sources */ = {isa = PBXBuildFile; fileRef = A12B52E32AA5A99E00658707 /* EditSystemPrompt.swift */; };
@@ -119,11 +115,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		A1156D2E2AD0954C00081313 /* TemplateManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TemplateManager.swift; sourceTree = "<group>"; };
 		A1156D302AD09FDD00081313 /* PromptTemplateTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PromptTemplateTests.swift; sourceTree = "<group>"; };
-		A1156D332AD1F5EF00081313 /* Templates.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Templates.swift; sourceTree = "<group>"; };
-		A1156D352AD5AB8700081313 /* EditFormat.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditFormat.swift; sourceTree = "<group>"; };
-		A1156D372AD5E75A00081313 /* EnumMap.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnumMap.swift; sourceTree = "<group>"; };
 		A12B52DD2AA5228100658707 /* EditModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditModels.swift; sourceTree = "<group>"; };
 		A12B52E32AA5A99E00658707 /* EditSystemPrompt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditSystemPrompt.swift; sourceTree = "<group>"; };
 		A12FAAEB2AC5E0C0006ACC43 /* WelcomeSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeSheet.swift; sourceTree = "<group>"; };
@@ -211,16 +203,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		A1156D322AD1F5C700081313 /* PromptTemplates */ = {
-			isa = PBXGroup;
-			children = (
-				A1156D2E2AD0954C00081313 /* TemplateManager.swift */,
-				A1156D332AD1F5EF00081313 /* Templates.swift */,
-				A1156D372AD5E75A00081313 /* EnumMap.swift */,
-			);
-			path = PromptTemplates;
-			sourceTree = "<group>";
-		};
 		A13C8C5E2A8FF02500EC18D8 /* Markdown */ = {
 			isa = PBXGroup;
 			children = (
@@ -250,7 +232,6 @@
 		A17A2E1B2A79A00D006CDD90 /* NPC */ = {
 			isa = PBXGroup;
 			children = (
-				A1156D322AD1F5C700081313 /* PromptTemplates */,
 				A17A2E122A79A005006CDD90 /* Agent.swift */,
 				A17A2E132A79A005006CDD90 /* LlamaServer.swift */,
 				DEEA39CB2B586F3800992592 /* ServerHealth.swift */,
@@ -282,7 +263,6 @@
 				A18A8BB42B24FC0F00D2197C /* UISettingsView.swift */,
 				A12B52DD2AA5228100658707 /* EditModels.swift */,
 				A12B52E32AA5A99E00658707 /* EditSystemPrompt.swift */,
-				A1156D352AD5AB8700081313 /* EditFormat.swift */,
 			);
 			path = Settings;
 			sourceTree = "<group>";
@@ -555,7 +535,6 @@
 				A13C8C602A8FF03800EC18D8 /* TextOutputFormat.swift in Sources */,
 				A1F6175B2A7838F700F2048C /* Conversation+Extensions.swift in Sources */,
 				DEA8CF572B51938B007A4CE7 /* FreeChatAppDelegate.swift in Sources */,
-				A1156D362AD5AB8700081313 /* EditFormat.swift in Sources */,
 				A13C8C622A8FF27000EC18D8 /* Theme+FreeChat.swift in Sources */,
 				A1F6172F2A782AA200F2048C /* Persistence.swift in Sources */,
 				A12B52E42AA5A99E00658707 /* EditSystemPrompt.swift in Sources */,
@@ -569,10 +548,8 @@
 				A1F617582A7836AE00F2048C /* Message+Extensions.swift in Sources */,
 				A13C8C682A902A1200EC18D8 /* CGKeycode+Extensions.swift in Sources */,
 				A15D50D22A7F539800FC1681 /* NavList.swift in Sources */,
-				A1156D342AD1F5EF00081313 /* Templates.swift in Sources */,
 				A1D4B49D2B9A780B00B9C4BE /* AgentDefaults.swift in Sources */,
 				A1F617262A782AA100F2048C /* FreeChat.swift in Sources */,
-				A1156D2F2AD0954C00081313 /* TemplateManager.swift in Sources */,
 				A1E4A6942A82B41F00BF9D34 /* Model+Extensions.swift in Sources */,
 				A12B52DE2AA5228100658707 /* EditModels.swift in Sources */,
 				A17AB1C22ABB4B5E00CD3100 /* CircleMenuStyle.swift in Sources */,
@@ -582,7 +559,6 @@
 				A17A2E182A79A006006CDD90 /* Agent.swift in Sources */,
 				A12FAAEC2AC5E0C0006ACC43 /* WelcomeSheet.swift in Sources */,
 				DEEA39CC2B586F3800992592 /* ServerHealth.swift in Sources */,
-				A1156D382AD5E75A00081313 /* EnumMap.swift in Sources */,
 				A137A37C2AB3D26C00BE1AE0 /* ObservableScrollView.swift in Sources */,
 				A16FFF8B2B2E35D200E6AAE2 /* GPU.swift in Sources */,
 				A18A8BB32B24FC0400D2197C /* AISettingsView.swift in Sources */,

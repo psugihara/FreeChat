@@ -146,32 +146,22 @@ actor LlamaServer {
     }
   }
 
-  func complete(
-    prompt: String, stop: [String]?, temperature: Double?,
+  func chat(
+    messages: [LlamaServer.ChatMessage],
+    temperature: Double?,
     progressHandler: (@Sendable (String) -> Void)? = nil
   ) async throws -> CompleteResponse {
-    #if DEBUG
-      print("START PROMPT\n \(prompt) \nEND PROMPT\n\n")
-    #endif
 
     let start = CFAbsoluteTimeGetCurrent()
     try await startServer()
 
     // hit localhost for completion
-    var params = CompleteParams(
-      prompt: prompt,
-      stop: stop ?? [
-        "</s>",
-        "\n\(Message.USER_SPEAKER_ID):",
-        "\n\(Message.USER_SPEAKER_ID.lowercased()):",
-        "[/INST]",
-        "[INST]",
-        "USER:",
-      ]
+    var params = ChatParams(
+      messages: messages
     )
     if let t = temperature { params.temperature = t }
 
-    var request = URLRequest(url: url("/completion"))
+    var request = URLRequest(url: url("/v1/chat/completions"))
 
     request.httpMethod = "POST"
     request.setValue("application/json", forHTTPHeaderField: "Content-Type")
@@ -186,8 +176,8 @@ actor LlamaServer {
     var response = ""
     var responseDiff = 0.0
     var stopResponse: StopResponse?
-    listenLoop: for await event in eventSource!.events {
-      switch event {
+  listenLoop: for await event in eventSource!.events {
+    switch event {
       case .open:
         continue listenLoop
       case .error(let error):
@@ -198,25 +188,25 @@ actor LlamaServer {
           let decoder = JSONDecoder()
 
           do {
-            let responseObj = try decoder.decode(Response.self, from: data)
-            let fragment = responseObj.content
+            let responseObj = try decoder.decode(StreamResponse.self, from: data)
+            let fragment = responseObj.choices[0].delta.content
             response.append(fragment)
             progressHandler?(fragment)
             if responseDiff == 0 {
               responseDiff = CFAbsoluteTimeGetCurrent() - start
             }
 
-            if responseObj.stop {
+            if responseObj.choices[0].finish_reason != nil {
               do {
                 stopResponse = try decoder.decode(StopResponse.self, from: data)
               } catch {
                 print("error decoding stopResponse", error as Any, data)
               }
-              #if DEBUG
-                print(
-                  "server.cpp stopResponse",
-                  NSString(data: data, encoding: String.Encoding.utf8.rawValue) ?? "missing")
-              #endif
+#if DEBUG
+              print(
+                "server.cpp stopResponse",
+                NSString(data: data, encoding: String.Encoding.utf8.rawValue) ?? "missing")
+#endif
               break listenLoop
             }
           } catch {
@@ -227,8 +217,8 @@ actor LlamaServer {
       case .closed:
         print("llama.cpp EventSource closed")
         break listenLoop
-      }
     }
+  }
 
     if responseDiff > 0 {
       print("response: \(response)")
@@ -325,6 +315,52 @@ actor LlamaServer {
     }
   }
 
+  enum ChatRole: Codable {
+    case system
+    case user
+  }
+
+  struct ChatMessage: Codable {
+    var role: ChatRole
+    var content: String
+
+    func toJSON() -> String {
+      let encoder = JSONEncoder()
+      encoder.outputFormatting = .prettyPrinted
+      let jsonData = try? encoder.encode(self)
+      return String(data: jsonData!, encoding: .utf8)!
+    }
+  }
+
+  struct ChatParams: Codable {
+    var messages: [ChatMessage]
+    var stream = true
+    var n_threads = 6
+
+    var n_predict = -1
+    var temperature = DEFAULT_TEMP
+    var repeat_last_n = 128  // 0 = disable penalty, -1 = context size
+    var repeat_penalty = 1.18  // 1.0 = disabled
+    var top_k = 40  // <= 0 to use vocab size
+    var top_p = 0.95  // 1.0 = disabled
+    var tfs_z = 1.0  // 1.0 = disabled
+    var typical_p = 1.0  // 1.0 = disabled
+    var presence_penalty = 0.0  // 0.0 = disabled
+    var frequency_penalty = 0.0  // 0.0 = disabled
+    var mirostat = 0  // 0/1/2
+    var mirostat_tau = 5  // target entropy
+    var mirostat_eta = 0.1  // learning rate
+    var cache_prompt = true
+
+    func toJSON() -> String {
+      let encoder = JSONEncoder()
+      encoder.outputFormatting = .prettyPrinted
+      let jsonData = try? encoder.encode(self)
+      return String(data: jsonData!, encoding: .utf8)!
+    }
+  }
+
+
   struct Timings: Codable {
     let prompt_n: Int
     let prompt_ms: Double
@@ -337,13 +373,30 @@ actor LlamaServer {
     let predicted_per_second: Double?
   }
 
+  struct Choice: Codable {
+    let content: ChatMessage
+    let finish_reason: String?
+  }
+
   struct Response: Codable {
+    let choices: [Choice]
+  }
+
+  struct StreamMessage: Codable {
     let content: String
-    let stop: Bool
+  }
+
+  struct StreamChoice: Codable {
+    let delta: StreamMessage
+    let finish_reason: String?
+  }
+
+  struct StreamResponse: Codable {
+    let choices: [StreamChoice]
   }
 
   struct StopResponse: Codable {
-    let content: String
+    let choices: [Choice]
     let model: String
     let tokens_predicted: Int
     let tokens_evaluated: Int
