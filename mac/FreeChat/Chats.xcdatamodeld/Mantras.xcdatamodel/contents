@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="22225" systemVersion="23A344" minimumToolsVersion="Automatic" sourceLanguage="Swift" usedWithCloudKit="YES" userDefinedModelVersionIdentifier="">
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="22757" systemVersion="23C71" minimumToolsVersion="Automatic" sourceLanguage="Swift" usedWithCloudKit="YES" userDefinedModelVersionIdentifier="">
     <entity name="Conversation" representedClassName="Conversation" syncable="YES" codeGenerationType="class">
         <attribute name="createdAt" attributeType="Date" defaultDateTimeInterval="712519080" usesScalarValueType="NO"/>
         <attribute name="lastMessageAt" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
@@ -9,7 +9,6 @@
     </entity>
     <entity name="Message" representedClassName="Message" syncable="YES" codeGenerationType="class">
         <attribute name="createdAt" attributeType="Date" defaultDateTimeInterval="712518960" usesScalarValueType="NO"/>
-        <attribute name="feedbackId" optional="YES" attributeType="String"/>
         <attribute name="fromId" attributeType="String" defaultValueString="npc"/>
         <attribute name="modelName" optional="YES" attributeType="String"/>
         <attribute name="nPredicted" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
