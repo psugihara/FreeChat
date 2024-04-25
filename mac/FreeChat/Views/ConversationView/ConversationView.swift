@@ -233,8 +233,6 @@ struct ConversationView: View, Sendable {
 
     playSendSound()
 
-    guard let model = selectedModel else { return }
-
     showUserMessage = false
     engageAutoScroll()
 
@@ -251,8 +249,6 @@ struct ConversationView: View, Sendable {
     withAnimation {
       showUserMessage = true
     }
-
-    let messageTexts = messages.map { $0.text ?? "" }
 
     // Pending message for bot's reply
     let m = Message(context: viewContext)

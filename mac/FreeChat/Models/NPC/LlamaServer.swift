@@ -255,8 +255,6 @@ actor LlamaServer {
     interrupted = false
     serverErrorMessage = ""
 
-    guard let modelPath = self.modelPath else { return }
-
     let serverHealth = ServerHealth()
     await serverHealth.updateURL(url("/health"))
     await serverHealth.check()
@@ -286,35 +284,6 @@ actor LlamaServer {
     var predictedPerSecond: Double?
     var modelName: String?
     var nPredicted: Int?
-  }
-
-  struct CompleteParams: Codable {
-    var prompt: String
-    var stop: [String] = ["</s>"]
-    var stream = true
-    var n_threads = 6
-
-    var n_predict = -1
-    var temperature = DEFAULT_TEMP
-    var repeat_last_n = 128  // 0 = disable penalty, -1 = context size
-    var repeat_penalty = 1.18  // 1.0 = disabled
-    var top_k = 40  // <= 0 to use vocab size
-    var top_p = 0.95  // 1.0 = disabled
-    var tfs_z = 1.0  // 1.0 = disabled
-    var typical_p = 1.0  // 1.0 = disabled
-    var presence_penalty = 0.0  // 0.0 = disabled
-    var frequency_penalty = 0.0  // 0.0 = disabled
-    var mirostat = 0  // 0/1/2
-    var mirostat_tau = 5  // target entropy
-    var mirostat_eta = 0.1  // learning rate
-    var cache_prompt = true
-
-    func toJSON() -> String {
-      let encoder = JSONEncoder()
-      encoder.outputFormatting = .prettyPrinted
-      let jsonData = try? encoder.encode(self)
-      return String(data: jsonData!, encoding: .utf8)!
-    }
   }
 
   enum ChatRole: Codable {
@@ -360,28 +329,6 @@ actor LlamaServer {
       let jsonData = try? encoder.encode(self)
       return String(data: jsonData!, encoding: .utf8)!
     }
-  }
-
-
-  struct Timings: Codable {
-    let prompt_n: Int
-    let prompt_ms: Double
-    let prompt_per_token_ms: Double
-    let prompt_per_second: Double?
-
-    let predicted_n: Int
-    let predicted_ms: Double
-    let predicted_per_token_ms: Double
-    let predicted_per_second: Double?
-  }
-
-  struct Choice: Codable {
-    let content: ChatMessage
-    let finish_reason: String?
-  }
-
-  struct Response: Codable {
-    let choices: [Choice]
   }
 
   struct StreamMessage: Codable {
