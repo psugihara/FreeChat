@@ -27,6 +27,10 @@ func removeUnmatchedTrailingQuote(_ inputString: String) -> String {
 actor LlamaServer {
 
   var modelPath: String?
+  var modelName: String {
+    modelPath?.split(separator: "/").last?.map { String($0) }.joined() ?? "unknown"
+  }
+
   var contextLength: Int
 
   @AppStorage("useGPU") private var useGPU: Bool = DEFAULT_USE_GPU
@@ -120,8 +124,8 @@ actor LlamaServer {
     process.standardInput = FileHandle.nullDevice
 
     // To debug with server's output, comment these 2 lines to inherit stdout.
-//    process.standardOutput =  FileHandle.nullDevice
-//    process.standardError =  FileHandle.nullDevice
+    process.standardOutput =  FileHandle.nullDevice
+    process.standardError =  FileHandle.nullDevice
 
     try process.run()
 
@@ -146,32 +150,22 @@ actor LlamaServer {
     }
   }
 
-  func complete(
-    prompt: String, stop: [String]?, temperature: Double?,
+  func chat(
+    messages: [LlamaServer.ChatMessage],
+    temperature: Double?,
     progressHandler: (@Sendable (String) -> Void)? = nil
   ) async throws -> CompleteResponse {
-    #if DEBUG
-      print("START PROMPT\n \(prompt) \nEND PROMPT\n\n")
-    #endif
 
     let start = CFAbsoluteTimeGetCurrent()
     try await startServer()
 
     // hit localhost for completion
-    var params = CompleteParams(
-      prompt: prompt,
-      stop: stop ?? [
-        "</s>",
-        "\n\(Message.USER_SPEAKER_ID):",
-        "\n\(Message.USER_SPEAKER_ID.lowercased()):",
-        "[/INST]",
-        "[INST]",
-        "USER:",
-      ]
+    var params = ChatParams(
+      messages: messages
     )
     if let t = temperature { params.temperature = t }
 
-    var request = URLRequest(url: url("/completion"))
+    var request = URLRequest(url: url("/v1/chat/completions"))
 
     request.httpMethod = "POST"
     request.setValue("application/json", forHTTPHeaderField: "Content-Type")
@@ -186,8 +180,8 @@ actor LlamaServer {
     var response = ""
     var responseDiff = 0.0
     var stopResponse: StopResponse?
-    listenLoop: for await event in eventSource!.events {
-      switch event {
+  listenLoop: for await event in eventSource!.events {
+    switch event {
       case .open:
         continue listenLoop
       case .error(let error):
@@ -198,37 +192,37 @@ actor LlamaServer {
           let decoder = JSONDecoder()
 
           do {
-            let responseObj = try decoder.decode(Response.self, from: data)
-            let fragment = responseObj.content
+            let responseObj = try decoder.decode(StreamResponse.self, from: data)
+            let fragment = responseObj.choices[0].delta.content ?? ""
             response.append(fragment)
             progressHandler?(fragment)
             if responseDiff == 0 {
               responseDiff = CFAbsoluteTimeGetCurrent() - start
             }
 
-            if responseObj.stop {
+            if responseObj.choices[0].finish_reason != nil {
               do {
                 stopResponse = try decoder.decode(StopResponse.self, from: data)
               } catch {
                 print("error decoding stopResponse", error as Any, data)
               }
-              #if DEBUG
-                print(
-                  "server.cpp stopResponse",
-                  NSString(data: data, encoding: String.Encoding.utf8.rawValue) ?? "missing")
-              #endif
+#if DEBUG
+              print(
+                "server.cpp stopResponse",
+                NSString(data: data, encoding: String.Encoding.utf8.rawValue) ?? "missing")
+#endif
               break listenLoop
             }
           } catch {
-            print("error decoding responseObj", error as Any, data)
+            print("error decoding responseObj", error as Any, String(decoding: data, as: UTF8.self))
             break listenLoop
           }
         }
       case .closed:
         print("llama.cpp EventSource closed")
         break listenLoop
-      }
     }
+  }
 
     if responseDiff > 0 {
       print("response: \(response)")
@@ -239,13 +233,13 @@ actor LlamaServer {
     let cleanText = removeUnmatchedTrailingQuote(response).trimmingCharacters(
       in: .whitespacesAndNewlines)
 
-    let modelName = stopResponse?.model.split(separator: "/").last?.map { String($0) }.joined()
+    let tokens = stopResponse?.usage.completion_tokens ?? 0
     return CompleteResponse(
       text: cleanText,
       responseStartSeconds: responseDiff,
-      predictedPerSecond: stopResponse?.timings.predicted_per_second,
+      predictedPerSecond: Double(tokens) / responseDiff,
       modelName: modelName,
-      nPredicted: stopResponse?.tokens_predicted
+      nPredicted: tokens
     )
   }
 
@@ -260,10 +254,6 @@ actor LlamaServer {
     guard process.isRunning else { return }
     interrupted = false
     serverErrorMessage = ""
-
-    guard let modelPath = self.modelPath else { return }
-    let modelName =
-      modelPath.split(separator: "/").last?.map { String($0) }.joined() ?? "Unknown model name"
 
     let serverHealth = ServerHealth()
     await serverHealth.updateURL(url("/health"))
@@ -296,9 +286,25 @@ actor LlamaServer {
     var nPredicted: Int?
   }
 
-  struct CompleteParams: Codable {
-    var prompt: String
-    var stop: [String] = ["</s>"]
+  enum ChatRole: Codable {
+    case system
+    case user
+  }
+
+  struct ChatMessage: Codable {
+    var role: ChatRole
+    var content: String
+
+    func toJSON() -> String {
+      let encoder = JSONEncoder()
+      encoder.outputFormatting = .prettyPrinted
+      let jsonData = try? encoder.encode(self)
+      return String(data: jsonData!, encoding: .utf8)!
+    }
+  }
+
+  struct ChatParams: Codable {
+    var messages: [ChatMessage]
     var stream = true
     var n_threads = 6
 
@@ -325,29 +331,28 @@ actor LlamaServer {
     }
   }
 
-  struct Timings: Codable {
-    let prompt_n: Int
-    let prompt_ms: Double
-    let prompt_per_token_ms: Double
-    let prompt_per_second: Double?
-
-    let predicted_n: Int
-    let predicted_ms: Double
-    let predicted_per_token_ms: Double
-    let predicted_per_second: Double?
+  struct StreamMessage: Codable {
+    let content: String?
   }
 
-  struct Response: Codable {
-    let content: String
-    let stop: Bool
+  struct StreamChoice: Codable {
+    let delta: StreamMessage
+    let finish_reason: String?
+  }
+
+  struct StreamResponse: Codable {
+    let choices: [StreamChoice]
+  }
+
+  struct Usage: Codable {
+    let completion_tokens: Int?
+    let prompt_tokens: Int?
+    let total_tokens: Int?
   }
 
   struct StopResponse: Codable {
-    let content: String
-    let model: String
-    let tokens_predicted: Int
-    let tokens_evaluated: Int
-    let timings: Timings
+    let choices: [StreamChoice]
+    let usage: Usage
   }
 }
 

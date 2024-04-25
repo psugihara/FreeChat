@@ -233,8 +233,6 @@ struct ConversationView: View, Sendable {
 
     playSendSound()
 
-    guard let model = selectedModel else { return }
-
     showUserMessage = false
     engageAutoScroll()
 
@@ -251,8 +249,6 @@ struct ConversationView: View, Sendable {
     withAnimation {
       showUserMessage = true
     }
-
-    let messageTexts = messages.map { $0.text ?? "" }
 
     // Pending message for bot's reply
     let m = Message(context: viewContext)
@@ -283,7 +279,7 @@ struct ConversationView: View, Sendable {
     Task {
       var response: LlamaServer.CompleteResponse
       do {
-        response = try await agent.listenThinkRespond(speakerId: Message.USER_SPEAKER_ID, messages: messageTexts, template: model.template, temperature: temperature)
+        response = try await agent.listenThinkRespond(speakerId: Message.USER_SPEAKER_ID, messages: messages, temperature: temperature)
       } catch let error as LlamaServerError {
         handleResponseError(error)
         return
@@ -330,7 +326,7 @@ struct ConversationView: View, Sendable {
   let c = try! Conversation.create(ctx: ctx)
   let cm = ConversationManager()
   cm.currentConversation = c
-  cm.agent = Agent(id: "llama", prompt: "", systemPrompt: "", modelPath: "", contextLength: DEFAULT_CONTEXT_LENGTH)
+  cm.agent = Agent(id: "llama", systemPrompt: "", modelPath: "", contextLength: DEFAULT_CONTEXT_LENGTH)
 
   let question = Message(context: ctx)
   question.conversation = c
@@ -365,7 +361,7 @@ struct ConversationView: View, Sendable {
   let c = try! Conversation.create(ctx: ctx)
   let cm = ConversationManager()
   cm.currentConversation = c
-  cm.agent = Agent(id: "llama", prompt: "", systemPrompt: "", modelPath: "", contextLength: DEFAULT_CONTEXT_LENGTH)
+  cm.agent = Agent(id: "llama", systemPrompt: "", modelPath: "", contextLength: DEFAULT_CONTEXT_LENGTH)
 
   return ConversationView()
     .environment(\.managedObjectContext, ctx)

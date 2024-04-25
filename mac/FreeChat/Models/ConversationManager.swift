@@ -18,7 +18,7 @@ class ConversationManager: ObservableObject {
   @AppStorage("systemPrompt") private var systemPrompt: String = DEFAULT_SYSTEM_PROMPT
   @AppStorage("contextLength") private var contextLength: Int = DEFAULT_CONTEXT_LENGTH
 
-  @Published var agent: Agent = Agent(id: "Llama", prompt: "", systemPrompt: "", modelPath: "", contextLength: DEFAULT_CONTEXT_LENGTH)
+  @Published var agent: Agent = Agent(id: "Llama", systemPrompt: "", modelPath: "", contextLength: DEFAULT_CONTEXT_LENGTH)
   @Published var loadingModelId: String?
 
   private static var dummyConversation: Conversation = {
@@ -80,9 +80,7 @@ class ConversationManager: ObservableObject {
     Task {
       await agent.llama.stopServer()
 
-      let messages = currentConversation.orderedMessages.map { $0.text ?? "" }
-      let convoPrompt = model.template.run(systemPrompt: systemPrompt, messages: messages)
-      agent = Agent(id: "Llama", prompt: convoPrompt, systemPrompt: systemPrompt, modelPath: url.path, contextLength: contextLength)
+      agent = Agent(id: "Llama", systemPrompt: systemPrompt, modelPath: url.path, contextLength: contextLength)
       loadingModelId = model.id?.uuidString 
 
       model.error = nil

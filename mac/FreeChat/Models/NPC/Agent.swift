@@ -11,8 +11,6 @@ class Agent: ObservableObject {
 
   var id: String
 
-  // prompt is the actual running prompt with the llm
-  var prompt = ""
   var systemPrompt = DEFAULT_SYSTEM_PROMPT
 
   // dialogue is the dialogue from prompt without system prompt / internal thoughts
@@ -22,9 +20,8 @@ class Agent: ObservableObject {
   // each agent runs their own server
   var llama: LlamaServer
 
-  init(id: String, prompt: String, systemPrompt: String, modelPath: String, contextLength: Int) {
+  init(id: String, systemPrompt: String, modelPath: String, contextLength: Int) {
     self.id = id
-    self.prompt = prompt
     self.systemPrompt = systemPrompt
     llama = LlamaServer(modelPath: modelPath, contextLength: contextLength)
   }
@@ -33,7 +30,7 @@ class Agent: ObservableObject {
   // listen -> respond -> update mental model and save checkpoint
   // we respond before updating to avoid a long delay after user input
   func listenThinkRespond(
-    speakerId: String, messages: [String], template: Template, temperature: Double?
+    speakerId: String, messages: [Message], temperature: Double?
   ) async throws -> LlamaServer.CompleteResponse {
     if status == .cold {
       status = .coldProcessing
@@ -41,12 +38,16 @@ class Agent: ObservableObject {
       status = .processing
     }
 
-    prompt = template.run(systemPrompt: systemPrompt, messages: messages)
-
     pendingMessage = ""
 
-    let response = try await llama.complete(
-      prompt: prompt, stop: template.stopWords, temperature: temperature
+    let chatMessages = messages.map { m in
+      LlamaServer.ChatMessage(
+        role: m.fromId == Message.USER_SPEAKER_ID ? .user : .system,
+        content: m.text ?? ""
+      )
+    }
+    let response = try await llama.chat(
+      messages: chatMessages, temperature: temperature
     ) { partialResponse in
       DispatchQueue.main.async {
         self.handleCompletionProgress(partialResponse: partialResponse)
@@ -60,22 +61,11 @@ class Agent: ObservableObject {
   }
 
   func handleCompletionProgress(partialResponse: String) {
-    self.prompt += partialResponse
     self.pendingMessage += partialResponse
   }
 
   func interrupt() async {
     if status != .processing, status != .coldProcessing { return }
     await llama.interrupt()
-  }
-
-  func warmup() async throws {
-    if prompt.isEmpty, systemPrompt.isEmpty { return }
-    do {
-      _ = try await llama.complete(prompt: prompt, stop: nil, temperature: nil)
-      status = .ready
-    } catch {
-      status = .cold
-    }
   }
 }
