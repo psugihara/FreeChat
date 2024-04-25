@@ -27,7 +27,6 @@
 		A13C8C622A8FF27000EC18D8 /* Theme+FreeChat.swift in Sources */ = {isa = PBXBuildFile; fileRef = A13C8C612A8FF27000EC18D8 /* Theme+FreeChat.swift */; };
 		A13C8C662A9027A200EC18D8 /* CopyButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = A13C8C652A9027A200EC18D8 /* CopyButton.swift */; };
 		A13C8C682A902A1200EC18D8 /* CGKeycode+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = A13C8C672A902A1200EC18D8 /* CGKeycode+Extensions.swift */; };
-		A15C684A2BC7176E0012084E /* ggml-metal-embed.metal in Sources */ = {isa = PBXBuildFile; fileRef = A15C68492BC7176E0012084E /* ggml-metal-embed.metal */; };
 		A15D50CF2A7EF73E00FC1681 /* MessageTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = A15D50CE2A7EF73E00FC1681 /* MessageTextField.swift */; };
 		A15D50D22A7F539800FC1681 /* NavList.swift in Sources */ = {isa = PBXBuildFile; fileRef = A15D50D12A7F539800FC1681 /* NavList.swift */; };
 		A15D50D42A80BCA900FC1681 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A15D50D32A80BCA900FC1681 /* SettingsView.swift */; };
@@ -137,7 +136,6 @@
 		A13C8C612A8FF27000EC18D8 /* Theme+FreeChat.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Theme+FreeChat.swift"; sourceTree = "<group>"; };
 		A13C8C652A9027A200EC18D8 /* CopyButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CopyButton.swift; sourceTree = "<group>"; };
 		A13C8C672A902A1200EC18D8 /* CGKeycode+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CGKeycode+Extensions.swift"; sourceTree = "<group>"; };
-		A15C68492BC7176E0012084E /* ggml-metal-embed.metal */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.metal; name = "ggml-metal-embed.metal"; path = "FreeChat/Models/NPC/ggml-metal-embed.metal"; sourceTree = SOURCE_ROOT; };
 		A15D50CE2A7EF73E00FC1681 /* MessageTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageTextField.swift; sourceTree = "<group>"; };
 		A15D50D12A7F539800FC1681 /* NavList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavList.swift; sourceTree = "<group>"; };
 		A15D50D32A80BCA900FC1681 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
@@ -253,7 +251,6 @@
 			isa = PBXGroup;
 			children = (
 				A1156D322AD1F5C700081313 /* PromptTemplates */,
-				A15C68492BC7176E0012084E /* ggml-metal-embed.metal */,
 				A17A2E122A79A005006CDD90 /* Agent.swift */,
 				A17A2E132A79A005006CDD90 /* LlamaServer.swift */,
 				DEEA39CB2B586F3800992592 /* ServerHealth.swift */,
@@ -591,7 +588,6 @@
 				A18A8BB32B24FC0400D2197C /* AISettingsView.swift in Sources */,
 				A1F617562A782E4F00F2048C /* ConversationView.swift in Sources */,
 				A13C8C5A2A8FEEE400EC18D8 /* SplashCodeSyntaxHighlighter.swift in Sources */,
-				A15C684A2BC7176E0012084E /* ggml-metal-embed.metal in Sources */,
 				A15D50D42A80BCA900FC1681 /* SettingsView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
