@@ -27,6 +27,10 @@ func removeUnmatchedTrailingQuote(_ inputString: String) -> String {
 actor LlamaServer {
 
   var modelPath: String?
+  var modelName: String {
+    modelPath?.split(separator: "/").last?.map { String($0) }.joined() ?? "unknown"
+  }
+
   var contextLength: Int
 
   @AppStorage("useGPU") private var useGPU: Bool = DEFAULT_USE_GPU
@@ -120,8 +124,8 @@ actor LlamaServer {
     process.standardInput = FileHandle.nullDevice
 
     // To debug with server's output, comment these 2 lines to inherit stdout.
-//    process.standardOutput =  FileHandle.nullDevice
-//    process.standardError =  FileHandle.nullDevice
+    process.standardOutput =  FileHandle.nullDevice
+    process.standardError =  FileHandle.nullDevice
 
     try process.run()
 
@@ -229,13 +233,13 @@ actor LlamaServer {
     let cleanText = removeUnmatchedTrailingQuote(response).trimmingCharacters(
       in: .whitespacesAndNewlines)
 
-    let modelName = stopResponse?.model.split(separator: "/").last?.map { String($0) }.joined()
+    let tokens = stopResponse?.usage.completion_tokens ?? 0
     return CompleteResponse(
       text: cleanText,
       responseStartSeconds: responseDiff,
-      predictedPerSecond: stopResponse?.timings.predicted_per_second,
+      predictedPerSecond: Double(tokens) / responseDiff,
       modelName: modelName,
-      nPredicted: stopResponse?.tokens_predicted
+      nPredicted: tokens
     )
   }
 
@@ -252,8 +256,6 @@ actor LlamaServer {
     serverErrorMessage = ""
 
     guard let modelPath = self.modelPath else { return }
-    let modelName =
-      modelPath.split(separator: "/").last?.map { String($0) }.joined() ?? "Unknown model name"
 
     let serverHealth = ServerHealth()
     await serverHealth.updateURL(url("/health"))
@@ -395,12 +397,15 @@ actor LlamaServer {
     let choices: [StreamChoice]
   }
 
+  struct Usage: Codable {
+    let completion_tokens: Int?
+    let prompt_tokens: Int?
+    let total_tokens: Int?
+  }
+
   struct StopResponse: Codable {
-    let choices: [Choice]
-    let model: String
-    let tokens_predicted: Int
-    let tokens_evaluated: Int
-    let timings: Timings
+    let choices: [StreamChoice]
+    let usage: Usage
   }
 }
 
