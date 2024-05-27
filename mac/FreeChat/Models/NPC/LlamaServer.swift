@@ -116,7 +116,7 @@ actor LlamaServer {
       "--threads", "\(max(1, Int(ceil(Double(processes) / 3.0 * 2.0))))",
       "--ctx-size", "\(contextLength)",
       "--port", port,
-      "--n-gpu-layers", gpu.available && useGPU ? "4" : "0",
+      "--n-gpu-layers", gpu.available && useGPU ? "99" : "0",
     ]
 
     print("starting llama.cpp server \(process.arguments!.joined(separator: " "))")
