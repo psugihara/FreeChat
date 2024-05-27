@@ -234,10 +234,11 @@ actor LlamaServer {
       in: .whitespacesAndNewlines)
 
     let tokens = stopResponse?.usage.completion_tokens ?? 0
+    let generationTime = CFAbsoluteTimeGetCurrent() - start - responseDiff
     return CompleteResponse(
       text: cleanText,
       responseStartSeconds: responseDiff,
-      predictedPerSecond: Double(tokens) / responseDiff,
+      predictedPerSecond: Double(tokens) / generationTime,
       modelName: modelName,
       nPredicted: tokens
     )
