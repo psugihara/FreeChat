@@ -287,9 +287,9 @@ actor LlamaServer {
     var nPredicted: Int?
   }
 
-  enum ChatRole: Codable {
-    case system
-    case user
+  enum ChatRole: String, Codable {
+    case system = "system"
+    case user = "user"
   }
 
   struct ChatMessage: Codable {
