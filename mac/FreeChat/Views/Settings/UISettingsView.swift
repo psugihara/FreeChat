@@ -16,7 +16,10 @@ struct UISettingsView: View {
 
   @AppStorage("playSoundEffects") private var playSoundEffects = true
   @AppStorage("showFeedbackButtons") private var showFeedbackButtons = true
-
+  @AppStorage("fontSizeOption") private var fontSizeOption: Double = 12
+  
+    
+    
   var globalHotkey: some View {
     KeyboardShortcuts.Recorder("Summon chat", name: .summonFreeChat)
   }
@@ -37,11 +40,21 @@ struct UISettingsView: View {
     }
   }
 
+  var fontSizeOptions: some View {
+      HStack(alignment: /*@START_MENU_TOKEN@*/.center/*@END_MENU_TOKEN@*/, content: {
+          Text("Font size: \(String(format: "%.0f", fontSizeOption))")
+               
+          Slider(value: $fontSizeOption, in: 10...30, step: 1)
+                     .padding()
+      })
+  }
+    
   var body: some View {
     Form {
       globalHotkey
       soundEffects
       feedbackButtons
+      fontSizeOptions
     }
       .formStyle(.grouped)
       .frame(minWidth: 300, maxWidth: 600, minHeight: 184, idealHeight: 195, maxHeight: 400, alignment: .center)

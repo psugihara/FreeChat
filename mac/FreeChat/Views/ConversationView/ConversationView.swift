@@ -22,6 +22,7 @@ struct ConversationView: View, Sendable {
   @AppStorage("serverHost") private var serverHost: String?
   @AppStorage("serverPort") private var serverPort: String?
   @AppStorage("serverTLS") private var serverTLS: Bool?
+  @AppStorage("fontSizeOption") private var fontSizeOption: Int = 12
 
   @FetchRequest(
     sortDescriptors: [NSSortDescriptor(keyPath: \Model.size, ascending: true)],
@@ -106,6 +107,7 @@ struct ConversationView: View, Sendable {
       }
     }
       .textSelection(.enabled)
+      .font(.system(size:CGFloat( fontSizeOption)))
       .safeAreaInset(edge: .bottom, spacing: 0) {
       MessageTextField { s in
         submit(s)

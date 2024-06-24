@@ -22,6 +22,10 @@ struct MessageView: View {
   @State var isHover = false
   @State var animateDots = false
 
+  @AppStorage("fontSizeOption") private var fontSizeOption: Int = 12
+    
+    
+    
   init(_ m: Message, overrideText: String = "", agentStatus: Agent.Status?) {
     self.m = m
     self.overrideText = overrideText
@@ -40,6 +44,7 @@ struct MessageView: View {
       ? Text("warming up...")
     : Text(m.createdAt ?? Date(), formatter: messageTimestampFormatter))
       .font(.caption)
+      .font(.system(size:CGFloat( fontSizeOption)))
   }
 
   var info: String {
@@ -178,6 +183,7 @@ struct MessageView: View {
         Group {
           if m.fromId == Message.USER_SPEAKER_ID {
             Text(messageText)
+                  .font(.system(size:CGFloat( fontSizeOption)))
           } else {
             Markdown(messageText)
               .markdownTheme(.freeChat)

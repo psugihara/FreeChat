@@ -22,10 +22,15 @@ extension Theme {
   /// Bulleted list | ![](GitHubNestedBulletedList)
   /// Numbered list | ![](GitHubNumberedList)
   /// Table | ![](GitHubTable)
+    ///
+  @AppStorage("fontSizeOption") private static var fontSizeOption: Int = 12
+        
+    
   public static let freeChat = Theme()
     .text {
       ForegroundColor(.text)
       BackgroundColor(.background)
+      FontSize(CGFloat(fontSizeOption))
     }
     .code {
       FontFamilyVariant(.monospaced)
