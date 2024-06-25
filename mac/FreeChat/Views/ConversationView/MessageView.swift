@@ -183,7 +183,7 @@ struct MessageView: View {
         Group {
           if m.fromId == Message.USER_SPEAKER_ID {
             Text(messageText)
-                  .font(.system(size:CGFloat( fontSizeOption)))
+             .font(.system(size:CGFloat( fontSizeOption)))
           } else {
             Markdown(messageText)
               .markdownTheme(.freeChat)
