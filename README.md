@@ -38,7 +38,7 @@ Once you're up and running, it's fun to try different models in FreeChat. The AI
 
 Models are usually named with their parameter count (e.g. 7B) and are formatted with different levels of lossy compression applied (quantization). The general rule of thumb is that models with more parameters tend to be slower and wiser and more quantization makes it dumber.
 
-To find models, try [Otherbrain](https://www.otherbrain.world). Most models have a linked "model card" by the author that discusses its training and abilities.
+To find models, try [Hugging Face](https://huggingface.co/models?sort=trending&search=gguf). Most models have a linked "model card" by the author that discusses its training and abilities.
 
 ## Dev Setup
 
@@ -47,7 +47,7 @@ To find models, try [Otherbrain](https://www.otherbrain.world). Most models have
 
 ### Roadmap / TODO (roughly in order):
 
-- [x] Chat with Llama 2 7B without installing anything else
+- [x] Chat with Llama 3 without installing anything else
 - [x] Try any llama.cpp compatible model
 - [x] Change system prompts to modify personas or expertise
 - [x] Download models from within the app (shrink app from 3GB to 10mb, way better for updates)
