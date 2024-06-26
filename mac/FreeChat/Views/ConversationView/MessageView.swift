@@ -43,8 +43,8 @@ struct MessageView: View {
     (agentStatus == .coldProcessing && overrideText.isEmpty
       ? Text("warming up...")
     : Text(m.createdAt ?? Date(), formatter: messageTimestampFormatter))
-      .font(.caption)
-      .font(.system(size:CGFloat( fontSizeOption)))
+      //.font(.caption)
+    .font(.system(size: CGFloat(Float(fontSizeOption) * 0.8)))
   }
 
   var info: String {
