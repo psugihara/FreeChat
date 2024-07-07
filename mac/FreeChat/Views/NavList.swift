@@ -12,6 +12,9 @@ struct NavList: View {
   @Environment(\.openWindow) private var openWindow
   @EnvironmentObject var conversationManager: ConversationManager
 
+  @State private var folderHierarchy: [FolderNode] = []
+  @State private var rootConversations: [Conversation] = []
+  
   @FetchRequest(
     sortDescriptors: [NSSortDescriptor(keyPath: \Conversation.lastMessageAt, ascending: false)],
     animation: .default)
@@ -23,8 +26,25 @@ struct NavList: View {
   @State var editing: Conversation?
   @State var newTitle = ""
   @FocusState var fieldFocused
+  
+  @State private var refreshTrigger = UUID()
 
   var body: some View {
+    List {
+                ForEach(folderHierarchy) { node in
+                    FolderView(node: node, selection: $selection, refreshTrigger: $refreshTrigger)
+                        .onDrop(of: [.text], delegate: FolderDropDelegate(folder: node.folder, refreshTrigger: $refreshTrigger))
+                }
+                ForEach(rootConversations) { conversation in
+                    ConversationRow(conversation: conversation, selection: $selection)
+                        .draggable(conversation.objectID.uriRepresentation().absoluteString)
+                }
+            }
+            .onAppear(perform: refreshHierarchy)
+            .onChange(of: refreshTrigger) { _ in
+                refreshHierarchy()
+            }
+    /*
     List(items, id: \.self, selection: $selection) { item in
       if editing == item {
         TextField(item.titleWithDefault, text: $newTitle)
@@ -46,7 +66,9 @@ struct NavList: View {
         Text(item.titleWithDefault).padding(.leading, 4)
       }
     }
-      .frame(minWidth: 50)
+    */
+    
+    .frame(minWidth: 50)
       .toolbar {
       ToolbarItem {
         Spacer()
@@ -82,6 +104,16 @@ struct NavList: View {
       }
         .keyboardShortcut(.defaultAction)
     }
+    
+    
+    
+    
+  }//body
+  
+  private func refreshHierarchy() {
+      let hierarchyManager = ConversationHierarchy(viewContext: viewContext)
+      (folderHierarchy, rootConversations) = hierarchyManager.getHierarchy()
+      refreshTrigger = UUID() // This will trigger a view update
   }
 
   private func saveNewTitle(conversation: Conversation) {
@@ -141,12 +173,93 @@ struct NavList: View {
     do {
            _ = try Folder.create(ctx: viewContext, name: folderName)
           print("Folder created")
+          debugPrintAllFolders()
+        refreshHierarchy()
+          
        } catch {
            print("An error occurred while creating the new folder: \(error)")
        }
   }
   
+  private func debugPrintAllFolders(){
+    // Fetch all folders after creating a new one
+    // To confirm the data model is working
+    let request: NSFetchRequest<Folder> = Folder.fetchRequest()
+    do {
+        let results = try viewContext.fetch(request)
+        print("Fetched Folders:")
+        for folder in results {
+            print(folder.name ?? "")
+        }
+    } catch {
+        print("Failed to fetch folders: \(error)")
+    }
+  }
+  
 }
+
+
+struct FolderView: View {
+    let node: FolderNode
+    @Binding var selection: Set<Conversation>
+    @Binding var refreshTrigger: UUID
+
+    var body: some View {
+        DisclosureGroup(
+            content: {
+                ForEach(node.subfolders) { subfolder in
+                    FolderView(node: subfolder, selection: $selection, refreshTrigger: $refreshTrigger)
+                }
+                ForEach(node.conversations) { conversation in
+                    ConversationRow(conversation: conversation, selection: $selection)
+                }
+            },
+            label: {
+                Text(node.folder.name ?? "Unnamed Folder")
+            }
+        )
+        .onDrop(of: [.text], delegate: FolderDropDelegate(folder: node.folder, refreshTrigger: $refreshTrigger))
+    }
+}
+
+struct ConversationRow: View {
+    let conversation: Conversation
+    @Binding var selection: Set<Conversation>
+    
+    var body: some View {
+        Text(conversation.titleWithDefault)
+            .padding(.leading, 4)
+            .draggable(conversation.objectID.uriRepresentation().absoluteString)
+            .onTapGesture {
+                selection = [conversation]
+            }
+    }
+}
+
+struct FolderDropDelegate: DropDelegate {
+    let folder: Folder
+    @Binding var refreshTrigger: UUID
+
+    func performDrop(info: DropInfo) -> Bool {
+        guard let itemProvider = info.itemProviders(for: [.text]).first else { return false }
+        
+        itemProvider.loadObject(ofClass: String.self) { (string, error) in
+            DispatchQueue.main.async {
+                if let uriString = string,
+                   let url = URL(string: uriString),
+                   let objectID = self.folder.managedObjectContext?.persistentStoreCoordinator?.managedObjectID(forURIRepresentation: url),
+                   let conversation = try? self.folder.managedObjectContext?.existingObject(with: objectID) as? Conversation {
+                    conversation.moveToFolder(self.folder)
+                    try? self.folder.managedObjectContext?.save()
+                    self.refreshTrigger = UUID() // This will trigger a view update
+                }
+            }
+        }
+        return true
+    }
+}
+
+
 
 #if DEBUG
   struct NavList_Previews_Container: View {

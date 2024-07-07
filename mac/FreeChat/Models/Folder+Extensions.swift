@@ -17,6 +17,10 @@ extension Folder {
     try ctx.save()
     return folder
   }
+  
+  func addConversation(_ conversation: Conversation) {
+          conversation.moveToFolder(self)
+      }
     
   var subfolders: [Folder] {
       let childFolders = self.child as? Set<Folder> ?? []

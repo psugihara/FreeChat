@@ -18,6 +18,11 @@ extension Conversation {
     return record
   }
 
+  func moveToFolder(_ folder: Folder?) {
+          self.folder = folder
+          try? self.managedObjectContext?.save()
+      }
+  
   var orderedMessages: [Message] {
     let set = messages as? Set<Message> ?? []
     return set.sorted {
