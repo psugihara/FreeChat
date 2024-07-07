@@ -28,12 +28,12 @@ struct NavList: View {
   @FocusState var fieldFocused
   
   @State private var refreshTrigger = UUID()
+  @State private var selectedFolder: Folder?
 
   var body: some View {
     List {
                 ForEach(folderHierarchy) { node in
-                    FolderView(node: node, selection: $selection, refreshTrigger: $refreshTrigger)
-                        .onDrop(of: [.text], delegate: FolderDropDelegate(folder: node.folder, refreshTrigger: $refreshTrigger))
+                    FolderView(node: node, selection: $selection, selectedFolder: $selectedFolder, refreshTrigger: $refreshTrigger)
                 }
                 ForEach(rootConversations) { conversation in
                     ConversationRow(conversation: conversation, selection: $selection)
@@ -164,22 +164,26 @@ struct NavList: View {
   }
 
   private func newConversation() {
-    conversationManager.newConversation(viewContext: viewContext, openWindow: openWindow)
-  }
-  
-  private func createFolder() {
-    let folderName = "New Folder"
-    print("want to create folder")
-    do {
-           _ = try Folder.create(ctx: viewContext, name: folderName)
-          print("Folder created")
-          debugPrintAllFolders()
-        refreshHierarchy()
-          
-       } catch {
-           print("An error occurred while creating the new folder: \(error)")
-       }
-  }
+          do {
+              let conversation = try Conversation.create(ctx: viewContext)
+              conversation.folder = selectedFolder
+              try viewContext.save()
+              refreshHierarchy()
+          } catch {
+              print("Error creating new conversation: \(error)")
+          }
+      }
+
+      private func createFolder() {
+          let folderName = "New Folder"
+          do {
+              let newFolder = try Folder.create(ctx: viewContext, name: folderName, parent: selectedFolder)
+              try viewContext.save()
+              refreshHierarchy()
+          } catch {
+              print("An error occurred while creating the new folder: \(error)")
+          }
+      }
   
   private func debugPrintAllFolders(){
     // Fetch all folders after creating a new one
@@ -202,23 +206,56 @@ struct NavList: View {
 struct FolderView: View {
     let node: FolderNode
     @Binding var selection: Set<Conversation>
+    @Binding var selectedFolder: Folder?
     @Binding var refreshTrigger: UUID
+    @State private var isEditing = false
+    @State private var newName = ""
 
     var body: some View {
         DisclosureGroup(
             content: {
                 ForEach(node.subfolders) { subfolder in
-                    FolderView(node: subfolder, selection: $selection, refreshTrigger: $refreshTrigger)
+                    FolderView(node: subfolder, selection: $selection, selectedFolder: $selectedFolder, refreshTrigger: $refreshTrigger)
                 }
                 ForEach(node.conversations) { conversation in
                     ConversationRow(conversation: conversation, selection: $selection)
                 }
             },
             label: {
-                Text(node.folder.name ?? "Unnamed Folder")
+                HStack {
+                    if isEditing {
+                        TextField("Folder Name", text: $newName, onCommit: {
+                            renameFolder()
+                            isEditing = false
+                        })
+                        .textFieldStyle(RoundedBorderTextFieldStyle())
+                        .frame(width: 150)
+                    } else {
+                        Text(node.folder.name ?? "Unnamed Folder")
+                    }
+                }
+                .onTapGesture {
+                    selectedFolder = node.folder
+                }
+                .onDrop(of: [.text], delegate: FolderDropDelegate(folder: node.folder, refreshTrigger: $refreshTrigger))
             }
         )
-        .onDrop(of: [.text], delegate: FolderDropDelegate(folder: node.folder, refreshTrigger: $refreshTrigger))
+        .contextMenu {
+            Button("Rename") {
+                newName = node.folder.name ?? ""
+                isEditing = true
+            }
+        }
+        .onAppear {
+            newName = node.folder.name ?? ""
+        }
+        .background(selectedFolder == node.folder ? Color.blue.opacity(0.1) : Color.clear)
+    }
+
+    private func renameFolder() {
+        node.folder.name = newName
+        try? node.folder.managedObjectContext?.save()
+        refreshTrigger = UUID()
     }
 }
 
