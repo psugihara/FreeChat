@@ -56,6 +56,11 @@ struct NavList: View {
           Label("Add conversation", systemImage: "plus")
         }
       }
+        ToolbarItem {
+          Button(action: createFolder) {
+            Label("New Folder", systemImage: "folder")
+          }
+        }
     }
       .onChange(of: items.count) { _ in
       selection = Set([items.first].compactMap { $0 })
@@ -129,6 +134,11 @@ struct NavList: View {
   private func newConversation() {
     conversationManager.newConversation(viewContext: viewContext, openWindow: openWindow)
   }
+  
+  private func createFolder() {
+      // Your code here...
+  }
+  
 }
 
 #if DEBUG
