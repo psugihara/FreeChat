@@ -35,8 +35,8 @@ extension Folder {
   public override func willSave() {
       super.willSave()
       
-      if !isDeleted, changedValues()["updatedAt"] == nil {
-          self.setValue(Date(), forKey: "updatedAt")
-      }
+      //if !isDeleted, changedValues()["updatedAt"] == nil {
+      //    self.setValue(Date(), forKey: "updatedAt")
+      //}
   }
 }

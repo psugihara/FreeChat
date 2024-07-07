@@ -136,7 +136,14 @@ struct NavList: View {
   }
   
   private func createFolder() {
-      // Your code here...
+    let folderName = "New Folder"
+    print("want to create folder")
+    do {
+           _ = try Folder.create(ctx: viewContext, name: folderName)
+          print("Folder created")
+       } catch {
+           print("An error occurred while creating the new folder: \(error)")
+       }
   }
   
 }
