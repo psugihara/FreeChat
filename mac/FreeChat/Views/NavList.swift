@@ -29,12 +29,13 @@ struct NavList: View {
   
   @State private var refreshTrigger = UUID()
   @State private var selectedFolder: Folder?
+  @State private var openFolders: Set<ObjectIdentifier> = []
 
   var body: some View {
     List {
-                ForEach(folderHierarchy) { node in
-                    FolderView(node: node, selection: $selection, selectedFolder: $selectedFolder, refreshTrigger: $refreshTrigger)
-                }
+      ForEach(folderHierarchy) { node in
+          FolderView(node: node, selection: $selection, selectedFolder: $selectedFolder, refreshTrigger: $refreshTrigger, openFolders: $openFolders)
+      }
                 ForEach(rootConversations) { conversation in
                     ConversationRow(conversation: conversation, selection: $selection)
                         .draggable(conversation.objectID.uriRepresentation().absoluteString)
@@ -185,6 +186,12 @@ struct NavList: View {
           }
       }
   
+  private func updateConversation(_ conversation: Conversation) {
+      // Find and update the conversation in the hierarchy
+      // This might involve recursively searching through folders
+      refreshHierarchy()
+  }
+  
   private func debugPrintAllFolders(){
     // Fetch all folders after creating a new one
     // To confirm the data model is working
@@ -208,14 +215,25 @@ struct FolderView: View {
     @Binding var selection: Set<Conversation>
     @Binding var selectedFolder: Folder?
     @Binding var refreshTrigger: UUID
+    @Binding var openFolders: Set<ObjectIdentifier>
     @State private var isEditing = false
     @State private var newName = ""
 
     var body: some View {
         DisclosureGroup(
+            isExpanded: Binding(
+                get: { openFolders.contains(ObjectIdentifier(node.folder)) },
+                set: { isExpanded in
+                    if isExpanded {
+                        openFolders.insert(ObjectIdentifier(node.folder))
+                    } else {
+                        openFolders.remove(ObjectIdentifier(node.folder))
+                    }
+                }
+            ),
             content: {
                 ForEach(node.subfolders) { subfolder in
-                    FolderView(node: subfolder, selection: $selection, selectedFolder: $selectedFolder, refreshTrigger: $refreshTrigger)
+                    FolderView(node: subfolder, selection: $selection, selectedFolder: $selectedFolder, refreshTrigger: $refreshTrigger, openFolders: $openFolders)
                 }
                 ForEach(node.conversations) { conversation in
                     ConversationRow(conversation: conversation, selection: $selection)
@@ -238,6 +256,8 @@ struct FolderView: View {
                     selectedFolder = node.folder
                 }
                 .onDrop(of: [.text], delegate: FolderDropDelegate(folder: node.folder, refreshTrigger: $refreshTrigger))
+                        
+                        
             }
         )
         .contextMenu {
