@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import CoreData
 
 struct NavList: View {
   @Environment(\.managedObjectContext) private var viewContext
@@ -30,17 +31,19 @@ struct NavList: View {
   @State private var refreshTrigger = UUID()
   @State private var selectedFolder: Folder?
   @State private var openFolders: Set<ObjectIdentifier> = []
-
+  @State private var combinedItems: [NavItem] = []
+  
   var body: some View {
     List {
-      ForEach(folderHierarchy) { node in
-          FolderView(node: node, selection: $selection, selectedFolder: $selectedFolder, refreshTrigger: $refreshTrigger, openFolders: $openFolders)
-      }
-                ForEach(rootConversations) { conversation in
-                    ConversationRow(conversation: conversation, selection: $selection)
-                        .draggable(conversation.objectID.uriRepresentation().absoluteString)
-                }
-            }
+               ForEach(combinedItems) { item in
+                   switch item {
+                   case .folder(let folderNode):
+                       FolderView(node: folderNode, selection: $selection, selectedFolder: $selectedFolder, refreshTrigger: $refreshTrigger, openFolders: $openFolders)
+                   case .conversation(let conversation):
+                       ConversationRow(conversation: conversation, selection: $selection)
+                   }
+               }
+           }
             .onAppear(perform: refreshHierarchy)
             .onChange(of: refreshTrigger) { _ in
                 refreshHierarchy()
@@ -112,10 +115,35 @@ struct NavList: View {
   }//body
   
   private func refreshHierarchy() {
-      let hierarchyManager = ConversationHierarchy(viewContext: viewContext)
-      (folderHierarchy, rootConversations) = hierarchyManager.getHierarchy()
-      refreshTrigger = UUID() // This will trigger a view update
-  }
+          let hierarchyManager = ConversationHierarchy(viewContext: viewContext)
+          (folderHierarchy, rootConversations) = hierarchyManager.getHierarchy()
+          
+          // Combine and sort folders and root conversations
+          let combined = folderHierarchy.map { NavItem.folder($0) } + rootConversations.map { NavItem.conversation($0) }
+          combinedItems = combined.sorted {
+              let title1: String
+              let title2: String
+              
+              switch ($0, $1) {
+              case (.folder(let node1), .folder(let node2)):
+                  title1 = node1.folder.name?.lowercased() ?? ""
+                  title2 = node2.folder.name?.lowercased() ?? ""
+              case (.conversation(let conv1), .conversation(let conv2)):
+                  title1 = conv1.titleWithDefault.lowercased()
+                  title2 = conv2.titleWithDefault.lowercased()
+              case (.folder(let node), .conversation(let conv)):
+                  title1 = node.folder.name?.lowercased() ?? ""
+                  title2 = conv.titleWithDefault.lowercased()
+              case (.conversation(let conv), .folder(let node)):
+                  title1 = conv.titleWithDefault.lowercased()
+                  title2 = node.folder.name?.lowercased() ?? ""
+              }
+              
+              return title1 < title2
+          }
+          
+          refreshTrigger = UUID()
+      }
 
   private func saveNewTitle(conversation: Conversation) {
     conversation.title = newTitle
@@ -220,17 +248,17 @@ struct FolderView: View {
     @State private var newName = ""
 
     var body: some View {
-        DisclosureGroup(
-            isExpanded: Binding(
-                get: { openFolders.contains(ObjectIdentifier(node.folder)) },
-                set: { isExpanded in
-                    if isExpanded {
-                        openFolders.insert(ObjectIdentifier(node.folder))
-                    } else {
-                        openFolders.remove(ObjectIdentifier(node.folder))
-                    }
-                }
-            ),
+      DisclosureGroup(
+                  isExpanded: Binding(
+                      get: { openFolders.contains(ObjectIdentifier(node.folder)) },
+                      set: { isExpanded in
+                          if isExpanded {
+                              openFolders.insert(ObjectIdentifier(node.folder))
+                          } else {
+                              openFolders.remove(ObjectIdentifier(node.folder))
+                          }
+                      }
+                  ),
             content: {
                 ForEach(node.subfolders) { subfolder in
                     FolderView(node: subfolder, selection: $selection, selectedFolder: $selectedFolder, refreshTrigger: $refreshTrigger, openFolders: $openFolders)
@@ -239,23 +267,26 @@ struct FolderView: View {
                     ConversationRow(conversation: conversation, selection: $selection)
                 }
             },
-            label: {
-                HStack {
-                    if isEditing {
-                        TextField("Folder Name", text: $newName, onCommit: {
-                            renameFolder()
-                            isEditing = false
-                        })
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
-                        .frame(width: 150)
-                    } else {
-                        Text(node.folder.name ?? "Unnamed Folder")
-                    }
-                }
-                .onTapGesture {
-                    selectedFolder = node.folder
-                }
-                .onDrop(of: [.text], delegate: FolderDropDelegate(folder: node.folder, refreshTrigger: $refreshTrigger))
+                  label: {
+                                  HStack {
+                                      Image(systemName: openFolders.contains(ObjectIdentifier(node.folder)) ? "folder.fill" : "folder")
+                                          .foregroundColor(.secondary)
+                                      if isEditing {
+                                          TextField("Folder Name", text: $newName, onCommit: {
+                                              renameFolder()
+                                              isEditing = false
+                                          })
+                                          .textFieldStyle(RoundedBorderTextFieldStyle())
+                                          .frame(width: 150)
+                                      } else {
+                                          Text(node.folder.name ?? "Unnamed Folder")
+                                      }
+                                  }
+                                  .onTapGesture {
+                                      selectedFolder = node.folder
+                                  }
+                                  .onDrop(of: [.text], delegate: FolderDropDelegate(folder: node.folder, refreshTrigger: $refreshTrigger))
+                              
                         
                         
             }

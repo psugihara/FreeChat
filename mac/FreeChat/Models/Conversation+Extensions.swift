@@ -8,8 +8,9 @@
 import Foundation
 import CoreData
 
-extension Conversation {
-  static func create(ctx: NSManagedObjectContext) throws -> Self {
+//extension Conversation: Hashable {
+extension Conversation{
+static func create(ctx: NSManagedObjectContext) throws -> Self {
     let record = self.init(context: ctx)
     record.createdAt = Date()
     record.lastMessageAt = record.createdAt
@@ -65,4 +66,16 @@ extension Conversation {
       self.setValue(Date(), forKey: "updatedAt")
     }
   }
+  
+  /*
+  public func hash(into hasher: inout Hasher) {
+      hasher.combine(objectID)
+  }*/
+  
+  public static func == (lhs: Conversation, rhs: Conversation) -> Bool {
+      return lhs.objectID == rhs.objectID
+  }
+  
+  
 }
+
