@@ -51,14 +51,21 @@ class ConversationHierarchy {
   }
     
   private func createFolderNode(from folder: Folder) -> FolderNode {
-      let subfolders = folder.subfolders
-          .map { createFolderNode(from: $0) }
-          .sorted { $0.folder.name?.lowercased() ?? "" < $1.folder.name?.lowercased() ?? "" }
-      
+      let subfolders = folder.subfolders.map { createFolderNode(from: $0) }
       let conversations = fetchConversations(for: folder)
-          .sorted { $0.titleWithDefault.lowercased() < $1.titleWithDefault.lowercased() }
       
-      return FolderNode(folder: folder, subfolders: subfolders, conversations: conversations)
+      // Combine and sort subfolders and conversations
+      let combinedItems = (subfolders as [Any] + conversations as [Any]).sorted {
+          let title1 = ($0 as? FolderNode)?.folder.name?.lowercased() ?? ($0 as? Conversation)?.titleWithDefault.lowercased() ?? ""
+          let title2 = ($1 as? FolderNode)?.folder.name?.lowercased() ?? ($1 as? Conversation)?.titleWithDefault.lowercased() ?? ""
+          return title1 < title2
+      }
+      
+      // Separate sorted items back into subfolders and conversations
+      let sortedSubfolders = combinedItems.compactMap { $0 as? FolderNode }
+      let sortedConversations = combinedItems.compactMap { $0 as? Conversation }
+      
+      return FolderNode(folder: folder, subfolders: sortedSubfolders, conversations: sortedConversations)
   }
     
     private func fetchConversations(for folder: Folder) -> [Conversation] {
