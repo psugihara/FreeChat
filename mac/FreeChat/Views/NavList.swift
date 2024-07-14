@@ -40,6 +40,29 @@ struct NavList: View {
                                 showingDeleteFolderConfirmation: $showingDeleteFolderConfirmation,
                                 folderToDelete: $folderToDelete,
                                 viewContext: viewContext)
+                //.contentShape(Rectangle())
+                .onTapGesture {
+                    selectedItemId = item.id
+                    if !item.isFolder, let conversation = item.item as? Conversation {
+                        lastSelectedChat = conversation
+                    }
+                }
+                .contextMenu {
+                    Button("Rename") {
+                        startRenaming(item)
+                    }
+                    
+                    if let conversation = item.item as? Conversation {
+                        Button("Delete", role: .destructive) {
+                            deleteConversation(conversation)
+                        }
+                    } else if let folder = item.item as? Folder {
+                        Button("Delete Folder and Contents", role: .destructive) {
+                            folderToDelete = folder
+                            showingDeleteFolderConfirmation = true
+                        }
+                    }
+                }
         }
         .onChange(of: lastSelectedChat) { newValue in
             if let newChat = newValue {
@@ -71,7 +94,13 @@ struct NavList: View {
         }
     }
 
-    
+  private func startRenaming(_ item: ListItem) {
+          editingItem = item
+          newTitle = item.item.name ?? ""
+          fieldFocused = true
+   }
+
+      
   
     private func refreshItems() {
         DispatchQueue.main.async {
@@ -158,6 +187,21 @@ struct NavList: View {
       }
     }
   
+  private func startRenaming(item: ListItem) {
+          editingItem = item
+          newTitle = item.item.name ?? ""
+          fieldFocused = true
+      }
+
+      private func deleteConversation(_ conversation: Conversation) {
+          viewContext.delete(conversation)
+          do {
+              try viewContext.save()
+              refreshTrigger = UUID()
+          } catch {
+              print("Error deleting conversation: \(error)")
+          }
+      }
 }
 
 struct HierarchicalItemRow: View {
@@ -186,7 +230,7 @@ struct HierarchicalItemRow: View {
           
             Spacer()
 
-            if showContextMenu {
+            /*if showContextMenu {
                 Menu {
                     Button("Rename") {
                         startRenaming()
@@ -205,7 +249,7 @@ struct HierarchicalItemRow: View {
                 } label: {
                     Image(systemName: "ellipsis.circle")
                 }
-            }
+            }*/
         }
         .contentShape(Rectangle())
         .listRowBackground(selectedItemId == item.id ? Color.blue.opacity(0.3) : Color.clear)
@@ -357,6 +401,13 @@ extension Folder {
         if let subfolders = folder.subfolders as? Set<Folder> {
             for subfolder in subfolders {
                 try deleteFolder(subfolder, in: context)
+              
+              // Delete all conversations in this folder
+              if let conversations = folder.conversation as? Set<Conversation> {
+                  for conversation in conversations {
+                      context.delete(conversation)
+                  }
+              }
             }
         }
         
