@@ -22,21 +22,34 @@ struct NavList: View {
     @State private var newTitle = ""
     @FocusState private var fieldFocused: Bool
     
-    @State private var selectedFolder: Folder?
+    @State private var selectedItemId: String?
+    @State private var lastSelectedChat: Conversation?
     @State private var refreshTrigger = UUID()
 
     var body: some View {
-        List(hierarchicalItems, children: \.children) { item in
-            HierarchicalItemRow(item: item,
-                                selection: $selection,
+        
+      List(hierarchicalItems, children: \.children) { item in
+            
+        HierarchicalItemRow(item: item,
+                                selectedItemId: $selectedItemId,
+                                lastSelectedChat: $lastSelectedChat,
                                 editingItem: $editingItem,
                                 newTitle: $newTitle,
                                 fieldFocused: _fieldFocused,
-                                selectedFolder: $selectedFolder)
+                            refreshTrigger: $refreshTrigger)
+        
+        
+        
+        
+        
         }
-        .onAppear(perform: refreshItems)
-        .onChange(of: refreshTrigger) { _ in refreshItems() }
-        .frame(minWidth: 50)
+        //.frame(maxWidth: .infinity)
+        //.listStyle(SidebarListStyle())
+        .onChange(of: lastSelectedChat) { newValue in
+            if let newChat = newValue {
+                selection = [newChat]
+            }
+        }
         .toolbar {
             ToolbarItem { Spacer() }
             ToolbarItem {
@@ -50,79 +63,67 @@ struct NavList: View {
                 }
             }
         }
-        .confirmationDialog("Are you sure you want to delete \(selection.count == 1 ? "this" : "\(selection.count)") conversation\(selection.count == 1 ? "" : "s")?", isPresented: $showDeleteConfirmation) {
-            Button("Yes, delete") {
-                deleteSelectedConversations()
+        .onAppear(perform: refreshItems)
+        .onChange(of: refreshTrigger) { _ in refreshItems() }
+    }
+
+    private func refreshItems() {
+        DispatchQueue.main.async {
+            do {
+                let folderFetchRequest: NSFetchRequest<Folder> = Folder.fetchRequest()
+                folderFetchRequest.predicate = NSPredicate(format: "parent == nil")
+                folderFetchRequest.sortDescriptors = [NSSortDescriptor(keyPath: \Folder.name, ascending: true)]
+                let rootFolders = try viewContext.fetch(folderFetchRequest)
+                
+                let conversationFetchRequest: NSFetchRequest<Conversation> = Conversation.fetchRequest()
+                conversationFetchRequest.predicate = NSPredicate(format: "folder == nil")
+                conversationFetchRequest.sortDescriptors = [NSSortDescriptor(keyPath: \Conversation.createdAt, ascending: false)]
+                let rootConversations = try viewContext.fetch(conversationFetchRequest)
+                
+                self.hierarchicalItems = self.buildHierarchy(folders: rootFolders, conversations: rootConversations)
+            } catch {
+                print("Failed to fetch items: \(error)")
             }
-            .keyboardShortcut(.defaultAction)
-        }
-        .onDisappear {
-            // Cancel any ongoing operations or listeners
-            // Reset any temporary state
-            editingItem = nil
-            newTitle = ""
         }
     }
 
-  private func refreshItems() {
-      DispatchQueue.main.async {
-          do {
-              // Fetch root folders
-              let folderFetchRequest: NSFetchRequest<Folder> = Folder.fetchRequest()
-              folderFetchRequest.predicate = NSPredicate(format: "parent == nil")
-              let rootFolders = try viewContext.fetch(folderFetchRequest)
-              
-              // Fetch root conversations (conversations not in any folder)
-              let conversationFetchRequest: NSFetchRequest<Conversation> = Conversation.fetchRequest()
-              conversationFetchRequest.predicate = NSPredicate(format: "folder == nil")
-              let rootConversations = try viewContext.fetch(conversationFetchRequest)
-              
-              // Build the hierarchy
-              self.hierarchicalItems = self.buildHierarchy(folders: rootFolders, conversations: rootConversations)
-          } catch {
-              print("Failed to fetch items: \(error)")
-          }
-      }
-  }
-
   private func buildHierarchy(folders: [Folder], conversations: [Conversation]) -> [ListItem] {
-      var items: [ListItem] = []
-      
-      // Add folders
-      for folder in folders {
-          let subfolders = folder.subfolders
-          let folderConversations = Array(folder.conversation as? Set<Conversation> ?? [])
-          let children = buildHierarchy(folders: subfolders, conversations: folderConversations)
-          let item = ListItem(id: folder.objectID.uriRepresentation().absoluteString, item: folder, children: children)
-          items.append(item)
-      }
-      
-      // Add conversations
-      for conversation in conversations {
-          let item = ListItem(id: conversation.objectID.uriRepresentation().absoluteString, item: conversation, children: nil)
-          items.append(item)
-      }
-      
-      // Sort items (folders first, then conversations, both alphabetically)
-      items.sort { (item1, item2) in
-          if item1.isFolder && !item2.isFolder {
-              return true
-          } else if !item1.isFolder && item2.isFolder {
-              return false
-          } else {
-              return item1.item.name?.lowercased() ?? "" < item2.item.name?.lowercased() ?? ""
-          }
-      }
-      
-      return items
-  }
+        var items: [ListItem] = []
+        
+        // Add folders
+        for folder in folders {
+            let subfolders = folder.subfolders
+            let folderConversations = Array(folder.conversation as? Set<Conversation> ?? [])
+            let children = buildHierarchy(folders: subfolders, conversations: folderConversations)
+            let item = ListItem(id: folder.objectID.uriRepresentation().absoluteString, item: folder, children: children)
+            items.append(item)
+        }
+        
+        for conversation in conversations {
+            let item = ListItem(id: conversation.objectID.uriRepresentation().absoluteString, item: conversation, children: nil)
+            items.append(item)
+        }
+        
+        return items
+    }
+
+    private func getSelectedFolder() -> Folder? {
+        if let selectedId = selectedItemId,
+           let selectedItem = hierarchicalItems.flatMap({ $0.allItems }).first(where: { $0.id == selectedId }),
+           let folder = selectedItem.item as? Folder {
+            return folder
+        }
+        return nil
+    }
 
     private func newConversation() {
         do {
             let conversation = try Conversation.create(ctx: viewContext)
-            conversation.folder = selectedFolder
+            conversation.folder = getSelectedFolder()
             try viewContext.save()
             refreshTrigger = UUID()
+            lastSelectedChat = conversation
+            selectedItemId = conversation.objectID.uriRepresentation().absoluteString
         } catch {
             print("Error creating new conversation: \(error)")
         }
@@ -131,37 +132,24 @@ struct NavList: View {
     private func createFolder() {
         let folderName = "New Folder"
         do {
-            let newFolder = try Folder.create(ctx: viewContext, name: folderName, parent: selectedFolder)
+            let newFolder = try Folder.create(ctx: viewContext, name: folderName, parent: getSelectedFolder())
             try viewContext.save()
             refreshTrigger = UUID()
+            selectedItemId = newFolder.objectID.uriRepresentation().absoluteString
         } catch {
             print("An error occurred while creating the new folder: \(error)")
-        }
-    }
-
-    private func deleteSelectedConversations() {
-        DispatchQueue.main.async {
-            withAnimation {
-                selection.forEach(viewContext.delete)
-                do {
-                    try viewContext.save()
-                    selection.removeAll()
-                    refreshTrigger = UUID()
-                } catch {
-                    print("Error deleting conversations: \(error)")
-                }
-            }
         }
     }
 }
 
 struct HierarchicalItemRow: View {
     let item: ListItem
-    @Binding var selection: Set<Conversation>
+    @Binding var selectedItemId: String?
+    @Binding var lastSelectedChat: Conversation?
     @Binding var editingItem: ListItem?
     @Binding var newTitle: String
     @FocusState var fieldFocused: Bool
-    @Binding var selectedFolder: Folder?
+    @Binding var refreshTrigger: UUID
     @Environment(\.managedObjectContext) private var viewContext
 
     var body: some View {
@@ -171,20 +159,36 @@ struct HierarchicalItemRow: View {
             } else {
                 Image(systemName: "doc.text")
             }
+          
             itemContent
+          
+            Spacer()
         }
         .contentShape(Rectangle())
+        .listRowBackground(selectedItemId == item.id ? Color.blue : Color.clear)
+        .padding(.leading, item.isFolder ? 0 : 16) // Indent chats
+        .listRowInsets(EdgeInsets(top: 2, leading: 0, bottom: 2, trailing: 8))
         .onTapGesture {
+            selectedItemId = item.id
             if !item.isFolder, let conversation = item.item as? Conversation {
-                selection = [conversation]
-            } else if item.isFolder, let folder = item.item as? Folder {
-                selectedFolder = folder
+                lastSelectedChat = conversation
             }
         }
         .contextMenu {
             Button("Rename") {
                 startRenaming()
             }
+            if let conversation = item.item as? Conversation {
+               Button("Delete") {
+                   viewContext.delete(conversation)
+                   do {
+                       try viewContext.save()
+                       refreshTrigger = UUID()  // Trigger a refresh after deletion
+                   } catch {
+                       print("Error deleting conversation: \(error)")
+                   }
+               }
+           }
             // Add other context menu items here
         }
     }
@@ -248,6 +252,17 @@ extension Conversation: HierarchicalItem {
         return self.title ?? self.titleWithDefault
     }
 }
+
+extension ListItem {
+    var allItems: [ListItem] {
+        var items = [self]
+        if let children = self.children {
+            items.append(contentsOf: children.flatMap { $0.allItems })
+        }
+        return items
+    }
+}
+
 
 #if DEBUG
 struct NavList_Previews: PreviewProvider {
