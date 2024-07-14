@@ -27,20 +27,35 @@ struct NavList: View {
     
     @State private var showingDeleteFolderConfirmation = false
     @State private var folderToDelete: Folder?
+  
+  @State private var draggedItem: ListItem?
+      @State private var dropTargetID: String?
 
     var body: some View {
-        List(hierarchicalItems, children: \.children) { item in
-            HierarchicalItemRow(item: item,
-                                selectedItemId: $selectedItemId,
-                                lastSelectedChat: $lastSelectedChat,
-                                editingItem: $editingItem,
-                                newTitle: $newTitle,
-                                fieldFocused: _fieldFocused,
-                                refreshTrigger: $refreshTrigger,
-                                showingDeleteFolderConfirmation: $showingDeleteFolderConfirmation,
-                                folderToDelete: $folderToDelete,
-                                viewContext: viewContext)
-                //.contentShape(Rectangle())
+      List(hierarchicalItems, children: \.children) { item in
+                  HierarchicalItemRow(item: item,
+                                      selectedItemId: $selectedItemId,
+                                      lastSelectedChat: $lastSelectedChat,
+                                      editingItem: $editingItem,
+                                      newTitle: $newTitle,
+                                      fieldFocused: _fieldFocused,
+                                      refreshTrigger: $refreshTrigger,
+                                      showingDeleteFolderConfirmation: $showingDeleteFolderConfirmation,
+                                      folderToDelete: $folderToDelete,
+                                      viewContext: viewContext,
+                                      draggedItem: $draggedItem,
+                                      dropTargetID: $dropTargetID)
+                      .onDrag {
+                          self.draggedItem = item
+                          return NSItemProvider(object: item.id as NSString)
+                      }
+                      .onDrop(of: [.text], delegate: ItemDropDelegate(item: item,
+                                                                      items: $hierarchicalItems,
+                                                                      viewContext: viewContext,
+                                                                      refreshTrigger: $refreshTrigger,
+                                                                      draggedItem: $draggedItem,
+                                                                      dropTargetID: $dropTargetID))
+              
                 .onTapGesture {
                     selectedItemId = item.id
                     if !item.isFolder, let conversation = item.item as? Conversation {
@@ -107,12 +122,12 @@ struct NavList: View {
             do {
                 let folderFetchRequest: NSFetchRequest<Folder> = Folder.fetchRequest()
                 folderFetchRequest.predicate = NSPredicate(format: "parent == nil")
-                folderFetchRequest.sortDescriptors = [NSSortDescriptor(keyPath: \Folder.name, ascending: true)]
+              folderFetchRequest.sortDescriptors = [NSSortDescriptor(keyPath: \Folder.orderIndex, ascending: true)]
                 let rootFolders = try viewContext.fetch(folderFetchRequest)
                 
                 let conversationFetchRequest: NSFetchRequest<Conversation> = Conversation.fetchRequest()
                 conversationFetchRequest.predicate = NSPredicate(format: "folder == nil")
-                conversationFetchRequest.sortDescriptors = [NSSortDescriptor(keyPath: \Conversation.createdAt, ascending: false)]
+              conversationFetchRequest.sortDescriptors = [NSSortDescriptor(keyPath: \Conversation.orderIndex, ascending: false)]
                 let rootConversations = try viewContext.fetch(conversationFetchRequest)
                 
                 self.hierarchicalItems = self.buildHierarchy(folders: rootFolders, conversations: rootConversations)
@@ -172,6 +187,7 @@ struct NavList: View {
             try viewContext.save()
             refreshTrigger = UUID()
             selectedItemId = newFolder.objectID.uriRepresentation().absoluteString
+          refreshItems()
         } catch {
             print("An error occurred while creating the new folder: \(error)")
         }
@@ -217,50 +233,36 @@ struct HierarchicalItemRow: View {
     let viewContext: NSManagedObjectContext
 
     @State private var showContextMenu = false
+  @Binding var draggedItem: ListItem?
+      @Binding var dropTargetID: String?
 
-    var body: some View {
-        HStack {
-            if item.isFolder {
-                Image(systemName: "folder")
-            } else {
-                Image(systemName: "doc.text")
-            }
-          
-            itemContent
-          
-            Spacer()
+  var body: some View {
+          HStack {
+              if item.isFolder {
+                  Image(systemName: "folder")
+              } else {
+                  Image(systemName: "doc.text")
+              }
+              
+              itemContent
+              
+              Spacer()
 
-            /*if showContextMenu {
-                Menu {
-                    Button("Rename") {
-                        startRenaming()
-                    }
-                    
-                    if let conversation = item.item as? Conversation {
-                        Button("Delete", role: .destructive) {
-                            deleteConversation(conversation)
-                        }
-                    } else if let folder = item.item as? Folder {
-                        Button("Delete Folder and Contents", role: .destructive) {
-                            folderToDelete = folder
-                            showingDeleteFolderConfirmation = true
-                        }
-                    }
-                } label: {
-                    Image(systemName: "ellipsis.circle")
-                }
-            }*/
-        }
-        .contentShape(Rectangle())
-        .listRowBackground(selectedItemId == item.id ? Color.blue.opacity(0.3) : Color.clear)
-        .padding(.leading, item.isFolder ? 0 : 16)
-        .listRowInsets(EdgeInsets(top: 2, leading: 0, bottom: 2, trailing: 8))
-        .onTapGesture {
-            selectedItemId = item.id
-            if !item.isFolder, let conversation = item.item as? Conversation {
-                lastSelectedChat = conversation
-            }
-        }
+              if dropTargetID == item.id && item.isFolder {
+                  Image(systemName: "plus.circle.fill")
+                      .foregroundColor(.green)
+              }
+          }
+          .contentShape(Rectangle())
+          .listRowBackground(selectedItemId == item.id ? Color.blue.opacity(0.3) : Color.clear)
+          .padding(.leading, item.isFolder ? 0 : 16)
+          .listRowInsets(EdgeInsets(top: 2, leading: 0, bottom: 2, trailing: 8))
+          .onTapGesture {
+              selectedItemId = item.id
+              if !item.isFolder, let conversation = item.item as? Conversation {
+                  lastSelectedChat = conversation
+              }
+          }
         .onHover { hovering in
             showContextMenu = hovering
         }
@@ -318,13 +320,15 @@ struct ItemDropDelegate: DropDelegate {
     @Binding var items: [ListItem]
     let viewContext: NSManagedObjectContext
     @Binding var refreshTrigger: UUID
+    @Binding var draggedItem: ListItem?
+    @Binding var dropTargetID: String?
 
     func performDrop(info: DropInfo) -> Bool {
-        guard let itemProvider = info.itemProviders(for: ["public.text"]).first else { return false }
+        guard let itemProvider = info.itemProviders(for: [.text]).first else { return false }
         
         itemProvider.loadObject(ofClass: NSString.self) { (id, error) in
             if let id = id as? String,
-               let sourceItem = self.items.flatMap({ $0.allItems }).first(where: { $0.id == id }),
+               let sourceItem = self.draggedItem,
                let destinationFolder = self.item.item as? Folder {
                 DispatchQueue.main.async {
                     if let conversation = sourceItem.item as? Conversation {
@@ -338,6 +342,8 @@ struct ItemDropDelegate: DropDelegate {
                     } catch {
                         print("Error saving after drop: \(error)")
                     }
+                    self.draggedItem = nil
+                    self.dropTargetID = nil
                 }
             }
         }
@@ -345,7 +351,11 @@ struct ItemDropDelegate: DropDelegate {
     }
 
     func dropEntered(info: DropInfo) {
-        // Implement if you want to highlight the drop target
+        self.dropTargetID = item.id
+    }
+
+    func dropExited(info: DropInfo) {
+        self.dropTargetID = nil
     }
 
     func dropUpdated(info: DropInfo) -> DropProposal? {
