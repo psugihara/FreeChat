@@ -11,73 +11,53 @@ import CoreData
 
 struct NavList: View {
     @Environment(\.managedObjectContext) private var viewContext
-    @StateObject private var conversationManager = ConversationManager()
-
-    @State private var hierarchicalItems: [ListItem] = []
+    @StateObject private var hierarchyManager: ConversationHierarchyManager
+    
     @Binding var selection: Set<Conversation>
     @Binding var showDeleteConfirmation: Bool
-
-    @State private var editingItem: ListItem?
+    
+    @State private var editingItem: NavItem?
     @State private var newTitle = ""
     @FocusState private var fieldFocused: Bool
     
     @State private var selectedItemId: String?
     @State private var lastSelectedChat: Conversation?
-    @State private var refreshTrigger = UUID()
     
     @State private var showingDeleteFolderConfirmation = false
     @State private var folderToDelete: Folder?
-  
-  @State private var draggedItem: ListItem?
-      @State private var dropTargetID: String?
+    
+    @State private var draggedItem: NavItem?
+    @State private var dropTargetID: String?
+
+    init(selection: Binding<Set<Conversation>>, showDeleteConfirmation: Binding<Bool>, viewContext: NSManagedObjectContext) {
+        self._selection = selection
+        self._showDeleteConfirmation = showDeleteConfirmation
+        self._hierarchyManager = StateObject(wrappedValue: ConversationHierarchyManager(viewContext: viewContext))
+    }
 
     var body: some View {
-      List(hierarchicalItems, children: \.children) { item in
-                  HierarchicalItemRow(item: item,
-                                      selectedItemId: $selectedItemId,
-                                      lastSelectedChat: $lastSelectedChat,
-                                      editingItem: $editingItem,
-                                      newTitle: $newTitle,
-                                      fieldFocused: _fieldFocused,
-                                      refreshTrigger: $refreshTrigger,
-                                      showingDeleteFolderConfirmation: $showingDeleteFolderConfirmation,
-                                      folderToDelete: $folderToDelete,
-                                      viewContext: viewContext,
-                                      draggedItem: $draggedItem,
-                                      dropTargetID: $dropTargetID)
-                      .onDrag {
-                          self.draggedItem = item
-                          return NSItemProvider(object: item.id as NSString)
-                      }
-                      .onDrop(of: [.text], delegate: ItemDropDelegate(item: item,
-                                                                      items: $hierarchicalItems,
-                                                                      viewContext: viewContext,
-                                                                      refreshTrigger: $refreshTrigger,
-                                                                      draggedItem: $draggedItem,
-                                                                      dropTargetID: $dropTargetID))
-              
-                .onTapGesture {
-                    selectedItemId = item.id
-                    if !item.isFolder, let conversation = item.item as? Conversation {
-                        lastSelectedChat = conversation
-                    }
+        List(hierarchyManager.navItems, children: \.children) { item in
+            NavItemRow(item: item,
+                       selectedItemId: $selectedItemId,
+                       lastSelectedChat: $lastSelectedChat,
+                       editingItem: $editingItem,
+                       newTitle: $newTitle,
+                       fieldFocused: _fieldFocused,
+                       showingDeleteFolderConfirmation: $showingDeleteFolderConfirmation,
+                       folderToDelete: $folderToDelete,
+                       viewContext: viewContext,
+                       draggedItem: $draggedItem,
+                       dropTargetID: $dropTargetID,
+                       hierarchyManager: hierarchyManager)
+                .onDrag {
+                    self.draggedItem = item
+                    return NSItemProvider(object: item.id as NSString)
                 }
-                .contextMenu {
-                    Button("Rename") {
-                        startRenaming(item)
-                    }
-                    
-                    if let conversation = item.item as? Conversation {
-                        Button("Delete", role: .destructive) {
-                            deleteConversation(conversation)
-                        }
-                    } else if let folder = item.item as? Folder {
-                        Button("Delete Folder and Contents", role: .destructive) {
-                            folderToDelete = folder
-                            showingDeleteFolderConfirmation = true
-                        }
-                    }
-                }
+                .onDrop(of: [.text], delegate: NavItemDropDelegate(item: item,
+                                                                   viewContext: viewContext,
+                                                                   hierarchyManager: hierarchyManager,
+                                                                   draggedItem: $draggedItem,
+                                                                   dropTargetID: $dropTargetID))
         }
         .onChange(of: lastSelectedChat) { newValue in
             if let newChat = newValue {
@@ -97,8 +77,6 @@ struct NavList: View {
                 }
             }
         }
-        .onAppear(perform: refreshItems)
-        .onChange(of: refreshTrigger) { _ in refreshItems() }
         .alert("Delete Folder", isPresented: $showingDeleteFolderConfirmation, presenting: folderToDelete) { folder in
             Button("Yes", role: .destructive) {
                 deleteFolder(folder)
@@ -109,116 +87,293 @@ struct NavList: View {
         }
     }
 
-  private func startRenaming(_ item: ListItem) {
-          editingItem = item
-          newTitle = item.item.name ?? ""
-          fieldFocused = true
-   }
-
-      
-  
-    private func refreshItems() {
-        DispatchQueue.main.async {
-            do {
-                let folderFetchRequest: NSFetchRequest<Folder> = Folder.fetchRequest()
-                folderFetchRequest.predicate = NSPredicate(format: "parent == nil")
-              folderFetchRequest.sortDescriptors = [NSSortDescriptor(keyPath: \Folder.orderIndex, ascending: true)]
-                let rootFolders = try viewContext.fetch(folderFetchRequest)
-                
-                let conversationFetchRequest: NSFetchRequest<Conversation> = Conversation.fetchRequest()
-                conversationFetchRequest.predicate = NSPredicate(format: "folder == nil")
-              conversationFetchRequest.sortDescriptors = [NSSortDescriptor(keyPath: \Conversation.orderIndex, ascending: false)]
-                let rootConversations = try viewContext.fetch(conversationFetchRequest)
-                
-                self.hierarchicalItems = self.buildHierarchy(folders: rootFolders, conversations: rootConversations)
-            } catch {
-                print("Failed to fetch items: \(error)")
-            }
-        }
-    }
-
-  private func buildHierarchy(folders: [Folder], conversations: [Conversation]) -> [ListItem] {
-        var items: [ListItem] = []
-        
-        // Add folders
-        for folder in folders {
-            let subfolders = folder.subfolders
-            let folderConversations = Array(folder.conversation as? Set<Conversation> ?? [])
-            let children = buildHierarchy(folders: subfolders, conversations: folderConversations)
-            let item = ListItem(id: folder.objectID.uriRepresentation().absoluteString, item: folder, children: children)
-            items.append(item)
-        }
-        
-        for conversation in conversations {
-            let item = ListItem(id: conversation.objectID.uriRepresentation().absoluteString, item: conversation, children: nil)
-            items.append(item)
-        }
-        
-        return items
-    }
-
-    private func getSelectedFolder() -> Folder? {
-        if let selectedId = selectedItemId,
-           let selectedItem = hierarchicalItems.flatMap({ $0.allItems }).first(where: { $0.id == selectedId }),
-           let folder = selectedItem.item as? Folder {
-            return folder
-        }
-        return nil
-    }
-
   private func newConversation() {
           do {
               let conversation = try Conversation.create(ctx: viewContext)
               conversation.folder = getSelectedFolder()
               try viewContext.save()
-              refreshTrigger = UUID()
+              hierarchyManager.refreshHierarchy()
               lastSelectedChat = conversation
-              selectedItemId = conversation.objectID.uriRepresentation().absoluteString
-              refreshItems() // Add this line to refresh the hierarchy
+              selectedItemId = NavItem.conversation(conversation).id
           } catch {
               print("Error creating new conversation: \(error)")
           }
       }
 
-    private func createFolder() {
-        let folderName = "New Folder"
-        do {
-            let newFolder = try Folder.create(ctx: viewContext, name: folderName, parent: getSelectedFolder())
-            try viewContext.save()
-            refreshTrigger = UUID()
-            selectedItemId = newFolder.objectID.uriRepresentation().absoluteString
-          refreshItems()
-        } catch {
-            print("An error occurred while creating the new folder: \(error)")
-        }
-    }
-  
-    private func deleteFolder(_ folder: Folder) {
-      do {
-          try Folder.deleteFolder(folder, in: viewContext)
-          try viewContext.save()
-          refreshTrigger = UUID()
-      } catch {
-          print("Error deleting folder: \(error)")
-      }
-    }
-  
-  private func startRenaming(item: ListItem) {
-          editingItem = item
-          newTitle = item.item.name ?? ""
-          fieldFocused = true
-      }
-
-      private func deleteConversation(_ conversation: Conversation) {
-          viewContext.delete(conversation)
+      private func createFolder() {
+          let folderName = "New Folder"
           do {
+              let newFolder = try Folder.create(ctx: viewContext, name: folderName, parent: getSelectedFolder())
               try viewContext.save()
-              refreshTrigger = UUID()
+              hierarchyManager.refreshHierarchy()
+              selectedItemId = NavItem.folder(FolderNode(folder: newFolder, subfolders: [], conversations: [])).id
           } catch {
-              print("Error deleting conversation: \(error)")
+              print("An error occurred while creating the new folder: \(error)")
           }
       }
+      
+      private func deleteFolder(_ folder: Folder) {
+          do {
+              try Folder.deleteFolder(folder, in: viewContext)
+              try viewContext.save()
+              hierarchyManager.refreshHierarchy()
+          } catch {
+              print("Error deleting folder: \(error)")
+          }
+      }
+
+      private func getSelectedFolder() -> Folder? {
+          if let selectedId = selectedItemId,
+             case .folder(let folderNode) = hierarchyManager.navItems.first(where: { $0.id == selectedId }) {
+              return folderNode.folder
+          }
+          return nil
+      }
+  
+ 
 }
+
+struct NavItemRow: View {
+    let item: NavItem
+    @Binding var selectedItemId: String?
+    @Binding var lastSelectedChat: Conversation?
+    @Binding var editingItem: NavItem?
+    @Binding var newTitle: String
+    @FocusState var fieldFocused: Bool
+    @Binding var showingDeleteFolderConfirmation: Bool
+    @Binding var folderToDelete: Folder?
+    let viewContext: NSManagedObjectContext
+    @Binding var draggedItem: NavItem?
+    @Binding var dropTargetID: String?
+    let hierarchyManager: ConversationHierarchyManager
+
+    @State private var showContextMenu = false
+
+    var body: some View {
+        HStack {
+            if case .folder = item {
+                Image(systemName: "folder")
+            } else {
+                Image(systemName: "doc.text")
+            }
+            
+            itemContent
+            
+            Spacer()
+
+            if dropTargetID == item.id, case .folder = item {
+                Image(systemName: "plus.circle.fill")
+                    .foregroundColor(.green)
+            }
+        }
+        .contentShape(Rectangle())
+        .listRowBackground(selectedItemId == item.id ? Color.blue.opacity(0.3) : Color.clear)
+        .padding(.leading, item.isFolder ? 0 : 16)
+        .listRowInsets(EdgeInsets(top: 2, leading: 0, bottom: 2, trailing: 8))
+        .onTapGesture {
+            selectedItemId = item.id
+            if case .conversation(let conversation) = item {
+                lastSelectedChat = conversation
+            }
+        }
+        .onHover { hovering in
+            showContextMenu = hovering
+        }
+        .contextMenu {
+            Button("Rename") {
+                startRenaming()
+            }
+            
+            if case .conversation(let conversation) = item {
+                Button("Delete", role: .destructive) {
+                    deleteConversation(conversation)
+                }
+            } else if case .folder(let folderNode) = item {
+                Button("Delete Folder and Contents", role: .destructive) {
+                    folderToDelete = folderNode.folder
+                    showingDeleteFolderConfirmation = true
+                }
+            }
+        }
+    }
+
+    @ViewBuilder
+    private var itemContent: some View {
+        if editingItem?.id == item.id {
+            TextField("Name", text: $newTitle)
+                .textFieldStyle(.plain)
+                .focused($fieldFocused)
+                .onSubmit(saveNewTitle)
+                .onExitCommand { editingItem = nil }
+        } else {
+            Text(item.name)
+        }
+    }
+
+    private func startRenaming() {
+        editingItem = item
+        newTitle = item.name
+        fieldFocused = true
+    }
+
+    private func saveNewTitle() {
+        do {
+            switch item {
+            case .conversation(let conversation):
+                conversation.title = newTitle
+            case .folder(let folderNode):
+                folderNode.folder.name = newTitle
+            }
+            try viewContext.save()
+            editingItem = nil
+            hierarchyManager.refreshHierarchy()
+        } catch {
+            print("Error saving new title: \(error)")
+        }
+    }
+
+    private func deleteConversation(_ conversation: Conversation) {
+        viewContext.delete(conversation)
+        do {
+            try viewContext.save()
+            hierarchyManager.refreshHierarchy()
+        } catch {
+            print("Error deleting conversation: \(error)")
+        }
+    }
+}
+
+struct NavItemDropDelegate: DropDelegate {
+    let item: NavItem
+    let viewContext: NSManagedObjectContext
+    let hierarchyManager: ConversationHierarchyManager
+    @Binding var draggedItem: NavItem?
+    @Binding var dropTargetID: String?
+
+    func performDrop(info: DropInfo) -> Bool {
+        guard let sourceItem = draggedItem else { return false }
+        
+        switch (sourceItem, item) {
+        case (.conversation(let conversation), .folder(let destinationFolder)):
+            conversation.folder = destinationFolder.folder
+        case (.folder(let sourceFolder), .folder(let destinationFolder)):
+            sourceFolder.folder.parent = destinationFolder.folder
+        case (.conversation(let conversation), .conversation):
+            // Move to root if dropped on another conversation
+            conversation.folder = nil
+        case (.folder(let folder), .conversation):
+            // Move to root if dropped on a conversation
+            folder.folder.parent = nil
+        }
+        
+        do {
+            try viewContext.save()
+            hierarchyManager.refreshHierarchy()
+        } catch {
+            print("Error saving after drop: \(error)")
+        }
+        
+        draggedItem = nil
+        dropTargetID = nil
+        return true
+    }
+
+    func dropEntered(info: DropInfo) {
+        self.dropTargetID = item.id
+    }
+
+    func dropExited(info: DropInfo) {
+        self.dropTargetID = nil
+    }
+
+    func dropUpdated(info: DropInfo) -> DropProposal? {
+        return DropProposal(operation: .move)
+    }
+}
+
+class ConversationHierarchyManager: ObservableObject {
+    @Published var navItems: [NavItem] = []
+    private let viewContext: NSManagedObjectContext
+    
+    init(viewContext: NSManagedObjectContext) {
+        self.viewContext = viewContext
+        refreshHierarchy()
+    }
+    
+    func refreshHierarchy() {
+        let folderFetchRequest: NSFetchRequest<Folder> = Folder.fetchRequest()
+        folderFetchRequest.predicate = NSPredicate(format: "parent == nil")
+        folderFetchRequest.sortDescriptors = [NSSortDescriptor(keyPath: \Folder.orderIndex, ascending: true)]
+        
+        let conversationFetchRequest: NSFetchRequest<Conversation> = Conversation.fetchRequest()
+        conversationFetchRequest.predicate = NSPredicate(format: "folder == nil")
+        conversationFetchRequest.sortDescriptors = [NSSortDescriptor(keyPath: \Conversation.orderIndex, ascending: true)]
+        
+        do {
+            let rootFolders = try viewContext.fetch(folderFetchRequest)
+            let rootConversations = try viewContext.fetch(conversationFetchRequest)
+            
+            navItems = rootFolders.map { NavItem.folder(createFolderNode(from: $0)) } +
+                       rootConversations.map { NavItem.conversation($0) }
+        } catch {
+            print("Failed to fetch root items: \(error)")
+        }
+    }
+    
+    private func createFolderNode(from folder: Folder) -> FolderNode {
+        let subfolderFetchRequest: NSFetchRequest<Folder> = Folder.fetchRequest()
+        subfolderFetchRequest.predicate = NSPredicate(format: "parent == %@", folder)
+        subfolderFetchRequest.sortDescriptors = [NSSortDescriptor(keyPath: \Folder.orderIndex, ascending: true)]
+        
+        let conversationFetchRequest: NSFetchRequest<Conversation> = Conversation.fetchRequest()
+        conversationFetchRequest.predicate = NSPredicate(format: "folder == %@", folder)
+        conversationFetchRequest.sortDescriptors = [NSSortDescriptor(keyPath: \Conversation.orderIndex, ascending: true)]
+        
+        do {
+            let subfolders = try viewContext.fetch(subfolderFetchRequest)
+            let conversations = try viewContext.fetch(conversationFetchRequest)
+            
+            return FolderNode(
+                folder: folder,
+                subfolders: subfolders.map { createFolderNode(from: $0) },
+                conversations: conversations
+            )
+        } catch {
+            print("Failed to fetch items for folder \(folder.name ?? ""): \(error)")
+            return FolderNode(folder: folder, subfolders: [], conversations: [])
+        }
+    }
+}
+
+extension NavItem {
+    var children: [NavItem]? {
+        switch self {
+        case .folder(let folderNode):
+            return folderNode.subfolders.map { NavItem.folder($0) } +
+                   folderNode.conversations.map { NavItem.conversation($0) }
+        case .conversation:
+            return nil
+        }
+    }
+    
+    var name: String {
+        switch self {
+        case .folder(let folderNode):
+            return folderNode.folder.name ?? "Unnamed Folder"
+        case .conversation(let conversation):
+            return conversation.title ?? conversation.titleWithDefault
+        }
+    }
+    
+    var isFolder: Bool {
+        if case .folder = self {
+            return true
+        }
+        return false
+    }
+}
+
+
 
 struct HierarchicalItemRow: View {
     let item: ListItem
@@ -426,7 +581,7 @@ extension Folder {
     }
 }
 
-#if DEBUG
+/*#if DEBUG
 struct NavList_Previews: PreviewProvider {
     static var previews: some View {
         let context = PersistenceController.preview.container.viewContext
@@ -434,4 +589,4 @@ struct NavList_Previews: PreviewProvider {
             .environment(\.managedObjectContext, context)
     }
 }
-#endif
+#endif*/
