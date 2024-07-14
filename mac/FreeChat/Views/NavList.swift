@@ -6,7 +6,6 @@
 //
 
 
-
 import SwiftUI
 import CoreData
 
@@ -25,26 +24,23 @@ struct NavList: View {
     @State private var selectedItemId: String?
     @State private var lastSelectedChat: Conversation?
     @State private var refreshTrigger = UUID()
+    
+    @State private var showingDeleteFolderConfirmation = false
+    @State private var folderToDelete: Folder?
 
     var body: some View {
-        
-      List(hierarchicalItems, children: \.children) { item in
-            
-        HierarchicalItemRow(item: item,
+        List(hierarchicalItems, children: \.children) { item in
+            HierarchicalItemRow(item: item,
                                 selectedItemId: $selectedItemId,
                                 lastSelectedChat: $lastSelectedChat,
                                 editingItem: $editingItem,
                                 newTitle: $newTitle,
                                 fieldFocused: _fieldFocused,
-                            refreshTrigger: $refreshTrigger)
-        
-        
-        
-        
-        
+                                refreshTrigger: $refreshTrigger,
+                                showingDeleteFolderConfirmation: $showingDeleteFolderConfirmation,
+                                folderToDelete: $folderToDelete,
+                                viewContext: viewContext)
         }
-        //.frame(maxWidth: .infinity)
-        //.listStyle(SidebarListStyle())
         .onChange(of: lastSelectedChat) { newValue in
             if let newChat = newValue {
                 selection = [newChat]
@@ -65,8 +61,18 @@ struct NavList: View {
         }
         .onAppear(perform: refreshItems)
         .onChange(of: refreshTrigger) { _ in refreshItems() }
+        .alert("Delete Folder", isPresented: $showingDeleteFolderConfirmation, presenting: folderToDelete) { folder in
+            Button("Yes", role: .destructive) {
+                deleteFolder(folder)
+            }
+            Button("No", role: .cancel) {}
+        } message: { folder in
+            Text("Are you sure you want to delete the folder \(folder.name ?? "Unnamed") and all of its contents?")
+        }
     }
 
+    
+  
     private func refreshItems() {
         DispatchQueue.main.async {
             do {
@@ -116,18 +122,19 @@ struct NavList: View {
         return nil
     }
 
-    private func newConversation() {
-        do {
-            let conversation = try Conversation.create(ctx: viewContext)
-            conversation.folder = getSelectedFolder()
-            try viewContext.save()
-            refreshTrigger = UUID()
-            lastSelectedChat = conversation
-            selectedItemId = conversation.objectID.uriRepresentation().absoluteString
-        } catch {
-            print("Error creating new conversation: \(error)")
-        }
-    }
+  private func newConversation() {
+          do {
+              let conversation = try Conversation.create(ctx: viewContext)
+              conversation.folder = getSelectedFolder()
+              try viewContext.save()
+              refreshTrigger = UUID()
+              lastSelectedChat = conversation
+              selectedItemId = conversation.objectID.uriRepresentation().absoluteString
+              refreshItems() // Add this line to refresh the hierarchy
+          } catch {
+              print("Error creating new conversation: \(error)")
+          }
+      }
 
     private func createFolder() {
         let folderName = "New Folder"
@@ -140,6 +147,17 @@ struct NavList: View {
             print("An error occurred while creating the new folder: \(error)")
         }
     }
+  
+    private func deleteFolder(_ folder: Folder) {
+      do {
+          try Folder.deleteFolder(folder, in: viewContext)
+          try viewContext.save()
+          refreshTrigger = UUID()
+      } catch {
+          print("Error deleting folder: \(error)")
+      }
+    }
+  
 }
 
 struct HierarchicalItemRow: View {
@@ -150,7 +168,11 @@ struct HierarchicalItemRow: View {
     @Binding var newTitle: String
     @FocusState var fieldFocused: Bool
     @Binding var refreshTrigger: UUID
-    @Environment(\.managedObjectContext) private var viewContext
+    @Binding var showingDeleteFolderConfirmation: Bool
+    @Binding var folderToDelete: Folder?
+    let viewContext: NSManagedObjectContext
+
+    @State private var showContextMenu = false
 
     var body: some View {
         HStack {
@@ -163,10 +185,31 @@ struct HierarchicalItemRow: View {
             itemContent
           
             Spacer()
+
+            if showContextMenu {
+                Menu {
+                    Button("Rename") {
+                        startRenaming()
+                    }
+                    
+                    if let conversation = item.item as? Conversation {
+                        Button("Delete", role: .destructive) {
+                            deleteConversation(conversation)
+                        }
+                    } else if let folder = item.item as? Folder {
+                        Button("Delete Folder and Contents", role: .destructive) {
+                            folderToDelete = folder
+                            showingDeleteFolderConfirmation = true
+                        }
+                    }
+                } label: {
+                    Image(systemName: "ellipsis.circle")
+                }
+            }
         }
         .contentShape(Rectangle())
-        .listRowBackground(selectedItemId == item.id ? Color.blue : Color.clear)
-        .padding(.leading, item.isFolder ? 0 : 16) // Indent chats
+        .listRowBackground(selectedItemId == item.id ? Color.blue.opacity(0.3) : Color.clear)
+        .padding(.leading, item.isFolder ? 0 : 16)
         .listRowInsets(EdgeInsets(top: 2, leading: 0, bottom: 2, trailing: 8))
         .onTapGesture {
             selectedItemId = item.id
@@ -174,22 +217,8 @@ struct HierarchicalItemRow: View {
                 lastSelectedChat = conversation
             }
         }
-        .contextMenu {
-            Button("Rename") {
-                startRenaming()
-            }
-            if let conversation = item.item as? Conversation {
-               Button("Delete") {
-                   viewContext.delete(conversation)
-                   do {
-                       try viewContext.save()
-                       refreshTrigger = UUID()  // Trigger a refresh after deletion
-                   } catch {
-                       print("Error deleting conversation: \(error)")
-                   }
-               }
-           }
-            // Add other context menu items here
+        .onHover { hovering in
+            showContextMenu = hovering
         }
     }
 
@@ -222,12 +251,64 @@ struct HierarchicalItemRow: View {
                 }
                 try viewContext.save()
                 editingItem = nil
+                refreshTrigger = UUID()
             } catch {
                 print("Error saving new title: \(error)")
             }
         }
     }
+
+  private func deleteConversation(_ conversation: Conversation) {
+          viewContext.delete(conversation)
+          do {
+              try viewContext.save()
+              refreshTrigger = UUID()
+          } catch {
+              print("Error deleting conversation: \(error)")
+          }
+      }
 }
+
+struct ItemDropDelegate: DropDelegate {
+    let item: ListItem
+    @Binding var items: [ListItem]
+    let viewContext: NSManagedObjectContext
+    @Binding var refreshTrigger: UUID
+
+    func performDrop(info: DropInfo) -> Bool {
+        guard let itemProvider = info.itemProviders(for: ["public.text"]).first else { return false }
+        
+        itemProvider.loadObject(ofClass: NSString.self) { (id, error) in
+            if let id = id as? String,
+               let sourceItem = self.items.flatMap({ $0.allItems }).first(where: { $0.id == id }),
+               let destinationFolder = self.item.item as? Folder {
+                DispatchQueue.main.async {
+                    if let conversation = sourceItem.item as? Conversation {
+                        conversation.folder = destinationFolder
+                    } else if let folder = sourceItem.item as? Folder {
+                        folder.parent = destinationFolder
+                    }
+                    do {
+                        try self.viewContext.save()
+                        self.refreshTrigger = UUID()
+                    } catch {
+                        print("Error saving after drop: \(error)")
+                    }
+                }
+            }
+        }
+        return true
+    }
+
+    func dropEntered(info: DropInfo) {
+        // Implement if you want to highlight the drop target
+    }
+
+    func dropUpdated(info: DropInfo) -> DropProposal? {
+        return DropProposal(operation: .move)
+    }
+}
+
 
 struct ListItem: Identifiable, Equatable {
     let id: String
@@ -263,6 +344,26 @@ extension ListItem {
     }
 }
 
+extension Folder {
+    static func deleteFolder(_ folder: Folder, in context: NSManagedObjectContext) throws {
+        // Delete all conversations in this folder
+        if let conversations = folder.conversation as? Set<Conversation> {
+            for conversation in conversations {
+                context.delete(conversation)
+            }
+        }
+        
+        // Recursively delete subfolders
+        if let subfolders = folder.subfolders as? Set<Folder> {
+            for subfolder in subfolders {
+                try deleteFolder(subfolder, in: context)
+            }
+        }
+        
+        // Delete the folder itself
+        context.delete(folder)
+    }
+}
 
 #if DEBUG
 struct NavList_Previews: PreviewProvider {
