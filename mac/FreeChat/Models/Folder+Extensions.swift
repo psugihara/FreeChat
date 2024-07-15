@@ -8,7 +8,8 @@
 import Foundation
 import CoreData
 
-extension Folder :HierarchicalItem {
+
+extension Folder {
     
   static func create(ctx: NSManagedObjectContext, name: String, parent: Folder? = nil) throws -> Self {
           let folder = self.init(context: ctx)
@@ -53,3 +54,4 @@ extension Folder :HierarchicalItem {
       //}
   }
 }
+

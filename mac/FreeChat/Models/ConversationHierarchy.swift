@@ -65,7 +65,7 @@ class ConversationHierarchy {
       let sortedSubfolders = combinedItems.compactMap { $0 as? FolderNode }
       let sortedConversations = combinedItems.compactMap { $0 as? Conversation }
       
-      return FolderNode(folder: folder, subfolders: sortedSubfolders, conversations: sortedConversations)
+    return FolderNode(folder: folder, subfolders: sortedSubfolders, conversations: sortedConversations, isOpen: folder.open)
   }
     
     private func fetchConversations(for folder: Folder) -> [Conversation] {

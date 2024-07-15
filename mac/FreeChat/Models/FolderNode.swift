@@ -9,18 +9,19 @@ import Foundation
 import CoreData
 
 public struct FolderNode: Identifiable, Hashable {
-    public let id = UUID()
-    public let folder: Folder
-    public var subfolders: [FolderNode]
-    public var conversations: [Conversation]
-    
-    public static func == (lhs: FolderNode, rhs: FolderNode) -> Bool {
-        return lhs.id == rhs.id
-    }
-    
-    public func hash(into hasher: inout Hasher) {
-        hasher.combine(id)
-    }
+  public let id = UUID()
+  public let folder: Folder
+  public var subfolders: [FolderNode]
+  public var conversations: [Conversation]
+  public var isOpen: Bool
+  
+  public static func == (lhs: FolderNode, rhs: FolderNode) -> Bool {
+      return lhs.id == rhs.id
+  }
+  
+  public func hash(into hasher: inout Hasher) {
+      hasher.combine(id)
+  }
 }
 
 public enum NavItem: Identifiable, Hashable {
