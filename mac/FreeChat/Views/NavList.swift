@@ -29,7 +29,10 @@ struct NavList: View {
     @State private var draggedItem: NavItem?
     @State private var dropTargetID: String?
   
-  @State private var contextMenuItemId: String?
+  @State private var contextMenuItem: NavItem?
+  
+  
+  //@State private var contextMenuItemId: String?
 
     init(selection: Binding<Set<Conversation>>, showDeleteConfirmation: Binding<Bool>, viewContext: NSManagedObjectContext) {
         self._selection = selection
@@ -38,34 +41,28 @@ struct NavList: View {
     }
 
   var body: some View {
-          List {
-              ForEach(hierarchyManager.navItems) { item in
-                  NavItemContent(item: item)
-                      .contentShape(Rectangle())
-                      .onTapGesture {
-                          selectedItemId = item.id
-                          if case .conversation(let conversation) = item {
-                              lastSelectedChat = conversation
-                          }
-                      }
-                      
-                      .contextMenu {
-                          Button("Rename") {
-                              startRenaming(item)
-                          }
-                          if case .conversation(let conversation) = item {
-                              Button("Delete", role: .destructive) {
-                                  deleteConversation(conversation)
+    List {
+                ForEach(hierarchyManager.navItems) { item in
+                    NavItemContent(item: item)
+                        /*.contextMenu {
+                            Button("Rename") {
+                                  contextMenuItem = item
+                                  startRenaming(item)
+                              
                               }
-                          } else if case .folder(let folderNode) = item {
-                              Button("Delete Folder and Contents", role: .destructive) {
-                                  folderToDelete = folderNode.folder
-                                  showingDeleteFolderConfirmation = true
-                              }
-                          }
-                      }
-              }
-          }
+                            if case .conversation(let conversation) = item {
+                                Button("Delete", role: .destructive) {
+                                    deleteConversation(conversation)
+                                }
+                            } else if case .folder(let folderNode) = item {
+                                Button("Delete Folder and Contents", role: .destructive) {
+                                    folderToDelete = folderNode.folder
+                                    showingDeleteFolderConfirmation = true
+                                }
+                            }
+                        }*/
+                }
+            }
         .onChange(of: lastSelectedChat) { newValue in
             if let newChat = newValue {
                 selection = [newChat]
@@ -149,10 +146,20 @@ struct NavList: View {
       }
   
   private func startRenaming(_ item: NavItem) {
-          editingItem = item
-          newTitle = item.name
-          fieldFocused = true
-      }
+    print(item.name)
+    //print(item.children)
+    editingItem = item
+      contextMenuItem = item
+      newTitle = item.name
+      fieldFocused = true
+  }
+  
+  private func saveNewTitle() {
+      guard let item = editingItem ?? contextMenuItem else { return }
+      hierarchyManager.renameItem(item, newName: newTitle)
+      editingItem = nil
+      contextMenuItem = nil  // Add this line
+  }
 
       private func deleteConversation(_ conversation: Conversation) {
           viewContext.delete(conversation)
@@ -163,6 +170,7 @@ struct NavList: View {
               print("Error deleting conversation: \(error)")
           }
       }
+  
   
   
   @ViewBuilder
@@ -180,7 +188,9 @@ struct NavList: View {
                         viewContext: viewContext,
                         draggedItem: $draggedItem,
                         dropTargetID: $dropTargetID,
-                        hierarchyManager: hierarchyManager)
+                        hierarchyManager: hierarchyManager,
+                        saveNewTitle: saveNewTitle,
+                        contextMenuItem: $contextMenuItem)
           
       case .conversation(let conversation):
           NavItemRow(item: item,
@@ -194,111 +204,153 @@ struct NavList: View {
                      viewContext: viewContext,
                      draggedItem: $draggedItem,
                      dropTargetID: $dropTargetID,
-                     hierarchyManager: hierarchyManager)
+                     hierarchyManager: hierarchyManager,
+                     contextMenuItem: $contextMenuItem,
+                     saveNewTitle: saveNewTitle
+                     )
       }
   }
  
 }
 
 struct NavItemRow: View {
-    let item: NavItem
-    @Binding var selectedItemId: String?
-    @Binding var lastSelectedChat: Conversation?
-    @Binding var editingItem: NavItem?
-    @Binding var newTitle: String
-    @FocusState var fieldFocused: Bool
-    @Binding var showingDeleteFolderConfirmation: Bool
-    @Binding var folderToDelete: Folder?
-    let viewContext: NSManagedObjectContext
-    @Binding var draggedItem: NavItem?
-    @Binding var dropTargetID: String?
-    @ObservedObject var hierarchyManager: ConversationHierarchyManager
-
-    var body: some View {
-        HStack {
-            if case .folder(let folderNode) = item {
-                Image(systemName: folderNode.isOpen ? "chevron.down" : "chevron.right")
-                    .foregroundColor(.secondary)
-                    .onTapGesture {
-                        withAnimation {
-                            hierarchyManager.toggleFolderOpen(folderNode)
-                        }
-                    }
-                Image(systemName: "folder")
-                    .foregroundColor(.blue)
-            } else {
-                Image(systemName: "doc.text")
-                    .foregroundColor(.gray)
-            }
-            
-            if editingItem?.id == item.id {
-                TextField("Name", text: $newTitle)
-                    .textFieldStyle(PlainTextFieldStyle())
-                    .focused($fieldFocused)
-                    .onSubmit(saveNewTitle)
-                    .onExitCommand { editingItem = nil }
-            } else {
-                Text(item.name)
-            }
-            
-            Spacer()
-
-            if dropTargetID == item.id, case .folder = item {
-                Image(systemName: "plus.circle.fill")
-                    .foregroundColor(.green)
-            }
+  let item: NavItem
+  @Binding var selectedItemId: String?
+  @Binding var lastSelectedChat: Conversation?
+  @Binding var editingItem: NavItem?
+  @Binding var newTitle: String
+  @FocusState var fieldFocused: Bool
+  @Binding var showingDeleteFolderConfirmation: Bool
+  @Binding var folderToDelete: Folder?
+  let viewContext: NSManagedObjectContext
+  @Binding var draggedItem: NavItem?
+  @Binding var dropTargetID: String?
+  @ObservedObject var hierarchyManager: ConversationHierarchyManager
+  @Binding var contextMenuItem: NavItem?
+  
+  @State private var isOpen: Bool = false
+  let saveNewTitle: () -> Void
+  
+  var body: some View {
+    HStack {
+      
+      
+      
+      if case .folder(let folderNode) = item {
+        Image(systemName: isOpen ? "chevron.down" : "chevron.right")
+                            .foregroundColor(.secondary)
+                            .onTapGesture {
+                                withAnimation {
+                                    isOpen.toggle()
+                                    hierarchyManager.toggleFolderOpen(folderNode)
+                                }
+                            }
+        Image(systemName: "folder")
+          .foregroundColor(.blue)
+      } else {
+        Image(systemName: "doc.text")
+          .foregroundColor(.gray)
+      }
+      
+      if editingItem?.id == item.id || contextMenuItem?.id == item.id {
+          TextField("Name", text: $newTitle)
+              .textFieldStyle(PlainTextFieldStyle())
+              .focused($fieldFocused)
+              .onSubmit {
+                  saveNewTitle()
+                  editingItem = nil
+                  contextMenuItem = nil
+              }
+              .onExitCommand {
+                  editingItem = nil
+                  contextMenuItem = nil
+              }
+      } else {
+          Text(item.name)
+      }
+        
+        Spacer()
+        
+        if dropTargetID == item.id, case .folder = item {
+          Image(systemName: "plus.circle.fill")
+            .foregroundColor(.green)
         }
-        .contentShape(Rectangle())
+      }
+      //.contentShape(Rectangle())
         .listRowBackground(selectedItemId == item.id ? Color.blue.opacity(0.3) : Color.clear)
-      .onTapGesture {
-            selectedItemId = item.id
-            if case .conversation(let conversation) = item {
-                lastSelectedChat = conversation
-            }
+        .onTapGesture {
+          selectedItemId = item.id
+          if case .conversation(let conversation) = item {
+            lastSelectedChat = conversation
+          }
         }
-      .onDrag {
+        .onDrag {
           self.draggedItem = self.item
           return NSItemProvider(object: self.item.id as NSString)
+        }
+        .onDrop(of: [.text], delegate: NavItemDropDelegate(item: item,
+                                                           viewContext: viewContext,
+                                                           hierarchyManager: hierarchyManager,
+                                                           draggedItem: $draggedItem,
+                                                           dropTargetID: $dropTargetID))
+        .onAppear {
+          if case .folder(let folderNode) = item {
+            isOpen = folderNode.folder.open
+          }
+        }
+    
+        .contextMenu {
+                    Button(action: {
+                        contextMenuItem = item
+                        startRenamingItem()
+                    }) {
+                        Label("Rename", systemImage: "pencil")
+                    }
+                    
+                    if case .conversation(let conversation) = item {
+                        Button(action: {
+                            deleteConversation(conversation)
+                        }) {
+                            Label("Delete", systemImage: "trash")
+                        }
+                    } else if case .folder(let folderNode) = item {
+                        Button(action: {
+                            folderToDelete = folderNode.folder
+                            showingDeleteFolderConfirmation = true
+                        }) {
+                            Label("Delete Folder and Contents", systemImage: "trash")
+                        }
+                    }
+                }
+    }
+    
+     private func updateFolderOpenState() {
+      if case .folder(let folderNode) = item {
+        folderNode.folder.open = isOpen
+        try? viewContext.save()
+        hierarchyManager.refreshHierarchy()
       }
-      .onDrop(of: [.text], delegate: NavItemDropDelegate(item: item,
-                                                         viewContext: viewContext,
-                                                         hierarchyManager: hierarchyManager,
-                                                         draggedItem: $draggedItem,
-                                                         dropTargetID: $dropTargetID))
     }
+    
+    
+     private func deleteConversation(_ conversation: Conversation) {
+      viewContext.delete(conversation)
+      do {
+        try viewContext.save()
+        hierarchyManager.refreshHierarchy()
+      } catch {
+        print("Error deleting conversation: \(error)")
+      }
+    }
+  
+  private func startRenamingItem(){
+    print(item)
+    
+  }
 
-    private func startRenaming() {
-        editingItem = item
-        newTitle = item.name
-        fieldFocused = true
-    }
-
-    private func saveNewTitle() {
-        do {
-            switch item {
-            case .conversation(let conversation):
-                conversation.title = newTitle
-            case .folder(let folderNode):
-                folderNode.folder.name = newTitle
-            }
-            try viewContext.save()
-            editingItem = nil
-            hierarchyManager.refreshHierarchy()
-        } catch {
-            print("Error saving new title: \(error)")
-        }
-    }
-
-    private func deleteConversation(_ conversation: Conversation) {
-        viewContext.delete(conversation)
-        do {
-            try viewContext.save()
-            hierarchyManager.refreshHierarchy()
-        } catch {
-            print("Error deleting conversation: \(error)")
-        }
-    }
+  
 }
+
 
 struct NavItemDropDelegate: DropDelegate {
     let item: NavItem
@@ -428,6 +480,23 @@ class ConversationHierarchyManager: ObservableObject {
             }
         }
     }
+  
+  func renameItem(_ item: NavItem, newName: String) {
+      switch item {
+      case .conversation(let conversation):
+          conversation.title = newName
+      case .folder(let folderNode):
+          folderNode.folder.name = newName
+      }
+      
+      do {
+          try viewContext.save()
+          refreshHierarchy()
+      } catch {
+          print("Error saving new name: \(error)")
+      }
+  }
+  
 }
 
 extension NavItem {
@@ -504,52 +573,62 @@ struct FolderContent: View {
     @Binding var draggedItem: NavItem?
     @Binding var dropTargetID: String?
     @ObservedObject var hierarchyManager: ConversationHierarchyManager
+      let saveNewTitle: () -> Void
+  @Binding var contextMenuItem: NavItem?
+  
+  
+  var body: some View {
+      
+          NavItemRow(item: .folder(folderNode),
+                     selectedItemId: $selectedItemId,
+                     lastSelectedChat: $lastSelectedChat,
+                     editingItem: $editingItem,
+                     newTitle: $newTitle,
+                     fieldFocused: _fieldFocused,
+                     showingDeleteFolderConfirmation: $showingDeleteFolderConfirmation,
+                     folderToDelete: $folderToDelete,
+                     viewContext: viewContext,
+                     draggedItem: $draggedItem,
+                     dropTargetID: $dropTargetID,
+                     hierarchyManager: hierarchyManager,
+                     contextMenuItem: $contextMenuItem,
+                     saveNewTitle: saveNewTitle)
 
-    var body: some View {
-        NavItemRow(item: .folder(folderNode),
-                   selectedItemId: $selectedItemId,
-                   lastSelectedChat: $lastSelectedChat,
-                   editingItem: $editingItem,
-                   newTitle: $newTitle,
-                   fieldFocused: _fieldFocused,
-                   showingDeleteFolderConfirmation: $showingDeleteFolderConfirmation,
-                   folderToDelete: $folderToDelete,
-                   viewContext: viewContext,
-                   draggedItem: $draggedItem,
-                   dropTargetID: $dropTargetID,
-                   hierarchyManager: hierarchyManager)
-
-        if folderNode.isOpen {
-            ForEach(folderNode.subfolders) { subfolder in
-                FolderContent(folderNode: subfolder,
-                              selectedItemId: $selectedItemId,
-                              lastSelectedChat: $lastSelectedChat,
-                              editingItem: $editingItem,
-                              newTitle: $newTitle,
-                              fieldFocused: _fieldFocused,
-                              showingDeleteFolderConfirmation: $showingDeleteFolderConfirmation,
-                              folderToDelete: $folderToDelete,
-                              viewContext: viewContext,
-                              draggedItem: $draggedItem,
-                              dropTargetID: $dropTargetID,
-                              hierarchyManager: hierarchyManager)
-                    .padding(.leading, 20)
-            }
-            ForEach(folderNode.conversations) { conversation in
-                NavItemRow(item: .conversation(conversation),
-                           selectedItemId: $selectedItemId,
-                           lastSelectedChat: $lastSelectedChat,
-                           editingItem: $editingItem,
-                           newTitle: $newTitle,
-                           fieldFocused: _fieldFocused,
-                           showingDeleteFolderConfirmation: $showingDeleteFolderConfirmation,
-                           folderToDelete: $folderToDelete,
-                           viewContext: viewContext,
-                           draggedItem: $draggedItem,
-                           dropTargetID: $dropTargetID,
-                           hierarchyManager: hierarchyManager)
-                    .padding(.leading, 20)
-            }
-        }
-    }
+          if folderNode.isOpen {
+              ForEach(folderNode.subfolders) { subfolder in
+                  FolderContent(folderNode: subfolder,
+                                selectedItemId: $selectedItemId,
+                                lastSelectedChat: $lastSelectedChat,
+                                editingItem: $editingItem,
+                                newTitle: $newTitle,
+                                fieldFocused: _fieldFocused,
+                                showingDeleteFolderConfirmation: $showingDeleteFolderConfirmation,
+                                folderToDelete: $folderToDelete,
+                                viewContext: viewContext,
+                                draggedItem: $draggedItem,
+                                dropTargetID: $dropTargetID,
+                                hierarchyManager: hierarchyManager,
+                                saveNewTitle: saveNewTitle,
+                                contextMenuItem: $contextMenuItem)
+                      .padding(.leading, 20)
+              }
+              ForEach(folderNode.conversations) { conversation in
+                  NavItemRow(item: .conversation(conversation),
+                             selectedItemId: $selectedItemId,
+                             lastSelectedChat: $lastSelectedChat,
+                             editingItem: $editingItem,
+                             newTitle: $newTitle,
+                             fieldFocused: _fieldFocused,
+                             showingDeleteFolderConfirmation: $showingDeleteFolderConfirmation,
+                             folderToDelete: $folderToDelete,
+                             viewContext: viewContext,
+                             draggedItem: $draggedItem,
+                             dropTargetID: $dropTargetID,
+                             hierarchyManager: hierarchyManager,
+                             contextMenuItem: $contextMenuItem,
+                             saveNewTitle: saveNewTitle)
+                      .padding(.leading, 20)
+              }
+          }
+      }
 }
