@@ -103,8 +103,8 @@ struct NavList: View {
       do {
           let conversation = try Conversation.create(ctx: viewContext)
           if let selectedId = selectedItemId,
-             case .folder(let folderNode) = hierarchyManager.navItems.first(where: { $0.id == selectedId }) {
-              conversation.folder = folderNode.folder
+             let folder = hierarchyManager.findFolder(withId: selectedId) {
+              conversation.folder = folder
           }
           try viewContext.save()
           hierarchyManager.refreshHierarchy()
@@ -155,7 +155,8 @@ struct NavList: View {
   }
   
   private func saveNewTitle() {
-      guard let item = editingItem ?? contextMenuItem else { return }
+    print("saveNewTile triggered")
+    guard let item = editingItem ?? contextMenuItem else { return }
       hierarchyManager.renameItem(item, newName: newTitle)
       editingItem = nil
       contextMenuItem = nil  // Add this line
@@ -495,6 +496,21 @@ class ConversationHierarchyManager: ObservableObject {
       } catch {
           print("Error saving new name: \(error)")
       }
+  }
+  
+  func findFolder(withId id: String) -> Folder? {
+      func search(in items: [NavItem]) -> Folder? {
+          for item in items {
+              if case .folder(let folderNode) = item, "\(folderNode.folder.id)" == id {
+                  return folderNode.folder
+              }
+              if let children = item.children, let found = search(in: children) {
+                  return found
+              }
+          }
+          return nil
+      }
+      return search(in: navItems)
   }
   
 }
