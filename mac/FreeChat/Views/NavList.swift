@@ -20,16 +20,19 @@ struct NavList: View {
     @State private var newTitle = ""
     @FocusState private var fieldFocused: Bool
     
-    @State private var selectedItemId: String?
+    //@State private var selectedItemId: String?
+  @State private var selectedItemId: AnyHashable?
+  
     @State private var lastSelectedChat: Conversation?
     
     @State private var showingDeleteFolderConfirmation = false
     @State private var folderToDelete: Folder?
     
     @State private var draggedItem: NavItem?
-    @State private var dropTargetID: String?
-  
+    //@State private var dropTargetID: String?
+  @State private var dropTargetID: AnyHashable?
   @State private var contextMenuItem: NavItem?
+  
   
   
   //@State private var contextMenuItemId: String?
@@ -103,6 +106,7 @@ struct NavList: View {
       do {
           let conversation = try Conversation.create(ctx: viewContext)
           if let selectedId = selectedItemId,
+             let folderId = selectedId.base as? NSManagedObjectID,
              let folder = hierarchyManager.findFolder(withId: selectedId) {
               conversation.folder = folder
           }
@@ -137,13 +141,12 @@ struct NavList: View {
           }
       }
 
-      private func getSelectedFolder() -> Folder? {
-          if let selectedId = selectedItemId,
-             case .folder(let folderNode) = hierarchyManager.navItems.first(where: { $0.id == selectedId }) {
-              return folderNode.folder
-          }
-          return nil
+  private func getSelectedFolder() -> Folder? {
+      if let selectedId = selectedItemId {
+          return hierarchyManager.findFolder(withId: selectedId)
       }
+      return nil
+  }
   
   private func startRenaming(_ item: NavItem) {
     print(item.name)
@@ -216,7 +219,9 @@ struct NavList: View {
 
 struct NavItemRow: View {
   let item: NavItem
-  @Binding var selectedItemId: String?
+  //@Binding var selectedItemId: String?
+  @Binding var selectedItemId: AnyHashable?
+  
   @Binding var lastSelectedChat: Conversation?
   @Binding var editingItem: NavItem?
   @Binding var newTitle: String
@@ -225,9 +230,11 @@ struct NavItemRow: View {
   @Binding var folderToDelete: Folder?
   let viewContext: NSManagedObjectContext
   @Binding var draggedItem: NavItem?
-  @Binding var dropTargetID: String?
+  //@Binding var dropTargetID: String?
+  @Binding var dropTargetID: AnyHashable?
   @ObservedObject var hierarchyManager: ConversationHierarchyManager
   @Binding var contextMenuItem: NavItem?
+  
   
   @State private var isOpen: Bool = false
   let saveNewTitle: () -> Void
@@ -278,17 +285,18 @@ struct NavItemRow: View {
         }
       }
       //.contentShape(Rectangle())
-        .listRowBackground(selectedItemId == item.id ? Color.blue.opacity(0.3) : Color.clear)
-        .onTapGesture {
-          selectedItemId = item.id
-          if case .conversation(let conversation) = item {
-            lastSelectedChat = conversation
-          }
-        }
-        .onDrag {
-          self.draggedItem = self.item
-          return NSItemProvider(object: self.item.id as NSString)
-        }
+    .listRowBackground(selectedItemId == item.id ? Color.blue.opacity(0.3) : Color.clear)
+            .onTapGesture {
+                selectedItemId = item.id
+                if case .conversation(let conversation) = item {
+                    lastSelectedChat = conversation
+                }
+            }
+            .onDrag {
+              self.draggedItem = self.item
+              //return NSItemProvider(object: self.item.id as NSString)
+              return NSItemProvider(object: String(describing: self.item.id) as NSString)
+            }
         .onDrop(of: [.text], delegate: NavItemDropDelegate(item: item,
                                                            viewContext: viewContext,
                                                            hierarchyManager: hierarchyManager,
@@ -358,8 +366,9 @@ struct NavItemDropDelegate: DropDelegate {
     let viewContext: NSManagedObjectContext
     let hierarchyManager: ConversationHierarchyManager
     @Binding var draggedItem: NavItem?
-    @Binding var dropTargetID: String?
-
+    //@Binding var dropTargetID: String?
+  @Binding var dropTargetID: AnyHashable?
+  
     func performDrop(info: DropInfo) -> Bool {
         guard let sourceItem = draggedItem else { return false }
         
@@ -406,6 +415,7 @@ struct NavItemDropDelegate: DropDelegate {
 class ConversationHierarchyManager: ObservableObject {
     @Published var navItems: [NavItem] = []
     private let viewContext: NSManagedObjectContext
+
     
     init(viewContext: NSManagedObjectContext) {
         self.viewContext = viewContext
@@ -498,10 +508,10 @@ class ConversationHierarchyManager: ObservableObject {
       }
   }
   
-  func findFolder(withId id: String) -> Folder? {
+  func findFolder(withId id: AnyHashable) -> Folder? {
       func search(in items: [NavItem]) -> Folder? {
           for item in items {
-              if case .folder(let folderNode) = item, "\(folderNode.folder.id)" == id {
+              if case .folder(let folderNode) = item, folderNode.folder.objectID == id.base as? NSManagedObjectID {
                   return folderNode.folder
               }
               if let children = item.children, let found = search(in: children) {
@@ -515,16 +525,20 @@ class ConversationHierarchyManager: ObservableObject {
   
 }
 
-extension NavItem {
-    var children: [NavItem]? {
-        switch self {
-        case .folder(let folderNode):
-            return folderNode.subfolders.map { NavItem.folder($0) } +
-                   folderNode.conversations.map { NavItem.conversation($0) }
-        case .conversation:
-            return nil
-        }
+extension NavItem: Equatable {
+    static func == (lhs: NavItem, rhs: NavItem) -> Bool {
+        lhs.id == rhs.id
     }
+  
+  var children: [NavItem]? {
+          switch self {
+          case .folder(let folderNode):
+              return folderNode.subfolders.map { NavItem.folder($0) } +
+                     folderNode.conversations.map { NavItem.conversation($0) }
+          case .conversation:
+              return nil
+          }
+      }
     
     var name: String {
         switch self {
@@ -570,6 +584,10 @@ extension Folder {
         
         // Delete the folder itself
         context.delete(folder)
+      
+      var id: ObjectIdentifier {
+              return ObjectIdentifier(self)
+          }
     }
 }
 
@@ -578,8 +596,10 @@ extension Folder {
 
 struct FolderContent: View {
     let folderNode: FolderNode
-    @Binding var selectedItemId: String?
-    @Binding var lastSelectedChat: Conversation?
+    //@Binding var selectedItemId: String?
+  @Binding var selectedItemId: AnyHashable?
+  
+  @Binding var lastSelectedChat: Conversation?
     @Binding var editingItem: NavItem?
     @Binding var newTitle: String
     @FocusState var fieldFocused: Bool
@@ -587,8 +607,9 @@ struct FolderContent: View {
     @Binding var folderToDelete: Folder?
     let viewContext: NSManagedObjectContext
     @Binding var draggedItem: NavItem?
-    @Binding var dropTargetID: String?
-    @ObservedObject var hierarchyManager: ConversationHierarchyManager
+    //@Binding var dropTargetID: String?
+  @Binding var dropTargetID: AnyHashable?
+  @ObservedObject var hierarchyManager: ConversationHierarchyManager
       let saveNewTitle: () -> Void
   @Binding var contextMenuItem: NavItem?
   

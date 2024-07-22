@@ -9,15 +9,24 @@ import Foundation
 import CoreData
 
 //extension Conversation: Hashable {
-extension Conversation{
-static func create(ctx: NSManagedObjectContext) throws -> Self {
-    let record = self.init(context: ctx)
-    record.createdAt = Date()
-    record.lastMessageAt = record.createdAt
-
-    try ctx.save()
-    return record
-  }
+extension Conversation {
+  public var id: UUID {
+         if uniqueId == nil {
+             uniqueId = UUID()
+         }
+         return uniqueId!
+     }
+  
+  
+  
+  static func create(ctx: NSManagedObjectContext) throws -> Self {
+          let record = self.init(context: ctx)
+          record.createdAt = Date()
+          record.lastMessageAt = record.createdAt
+          record.uniqueId = UUID()  // Set the uniqueId here
+          try ctx.save()
+          return record
+      }
 
   func moveToFolder(_ folder: Folder?) {
           self.folder = folder
@@ -76,6 +85,7 @@ static func create(ctx: NSManagedObjectContext) throws -> Self {
       return lhs.objectID == rhs.objectID
   }
   
+
   
 }
 

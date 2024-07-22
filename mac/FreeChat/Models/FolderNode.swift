@@ -24,16 +24,19 @@ public struct FolderNode: Identifiable, Hashable {
   }
 }
 
-public enum NavItem: Identifiable, Hashable {
+enum NavItem: Identifiable {
     case folder(FolderNode)
     case conversation(Conversation)
+
     
-    public var id: String {
+  
+  
+    var id: AnyHashable {
         switch self {
-        case .folder(let node):
-            return "folder_\(node.id)"
+        case .folder(let folderNode):
+            return AnyHashable(folderNode.folder.objectID)
         case .conversation(let conversation):
-            return "conversation_\(conversation.objectID)"
+            return AnyHashable(conversation.id)
         }
     }
 }
