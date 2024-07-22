@@ -92,7 +92,6 @@ struct NavList: View {
     do {
       let conversation = try Conversation.create(ctx: viewContext)
       if let selectedId = selectedItemId,
-         let folderId = selectedId.base as? NSManagedObjectID,
          let folder = hierarchyManager.findFolder(withId: selectedId) {
         conversation.folder = folder
       }
@@ -135,12 +134,11 @@ struct NavList: View {
   }
   
   private func startRenaming(_ item: NavItem) {
-    print(item.name)
-    //print(item.children)
-    editingItem = item
-    contextMenuItem = item
-    newTitle = item.name
-    fieldFocused = true
+      editingItem = item
+      newTitle = item.name
+      DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+          fieldFocused = true
+      }
   }
   
   private func saveNewTitle() {
@@ -197,7 +195,7 @@ struct NavList: View {
                  dropTargetID: $dropTargetID,
                  hierarchyManager: hierarchyManager,
                  contextMenuItem: $contextMenuItem,
-                 saveNewTitle: saveNewTitle,
+                 //saveNewTitle: saveNewTitle,
                  internalSelection: $internalSelection
       )
     }
@@ -225,9 +223,16 @@ struct NavItemRow: View {
   
   
   @State private var isOpen: Bool = false
-  let saveNewTitle: () -> Void
+  //let saveNewTitle: () -> Void
+  //let saveNewTitle: () -> Void = {
+  //    hierarchyManager.renameItem(item, newName: newTitle)
+  //    isEditing = false
+  //}
   
   @Binding var internalSelection: Set<Conversation>
+  
+  // Is an item being edited
+  @State private var isEditing: Bool = false
   
   
   var body: some View {
@@ -248,21 +253,19 @@ struct NavItemRow: View {
           .foregroundColor(.gray)
       }
       
-      if editingItem?.id == item.id || contextMenuItem?.id == item.id {
-        TextField("Name", text: $newTitle)
-          .textFieldStyle(PlainTextFieldStyle())
-          .focused($fieldFocused)
-          .onSubmit {
-            saveNewTitle()
-            editingItem = nil
-            contextMenuItem = nil
-          }
-          .onExitCommand {
-            editingItem = nil
-            contextMenuItem = nil
-          }
+      if isEditing {
+          TextField("Name", text: $newTitle)
+              .textFieldStyle(PlainTextFieldStyle())
+              .focused($fieldFocused)
+              .onSubmit {
+                  performRename()
+              }
+              .onExitCommand {
+                  isEditing = false
+                  newTitle = item.name  // Reset to original name if cancelled
+              }
       } else {
-        Text(item.name)
+          Text(item.name)
       }
       
       Spacer()
@@ -304,12 +307,15 @@ struct NavItemRow: View {
     }
     
     .contextMenu {
-      Button(action: {
-        contextMenuItem = item
-        startRenamingItem()
-      }) {
-        Label("Rename", systemImage: "pencil")
-      }
+        Button(action: {
+            isEditing = true
+            newTitle = item.name
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                fieldFocused = true
+            }
+        }) {
+            Label("Rename", systemImage: "pencil")
+        }
       
       if case .conversation(let conversation) = item {
         Button(action: {
@@ -347,10 +353,15 @@ struct NavItemRow: View {
     }
   }
   
-  private func startRenamingItem(){
-    print(item)
-    
+  func performRename() {
+      hierarchyManager.renameItem(item, newName: newTitle)
+      isEditing = false
   }
+  
+  
+  //private func startRenamingItem(){
+  //  print(item)
+  //}
   
   
 }
@@ -615,7 +626,7 @@ struct FolderContent: View {
                dropTargetID: $dropTargetID,
                hierarchyManager: hierarchyManager,
                contextMenuItem: $contextMenuItem,
-               saveNewTitle: saveNewTitle,
+               //saveNewTitle: saveNewTitle,
                internalSelection: $internalSelection)
     
     if folderNode.isOpen {
@@ -651,7 +662,7 @@ struct FolderContent: View {
                    dropTargetID: $dropTargetID,
                    hierarchyManager: hierarchyManager,
                    contextMenuItem: $contextMenuItem,
-                   saveNewTitle: saveNewTitle,
+                   //saveNewTitle: saveNewTitle,
                    internalSelection: $internalSelection)
         .padding(.leading, 20)
       }
