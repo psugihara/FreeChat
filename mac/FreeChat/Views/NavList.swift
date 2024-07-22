@@ -33,7 +33,7 @@ struct NavList: View {
   @State private var dropTargetID: AnyHashable?
   @State private var contextMenuItem: NavItem?
   
-  
+  @State private var internalSelection: Set<Conversation> = Set()
   
   //@State private var contextMenuItemId: String?
 
@@ -47,35 +47,26 @@ struct NavList: View {
     List {
                 ForEach(hierarchyManager.navItems) { item in
                     NavItemContent(item: item)
-                        /*.contextMenu {
-                            Button("Rename") {
-                                  contextMenuItem = item
-                                  startRenaming(item)
-                              
-                              }
-                            if case .conversation(let conversation) = item {
-                                Button("Delete", role: .destructive) {
-                                    deleteConversation(conversation)
-                                }
-                            } else if case .folder(let folderNode) = item {
-                                Button("Delete Folder and Contents", role: .destructive) {
-                                    folderToDelete = folderNode.folder
-                                    showingDeleteFolderConfirmation = true
-                                }
-                            }
-                        }*/
+                      
                 }
             }
-        .onChange(of: lastSelectedChat) { newValue in
+        /*.onChange(of: lastSelectedChat) { newValue in
             if let newChat = newValue {
                 selection = [newChat]
             }
-        }
+        }*/
         .onChange(of: draggedItem) { _ in
             if draggedItem == nil {
                 hierarchyManager.updateItemOrder()
             }
-        }
+        }.onChange(of: internalSelection) { newValue in
+          DispatchQueue.main.async {
+              self.selection = newValue
+              if let selectedConversation = newValue.first {
+                  self.lastSelectedChat = selectedConversation
+              }
+          }
+      }
         .onAppear {
             hierarchyManager.refreshHierarchy()
         }
@@ -112,11 +103,11 @@ struct NavList: View {
           }
           try viewContext.save()
           hierarchyManager.refreshHierarchy()
-          lastSelectedChat = conversation
-          selectedItemId = NavItem.conversation(conversation).id
-      } catch {
-          print("Error creating new conversation: \(error)")
-      }
+        internalSelection = [conversation]
+                selectedItemId = NavItem.conversation(conversation).id
+            } catch {
+                print("Error creating new conversation: \(error)")
+            }
   }
 
       private func createFolder() {
@@ -194,7 +185,8 @@ struct NavList: View {
                         dropTargetID: $dropTargetID,
                         hierarchyManager: hierarchyManager,
                         saveNewTitle: saveNewTitle,
-                        contextMenuItem: $contextMenuItem)
+                        contextMenuItem: $contextMenuItem,
+                        internalSelection: $internalSelection)
           
       case .conversation(let conversation):
           NavItemRow(item: item,
@@ -210,7 +202,8 @@ struct NavList: View {
                      dropTargetID: $dropTargetID,
                      hierarchyManager: hierarchyManager,
                      contextMenuItem: $contextMenuItem,
-                     saveNewTitle: saveNewTitle
+                     saveNewTitle: saveNewTitle,
+                     internalSelection: $internalSelection
                      )
       }
   }
@@ -239,11 +232,11 @@ struct NavItemRow: View {
   @State private var isOpen: Bool = false
   let saveNewTitle: () -> Void
   
+  @Binding var internalSelection: Set<Conversation>
+  
+  
   var body: some View {
     HStack {
-      
-      
-      
       if case .folder(let folderNode) = item {
         Image(systemName: isOpen ? "chevron.down" : "chevron.right")
                             .foregroundColor(.secondary)
@@ -283,7 +276,14 @@ struct NavItemRow: View {
           Image(systemName: "plus.circle.fill")
             .foregroundColor(.green)
         }
-      }
+      } //hstack
+    
+    .onTapGesture {
+                selectedItemId = item.id
+                if case .conversation(let conversation) = item {
+                    internalSelection = [conversation]
+                }
+            }
       //.contentShape(Rectangle())
     .listRowBackground(selectedItemId == item.id ? Color.blue.opacity(0.3) : Color.clear)
             .onTapGesture {
@@ -603,7 +603,7 @@ struct FolderContent: View {
   @ObservedObject var hierarchyManager: ConversationHierarchyManager
       let saveNewTitle: () -> Void
   @Binding var contextMenuItem: NavItem?
-  
+  @Binding var internalSelection: Set<Conversation>
   
   var body: some View {
       
@@ -620,7 +620,8 @@ struct FolderContent: View {
                      dropTargetID: $dropTargetID,
                      hierarchyManager: hierarchyManager,
                      contextMenuItem: $contextMenuItem,
-                     saveNewTitle: saveNewTitle)
+                     saveNewTitle: saveNewTitle,
+                     internalSelection: $internalSelection)
 
           if folderNode.isOpen {
               ForEach(folderNode.subfolders) { subfolder in
@@ -637,7 +638,8 @@ struct FolderContent: View {
                                 dropTargetID: $dropTargetID,
                                 hierarchyManager: hierarchyManager,
                                 saveNewTitle: saveNewTitle,
-                                contextMenuItem: $contextMenuItem)
+                                contextMenuItem: $contextMenuItem,
+                                internalSelection: $internalSelection)
                       .padding(.leading, 20)
               }
               ForEach(folderNode.conversations) { conversation in
@@ -654,7 +656,8 @@ struct FolderContent: View {
                              dropTargetID: $dropTargetID,
                              hierarchyManager: hierarchyManager,
                              contextMenuItem: $contextMenuItem,
-                             saveNewTitle: saveNewTitle)
+                             saveNewTitle: saveNewTitle,
+                             internalSelection: $internalSelection)
                       .padding(.leading, 20)
               }
           }
