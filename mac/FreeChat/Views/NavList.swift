@@ -131,15 +131,15 @@ struct NavList: View {
           }
       }
       
-      private func deleteFolder(_ folder: Folder) {
-          do {
-              try Folder.deleteFolder(folder, in: viewContext)
-              try viewContext.save()
-              hierarchyManager.refreshHierarchy()
-          } catch {
-              print("Error deleting folder: \(error)")
-          }
+  private func deleteFolder(_ folder: Folder) {
+      do {
+          try Folder.deleteFolder(folder, in: viewContext)
+          try viewContext.save()
+          hierarchyManager.refreshHierarchy()
+      } catch {
+          print("Error deleting folder: \(error)")
       }
+  }
 
   private func getSelectedFolder() -> Folder? {
       if let selectedId = selectedItemId {
@@ -561,6 +561,11 @@ extension NavItem: Equatable {
  
 extension Folder {
     static func deleteFolder(_ folder: Folder, in context: NSManagedObjectContext) throws {
+        // Recursively delete subfolders first
+        for subfolder in folder.subfolders {
+            try deleteFolder(subfolder, in: context)
+        }
+        
         // Delete all conversations in this folder
         if let conversations = folder.conversation as? Set<Conversation> {
             for conversation in conversations {
@@ -568,26 +573,12 @@ extension Folder {
             }
         }
         
-        // Recursively delete subfolders
-        if let subfolders = folder.subfolders as? Set<Folder> {
-            for subfolder in subfolders {
-                try deleteFolder(subfolder, in: context)
-              
-              // Delete all conversations in this folder
-              if let conversations = folder.conversation as? Set<Conversation> {
-                  for conversation in conversations {
-                      context.delete(conversation)
-                  }
-              }
-            }
-        }
-        
         // Delete the folder itself
         context.delete(folder)
-      
-      var id: ObjectIdentifier {
-              return ObjectIdentifier(self)
-          }
+    }
+    
+    public var id: ObjectIdentifier {
+        return ObjectIdentifier(self)
     }
 }
 
