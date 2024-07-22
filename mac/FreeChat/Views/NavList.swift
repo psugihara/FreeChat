@@ -134,11 +134,11 @@ struct NavList: View {
   }
   
   private func startRenaming(_ item: NavItem) {
-      editingItem = item
-      newTitle = item.name
-      DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-          fieldFocused = true
-      }
+    editingItem = item
+    newTitle = item.name
+    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+      fieldFocused = true
+    }
   }
   
   private func saveNewTitle() {
@@ -236,46 +236,53 @@ struct NavItemRow: View {
   
   
   var body: some View {
-    HStack {
-      if case .folder(let folderNode) = item {
-        Image(systemName: isOpen ? "chevron.down" : "chevron.right")
-          .foregroundColor(.secondary)
-          .onTapGesture {
-            withAnimation {
-              isOpen.toggle()
-              hierarchyManager.toggleFolderOpen(folderNode)
-            }
-          }
-        Image(systemName: "folder")
-          .foregroundColor(.blue)
-      } else {
-        Image(systemName: "doc.text")
-          .foregroundColor(.gray)
-      }
-      
-      if isEditing {
-          TextField("Name", text: $newTitle)
-              .textFieldStyle(PlainTextFieldStyle())
-              .focused($fieldFocused)
-              .onSubmit {
-                  performRename()
-              }
-              .onExitCommand {
-                  isEditing = false
-                  newTitle = item.name  // Reset to original name if cancelled
-              }
-      } else {
-          Text(item.name)
-      }
-      
-      Spacer()
-      
-      if dropTargetID == item.id, case .folder = item {
-        Image(systemName: "plus.circle.fill")
-          .foregroundColor(.green)
-      }
-    } //hstack
     
+    
+    HStack {
+      Group {
+        if case .folder(let folderNode) = item {
+          Image(systemName: isOpen ? "chevron.down" : "chevron.right")
+            .foregroundColor(.secondary)
+            .onTapGesture {
+              withAnimation {
+                isOpen.toggle()
+                hierarchyManager.toggleFolderOpen(folderNode)
+              }
+            }
+          Image(systemName: "folder")
+            .foregroundColor(.blue)
+        } else {
+          Image(systemName: "doc.text")
+            .foregroundColor(.gray)
+        }
+        
+        if isEditing {
+          TextField("Name", text: $newTitle)
+            .textFieldStyle(PlainTextFieldStyle())
+            .focused($fieldFocused)
+            .onSubmit {
+              performRename()
+            }
+            .onExitCommand {
+              isEditing = false
+              newTitle = item.name  // Reset to original name if cancelled
+            }
+        } else {
+          Text(item.name)
+        }
+        
+        Spacer()
+        
+        if dropTargetID == item.id, case .folder = item {
+          Image(systemName: "plus.circle.fill")
+            .foregroundColor(.green)
+        }
+      }//Group
+      
+    } //hstack
+    //.frame(maxWidth: .infinity, alignment: .leading)
+    //.frame(minHeight: 44)
+    .contentShape(Rectangle())
     .onTapGesture {
       selectedItemId = item.id
       if case .conversation(let conversation) = item {
@@ -283,7 +290,12 @@ struct NavItemRow: View {
       }
     }
     //.contentShape(Rectangle())
-    .listRowBackground(selectedItemId == item.id ? Color.blue.opacity(0.3) : Color.clear)
+    .listRowBackground(
+        RoundedRectangle(cornerRadius: 8)
+            .fill(selectedItemId == item.id ? Color.blue.opacity(0.9) : Color.clear)
+            .padding(.vertical, 0)
+            .padding(.horizontal, 10)
+    )
     .onTapGesture {
       selectedItemId = item.id
       if case .conversation(let conversation) = item {
@@ -307,15 +319,15 @@ struct NavItemRow: View {
     }
     
     .contextMenu {
-        Button(action: {
-            isEditing = true
-            newTitle = item.name
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                fieldFocused = true
-            }
-        }) {
-            Label("Rename", systemImage: "pencil")
+      Button(action: {
+        isEditing = true
+        newTitle = item.name
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+          fieldFocused = true
         }
+      }) {
+        Label("Rename", systemImage: "pencil")
+      }
       
       if case .conversation(let conversation) = item {
         Button(action: {
@@ -354,8 +366,8 @@ struct NavItemRow: View {
   }
   
   func performRename() {
-      hierarchyManager.renameItem(item, newName: newTitle)
-      isEditing = false
+    hierarchyManager.renameItem(item, newName: newTitle)
+    isEditing = false
   }
   
   
