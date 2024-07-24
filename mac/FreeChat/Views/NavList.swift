@@ -47,9 +47,15 @@ struct NavList: View {
     List {
       ForEach(hierarchyManager.navItems) { item in
         NavItemContent(item: item)
+          //.contentShape(Rectangle()) // Make the entire row tappable
         
       }
+      //.listRowInsets(EdgeInsets()) // Remove default insets
+      //.padding(0) // Ensure no extra padding
     }
+    //.listRowInsets(EdgeInsets())
+    //.listStyle(PlainListStyle())
+    //.environment(\.defaultMinListRowHeight, 1)
     .onChange(of: draggedItem) { _ in
       if draggedItem == nil {
         hierarchyManager.updateItemOrder()
@@ -238,7 +244,7 @@ struct NavItemRow: View {
   var body: some View {
     
     
-    HStack {
+    HStack{
       Group {
         if case .folder(let folderNode) = item {
           Image(systemName: isOpen ? "chevron.down" : "chevron.right")
@@ -277,12 +283,21 @@ struct NavItemRow: View {
           Image(systemName: "plus.circle.fill")
             .foregroundColor(.green)
         }
-      }//Group
+      }// group
+      //.padding(.vertical, 8)
+      //.listRowInsets(EdgeInsets())//Group
       
-    } //hstack
+    }
+    //.frame(height: /*@START_MENU_TOKEN@*/30.0/*@END_MENU_TOKEN@*/)
+    //.padding(.all) //hstack
+    //.listRowInsets(EdgeInsets())
+    //.frame(maxWidth: .infinity, alignment: .leading)
+          //.padding(0)
+    //.background(Color.red.opacity(0.9))
     //.frame(maxWidth: .infinity, alignment: .leading)
     //.frame(minHeight: 44)
-    .contentShape(Rectangle())
+    .contentShape(Rectangle()) // This makes the full width of the row clickable
+    //.contentShape(RoundedRectangle(cornerRadius: 8))
     .onTapGesture {
       selectedItemId = item.id
       if case .conversation(let conversation) = item {
@@ -293,15 +308,15 @@ struct NavItemRow: View {
     .listRowBackground(
         RoundedRectangle(cornerRadius: 8)
             .fill(selectedItemId == item.id ? Color.blue.opacity(0.9) : Color.clear)
-            .padding(.vertical, 0)
+            //.padding(.vertical, 0)
             .padding(.horizontal, 10)
     )
-    .onTapGesture {
+    /*.onTapGesture {
       selectedItemId = item.id
       if case .conversation(let conversation) = item {
         lastSelectedChat = conversation
       }
-    }
+    }*/
     .onDrag {
       self.draggedItem = self.item
       //return NSItemProvider(object: self.item.id as NSString)
@@ -344,6 +359,11 @@ struct NavItemRow: View {
         }
       }
     }
+    
+    //.padding(.horizontal, 10) // Add horizontal padding outside the row
+    //.padding(.vertical, 2) // Add minimal vertical padding between rows
+
+    
   }
   
   private func updateFolderOpenState() {
@@ -376,7 +396,7 @@ struct NavItemRow: View {
   //}
   
   
-}
+}//view
 
 
 struct NavItemDropDelegate: DropDelegate {
@@ -680,4 +700,47 @@ struct FolderContent: View {
       }
     }
   }
+}
+
+
+struct NavList_Previews: PreviewProvider {
+    static var previews: some View {
+        // Create a mock managed object context
+        let viewContext = PersistenceController.preview.container.viewContext
+        
+        // Create sample folders and conversations
+        let folder1 = Folder(context: viewContext)
+        folder1.name = "Folder 1"
+        folder1.orderIndex = 0
+        
+        let folder2 = Folder(context: viewContext)
+        folder2.name = "Folder 2"
+        folder2.orderIndex = 1
+        
+        let conversation1 = Conversation(context: viewContext)
+        conversation1.title = "Conversation 1"
+        conversation1.orderIndex = 0
+        
+        let conversation2 = Conversation(context: viewContext)
+        conversation2.title = "Conversation 2"
+        conversation2.orderIndex = 1
+        
+        // Assign conversations to folders
+        conversation1.folder = folder1
+        conversation2.folder = folder1
+        
+        // Save context to persist the sample data
+        do {
+            try viewContext.save()
+        } catch {
+            print("Error saving preview data: \(error)")
+        }
+        
+        return NavList(
+            selection: .constant(Set<Conversation>()),
+            showDeleteConfirmation: .constant(false),
+            viewContext: viewContext
+        )
+        .environment(\.managedObjectContext, viewContext)
+    }
 }
