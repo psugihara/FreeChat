@@ -23,8 +23,9 @@ struct HierarchyView: View {
   
   @State private var selectedContextMenuItem: HierarchyItem?
   
-  @EnvironmentObject var conversationManager: ConversationManager
+  @State private var contextMenuSelectedItem: HierarchyItem?
   
+  @EnvironmentObject var conversationManager: ConversationManager
   
   
   
@@ -36,15 +37,44 @@ struct HierarchyView: View {
   
   var body: some View {
     List(hierarchyManager.hierarchyItems, children: \.children) { item in
-      HierarchyItemRow(item: item)
-        .tag(item.id)
+      HierarchyItemRow(item: item,
+                       selectedItemId: $selectedItemId,
+                       folderToDelete: $folderToDelete,
+                       showingDeleteFolderConfirmation: $showingDeleteFolderConfirmation,
+                       draggedItem: $draggedItem,
+                       dropTargetID: $dropTargetID,
+                       editingItem: $editingItem,  // Add this
+                       newTitle: $newTitle,  // Add this
+                       viewContext: viewContext,
+                       hierarchyManager: hierarchyManager)
         .listRowInsets(EdgeInsets())
-        .listRowSeparator(.hidden)  // This explicitly hides the separator
-        .listRowBackground(Color.clear)
+        .contentShape(Rectangle())
+        //.contentShape(RoundedRectangle(cornerRadius: 8))
+        .onTapGesture {
+            selectedItemId = item.id
+        }
+        .contextMenu {
+            Button(action: {
+                contextMenuSelectedItem = item
+                renameItem()
+            }) {
+                Label("Rename", systemImage: "pencil")
+            }
+            
+            Button(action: {
+                contextMenuSelectedItem = item
+                deleteItem()
+            }) {
+                Label("Delete", systemImage: "trash")
+            }
+        }
+        
+        .listRowBackground(
+                           RoundedRectangle(cornerRadius: 8).fill(rowBackgroundColor(for: item))
+                            .padding(.horizontal, 8)
+        )
+      
     }
-    
-    //.listStyle(PlainListStyle())
-    //.listStyle(SidebarListStyle())
     .onChange(of: draggedItem) { _ in
       if draggedItem == nil {
         hierarchyManager.updateItemOrder()
@@ -60,9 +90,6 @@ struct HierarchyView: View {
         conversationManager.unsetConversation()
       }
     }
-    .onAppear {
-      hierarchyManager.refreshHierarchy()
-    }
     .toolbar {
       ToolbarItem { Spacer() }
       ToolbarItem {
@@ -76,6 +103,7 @@ struct HierarchyView: View {
         }
       }
     }
+    
     .alert("Delete Folder", isPresented: $showingDeleteFolderConfirmation, presenting: folderToDelete) { folder in
       Button("Yes", role: .destructive) {
         deleteFolder(folder)
@@ -86,11 +114,50 @@ struct HierarchyView: View {
     }
   }
   
+  private func rowBackgroundColor(for item: HierarchyItem) -> Color {
+      selectedItemId == item.id ? Color(NSColor.selectedControlColor) : Color.clear
+  }
+  
   private func startRenaming(_ item: HierarchyItem) {
+      print("startRenaming called for item: \(item.name)")
       editingItem = item
       newTitle = item.name
+      print("editingItem set to: \(editingItem?.name ?? "nil")")
+      print("newTitle set to: \(newTitle)")
       DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+          print("Setting fieldFocused to true")
           fieldFocused = true
+      }
+  }
+  
+  private func testingThisWorks(){
+    print("testing this works")
+  }
+  
+  private func renameItem() {
+      print("Rename function called")
+      print("Context menu selected item: \(contextMenuSelectedItem?.name ?? "nil")")
+      guard let item = contextMenuSelectedItem else {
+          print("No item selected for renaming")
+          return
+      }
+      print("Calling startRenaming for item: \(item.name)")
+      startRenaming(item)
+  }
+
+  private func deleteItem() {
+      print("Context menu selected item: \(contextMenuSelectedItem?.name ?? "nil")")
+      guard let item = contextMenuSelectedItem else {
+          print("No item selected for deletion")
+          return
+      }
+      if item.isFolder {
+          folderToDelete = item.folder
+          showingDeleteFolderConfirmation = true
+      } else {
+          if let conversation = item.conversation {
+              deleteConversation(conversation)
+          }
       }
   }
   
@@ -149,14 +216,12 @@ struct HierarchyView: View {
     context.delete(folder)
   }
   
- 
-  
   private func saveNewTitle() {
-      guard let item = editingItem else { return }
-      hierarchyManager.renameItem(item, newName: newTitle)
-      editingItem = nil
-      fieldFocused = false
-      hierarchyManager.refreshHierarchy() // Refresh to show the updated name
+    guard let item = editingItem else { return }
+    hierarchyManager.renameItem(item, newName: newTitle)
+    editingItem = nil
+    fieldFocused = false
+    hierarchyManager.refreshHierarchy() // Refresh to show the updated name
   }
   
   private func deleteConversation(_ conversation: Conversation) {
@@ -168,73 +233,96 @@ struct HierarchyView: View {
       print("Error deleting conversation: \(error)")
     }
   }
+}
+
+struct HierarchyItemRow: View {
+    var item: HierarchyItem
+    @Binding var selectedItemId: NSManagedObjectID?
+    @Binding var folderToDelete: Folder?
+    @Binding var showingDeleteFolderConfirmation: Bool
+    @Binding var draggedItem: HierarchyItem?
+    @Binding var dropTargetID: NSManagedObjectID?
+    @Binding var editingItem: HierarchyItem?  // Add this
+    @Binding var newTitle: String  // Add this
+    var viewContext: NSManagedObjectContext
+    var hierarchyManager: ConversationHierarchyManager
+    
+    @FocusState private var fieldFocused: Bool
   
-  @ViewBuilder
-  func HierarchyItemRow(item: HierarchyItem) -> some View {
-      HStack {
-          if item.isFolder {
-              Text(item.isOpen ? "📂" : "📁")
-          } else {
-              Text("📄")
-          }
-          
-          if editingItem?.id == item.id {
-              TextField("", text: $newTitle, onCommit: saveNewTitle)
-                  .textFieldStyle(RoundedBorderTextFieldStyle())
-                  .focused($fieldFocused)
-                  .onSubmit {
-                      saveNewTitle()
-                  }
-          } else {
-              Text(item.name)
-          }
-          
-          Spacer()
+  var body: some View {
+    HStack {
+      if item.isFolder {
+        Text(item.isOpen ? "📂" : "📁")
+      } else {
+        Text("📄")
       }
-      .padding(.vertical, 8)
-      .padding(.horizontal, 12)
-      .frame(maxWidth: .infinity, alignment: .leading)
-      .background(
-          RoundedRectangle(cornerRadius: 8)
-              .fill(selectedItemId == item.id ? Color(NSColor.selectedControlColor) : Color.clear)
-      )
-      .contentShape(Rectangle())
-      .onTapGesture {
-          selectedItemId = item.id
-      }
-      .contextMenu {
-          Button(action: {
-              startRenaming(item)
-          }) {
-              Label("Rename", systemImage: "pencil")
-          }
-          
-          if !item.isFolder {
-              Button(action: {
-                  if let conversation = item.conversation {
-                      deleteConversation(conversation)
-                  }
-              }) {
-                  Label("Delete", systemImage: "trash")
+      
+      if editingItem?.id == item.id {
+                  TextField("", text: $newTitle, onCommit: saveNewTitle)
+                      .textFieldStyle(RoundedBorderTextFieldStyle())
+                      .focused($fieldFocused)
+                      .onSubmit {
+                          saveNewTitle()
+                      }
+              } else {
+                  Text(item.name)
               }
-          } else {
-              Button(action: {
-                  folderToDelete = item.folder
-                  showingDeleteFolderConfirmation = true
-              }) {
-                  Label("Delete Folder and Contents", systemImage: "trash")
-              }
-          }
+      
+      Spacer()
+    }
+    .padding(.vertical, 8)
+    .padding(.horizontal, 6)
+    //.frame(maxWidth: .infinity, alignment: .leading)
+    //.background(
+    //  RoundedRectangle(cornerRadius: 8)
+    //    .fill(selectedItemId == item.id ? Color(NSColor.selectedControlColor) : Color.clear)
+    //)
+    .contentShape(Rectangle()) // This makes the whole row clickable (above and below the text) - otherwise the tap target is too small
+    .onTapGesture {
+      selectedItemId = item.id
+    }
+    
+    .onDrag {
+      self.draggedItem = item
+      return NSItemProvider(object: item.id.uriRepresentation().absoluteString as NSString)
+    }
+    .onDrop(of: [.text], delegate: HierarchyItemDropDelegate(item: item,
+                                                             viewContext: viewContext,
+                                                             hierarchyManager: hierarchyManager,
+                                                             draggedItem: $draggedItem,
+                                                             dropTargetID: $dropTargetID))
+  }
+  
+  private func startRenaming(_ item: HierarchyItem) {
+    editingItem = item
+    newTitle = item.name
+    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+      fieldFocused = true
+    }
+  }
+  
+  private func saveNewTitle() {
+      print("saveNewTitle called")
+      guard let item = editingItem else {
+          print("No item being edited")
+          return
       }
-      .onDrag {
-          self.draggedItem = item
-          return NSItemProvider(object: item.id.uriRepresentation().absoluteString as NSString)
-      }
-      .onDrop(of: [.text], delegate: HierarchyItemDropDelegate(item: item,
-                                                               viewContext: viewContext,
-                                                               hierarchyManager: hierarchyManager,
-                                                               draggedItem: $draggedItem,
-                                                               dropTargetID: $dropTargetID))
+      print("Saving new title: \(newTitle) for item: \(item.name)")
+      hierarchyManager.renameItem(item, newName: newTitle)
+      editingItem = nil
+      fieldFocused = false
+      print("editingItem set to nil, fieldFocused set to false")
+      hierarchyManager.refreshHierarchy()
+  }
+  
+  private func deleteConversation(_ conversation: Conversation) {
+    viewContext.delete(conversation)
+    do {
+      try viewContext.save()
+      hierarchyManager.refreshHierarchy()
+    } catch {
+      print("Error deleting conversation: \(error)")
+    }
   }
 }
 
@@ -407,7 +495,6 @@ struct HierarchyItemDropDelegate: DropDelegate {
   let hierarchyManager: ConversationHierarchyManager
   @Binding var draggedItem: HierarchyItem?
   @Binding var dropTargetID: NSManagedObjectID?
-  
   
   func performDrop(info: DropInfo) -> Bool {
     guard let sourceItem = draggedItem else { return false }
