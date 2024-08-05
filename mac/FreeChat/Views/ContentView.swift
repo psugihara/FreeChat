@@ -41,8 +41,10 @@ struct ContentView: View {
   var body: some View {
     NavigationSplitView {
       if setInitialSelection {
-        NavList(selection: $selection, showDeleteConfirmation: $showDeleteConfirmation)
-          .navigationSplitViewColumnWidth(min: 160, ideal: 160)
+        HierarchyView(selection: $selection,
+                      showDeleteConfirmation: $showDeleteConfirmation,
+                      viewContext: viewContext)
+            .navigationSplitViewColumnWidth(min: 160, ideal: 160)
       }
     } detail: {
       if selection.count > 1 {

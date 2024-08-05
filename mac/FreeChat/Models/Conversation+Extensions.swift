@@ -8,16 +8,31 @@
 import Foundation
 import CoreData
 
+//extension Conversation: Hashable {
 extension Conversation {
+  public var id: UUID {
+         if uniqueId == nil {
+             uniqueId = UUID()
+         }
+         return uniqueId!
+     }
+  
+  
+  
   static func create(ctx: NSManagedObjectContext) throws -> Self {
-    let record = self.init(context: ctx)
-    record.createdAt = Date()
-    record.lastMessageAt = record.createdAt
+          let record = self.init(context: ctx)
+          record.createdAt = Date()
+          record.lastMessageAt = record.createdAt
+          record.uniqueId = UUID()  // Set the uniqueId here
+          try ctx.save()
+          return record
+      }
 
-    try ctx.save()
-    return record
-  }
-
+  func moveToFolder(_ folder: Folder?) {
+          self.folder = folder
+          try? self.managedObjectContext?.save()
+      }
+  
   var orderedMessages: [Message] {
     let set = messages as? Set<Message> ?? []
     return set.sorted {
@@ -60,4 +75,17 @@ extension Conversation {
       self.setValue(Date(), forKey: "updatedAt")
     }
   }
+  
+  /*
+  public func hash(into hasher: inout Hasher) {
+      hasher.combine(objectID)
+  }*/
+  
+  public static func == (lhs: Conversation, rhs: Conversation) -> Bool {
+      return lhs.objectID == rhs.objectID
+  }
+  
+
+  
 }
+
