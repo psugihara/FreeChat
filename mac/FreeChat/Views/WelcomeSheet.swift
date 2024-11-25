@@ -65,7 +65,7 @@ struct WelcomeSheet: View {
         Button(action: downloadDefault) {
           HStack {
             Text("Download default model")
-            Text("4.02 GB").foregroundStyle(.white.opacity(0.7))
+            Text("2.02 GB").foregroundStyle(.white.opacity(0.7))
           }.padding(.horizontal, 20)
         }
         .keyboardShortcut(.defaultAction)
@@ -96,6 +96,7 @@ struct WelcomeSheet: View {
     downloadManager.startDownload(url: Model.defaultModelUrl)
   }
 }
+
 
 #Preview {
   @State var isPresented: Bool = true
